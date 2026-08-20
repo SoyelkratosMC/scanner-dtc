@@ -1,117 +1,204 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>Scanner DTC Automotriz</title>
 
 <style>
+
 * {
     box-sizing: border-box;
 }
 
 body {
+
     margin: 0;
+
     padding: 20px;
-    font-family: Arial, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     background: #080d18;
+
     color: #f8fafc;
 }
 
+
 .container {
+
     width: 100%;
+
     max-width: 750px;
+
     margin: auto;
 }
 
+
+/* =========================
+   HEADER
+========================= */
+
 header {
+
     text-align: center;
+
     margin-bottom: 25px;
 }
 
+
 h1 {
-    margin-bottom: 5px;
+
+    margin: 0 0 6px;
+
     color: #ef4444;
+
+    font-size: 30px;
 }
 
+
 .subtitle {
+
     margin: 0;
+
     color: #94a3b8;
+
     font-size: 14px;
 }
 
+
+/* =========================
+   CARDS
+========================= */
+
 .card {
+
     background: #151e2e;
+
     border: 1px solid #29364d;
+
     border-radius: 16px;
+
     padding: 20px;
+
     margin-bottom: 20px;
-    box-shadow: 0 8px 30px rgba(0,0,0,.25);
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.25);
 }
 
+
+/* =========================
+   FORMULARIO
+========================= */
+
 label {
+
     display: block;
+
     color: #94a3b8;
+
     font-size: 13px;
+
     font-weight: bold;
+
     margin-bottom: 7px;
 }
 
+
 input,
 select {
+
     width: 100%;
+
     padding: 14px;
+
     margin-bottom: 15px;
 
     background: #0b1220;
+
     color: white;
 
     border: 1px solid #334155;
+
     border-radius: 9px;
 
     font-size: 16px;
+
     outline: none;
 }
 
+
 input:focus,
 select:focus {
+
     border-color: #ef4444;
 }
 
+
 button {
+
     width: 100%;
+
     padding: 15px;
 
     border: none;
+
     border-radius: 9px;
 
     background: #ef4444;
+
     color: white;
 
     font-size: 16px;
+
     font-weight: bold;
 
     cursor: pointer;
+
+    transition: .2s;
 }
 
+
 button:hover {
+
     background: #dc2626;
 }
 
+
 button:disabled {
+
     opacity: .6;
+
     cursor: wait;
 }
 
+
+/* =========================
+   RESULTADO
+========================= */
+
 #resultado {
+
     display: none;
 }
 
+
 .codigo {
+
     display: inline-block;
 
     background: #ef4444;
+
     color: white;
 
     padding: 8px 14px;
@@ -119,33 +206,47 @@ button:disabled {
     border-radius: 8px;
 
     font-size: 25px;
+
     font-weight: bold;
 }
+
 
 .titulo {
+
     font-size: 21px;
+
     font-weight: bold;
+
     margin-top: 14px;
+
+    line-height: 1.3;
 }
 
+
 .marca {
+
     display: inline-block;
 
     margin-top: 10px;
+
     padding: 5px 9px;
 
     border-radius: 6px;
 
     background: #334155;
+
     color: #cbd5e1;
 
     font-size: 13px;
 }
 
+
 .gravedad {
+
     display: inline-block;
 
     margin-top: 10px;
+
     margin-left: 5px;
 
     padding: 5px 9px;
@@ -153,91 +254,181 @@ button:disabled {
     border-radius: 6px;
 
     background: #f59e0b;
+
     color: #111827;
 
     font-size: 13px;
+
     font-weight: bold;
 }
 
+
+/* =========================
+   SECCIONES
+========================= */
+
 .seccion {
+
     margin-top: 22px;
 }
 
+
 .seccion h3 {
+
     color: #38bdf8;
 
     border-bottom: 1px solid #334155;
 
     padding-bottom: 7px;
+
+    margin-bottom: 10px;
 }
 
+
 .seccion p {
+
     color: #cbd5e1;
+
     line-height: 1.6;
 }
 
+
 ul,
 ol {
+
     color: #cbd5e1;
+
     padding-left: 25px;
 }
 
+
 li {
+
     margin-bottom: 9px;
+
     line-height: 1.4;
 }
 
+
+/* =========================
+   ESTADOS
+========================= */
+
 .loading {
+
     text-align: center;
+
     color: #38bdf8;
+
     font-weight: bold;
+
+    line-height: 1.6;
 }
+
 
 .error {
+
     color: #f87171;
+
     font-weight: bold;
 }
 
+
 .warning {
+
     background: #422006;
+
     border: 1px solid #92400e;
+
     padding: 12px;
+
     border-radius: 8px;
+
     color: #fed7aa;
+
+    line-height: 1.5;
 }
 
+
+.success {
+
+    background: #052e1b;
+
+    border: 1px solid #166534;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    color: #bbf7d0;
+
+    margin-top: 15px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
 footer {
+
     text-align: center;
+
     color: #64748b;
+
     font-size: 12px;
+
     margin-top: 20px;
 }
+
+
+/* =========================
+   CELULAR
+========================= */
 
 @media(max-width:600px) {
 
     body {
+
         padding: 12px;
     }
 
+
     .card {
+
         padding: 16px;
     }
 
+
+    h1 {
+
+        font-size: 26px;
+    }
+
+
     .titulo {
+
         font-size: 19px;
     }
+
 }
+
 </style>
+
 </head>
 
 
 <body>
 
+
 <div class="container">
+
 
 <header>
 
-<h1>🚗 Scanner DTC</h1>
+<h1>
+🚗 Scanner DTC
+</h1>
 
 <p class="subtitle">
 Diagnóstico de códigos de falla automotrices
@@ -246,38 +437,115 @@ Diagnóstico de códigos de falla automotrices
 </header>
 
 
+<!-- =========================
+     BUSCADOR
+========================= -->
+
 <div class="card">
+
 
 <label for="marca">
 MARCA DEL VEHÍCULO
 </label>
 
+
 <select id="marca">
 
-<option value="chevrolet">Chevrolet</option>
-<option value="ford">Ford</option>
-<option value="nissan">Nissan</option>
-<option value="dodge">Dodge</option>
-<option value="toyota">Toyota</option>
-<option value="honda">Honda</option>
-<option value="kia">Kia</option>
-<option value="hyundai">Hyundai</option>
-<option value="volkswagen">Volkswagen</option>
-<option value="mazda">Mazda</option>
-<option value="jeep">Jeep</option>
-<option value="chrysler">Chrysler</option>
-<option value="gmc">GMC</option>
-<option value="cadillac">Cadillac</option>
-<option value="buick">Buick</option>
-<option value="lexus">Lexus</option>
-<option value="infiniti">Infiniti</option>
-<option value="acura">Acura</option>
-<option value="subaru">Subaru</option>
-<option value="mitsubishi">Mitsubishi</option>
-<option value="volvo">Volvo</option>
-<option value="audi">Audi</option>
-<option value="bmw">BMW</option>
-<option value="mercedes-benz">Mercedes-Benz</option>
+<option value="chevrolet">
+Chevrolet
+</option>
+
+<option value="ford">
+Ford
+</option>
+
+<option value="nissan">
+Nissan
+</option>
+
+<option value="dodge">
+Dodge
+</option>
+
+<option value="toyota">
+Toyota
+</option>
+
+<option value="honda">
+Honda
+</option>
+
+<option value="kia">
+Kia
+</option>
+
+<option value="hyundai">
+Hyundai
+</option>
+
+<option value="volkswagen">
+Volkswagen
+</option>
+
+<option value="mazda">
+Mazda
+</option>
+
+<option value="jeep">
+Jeep
+</option>
+
+<option value="chrysler">
+Chrysler
+</option>
+
+<option value="gmc">
+GMC
+</option>
+
+<option value="cadillac">
+Cadillac
+</option>
+
+<option value="buick">
+Buick
+</option>
+
+<option value="lexus">
+Lexus
+</option>
+
+<option value="infiniti">
+Infiniti
+</option>
+
+<option value="acura">
+Acura
+</option>
+
+<option value="subaru">
+Subaru
+</option>
+
+<option value="mitsubishi">
+Mitsubishi
+</option>
+
+<option value="volvo">
+Volvo
+</option>
+
+<option value="audi">
+Audi
+</option>
+
+<option value="bmw">
+BMW
+</option>
+
+<option value="mercedes-benz">
+Mercedes-Benz
+</option>
 
 </select>
 
@@ -286,24 +554,45 @@ MARCA DEL VEHÍCULO
 CÓDIGO DTC
 </label>
 
+
 <input
-    id="codigo"
-    type="text"
-    placeholder="Ejemplo: P0420"
-    maxlength="6"
-    autocomplete="off"
-    spellcheck="false"
+
+id="codigo"
+
+type="text"
+
+placeholder="Ejemplo: P0420"
+
+maxlength="6"
+
+autocomplete="off"
+
+spellcheck="false"
+
 >
 
 
-<button id="buscarBtn" onclick="buscarCodigo()">
+<button
+id="buscarBtn"
+onclick="buscarCodigo()"
+>
+
 🔎 BUSCAR CÓDIGO
+
 </button>
+
 
 </div>
 
 
-<div id="resultado" class="card"></div>
+<!-- =========================
+     RESULTADO
+========================= -->
+
+<div
+id="resultado"
+class="card"
+></div>
 
 
 <footer>
@@ -312,37 +601,44 @@ Scanner DTC Automotriz © 2026
 
 </footer>
 
+
 </div>
+
 
 
 <script>
 
 /*
-==================================================
+=================================================
 CONFIGURACIÓN DE LA API
-==================================================
-
-Cuando creemos tu API cambiaremos esta dirección.
-
-Ejemplo:
-
-https://tu-api.vercel.app/api/dtc
-
+=================================================
 */
 
-const API_URL = "https://TU-API.vercel.app/api/dtc";
+const API_URL =
+"https://scanner-dtc.vercel.app/api/dtc";
 
+
+
+/*
+=================================================
+BUSCAR CÓDIGO
+=================================================
+*/
 
 async function buscarCodigo() {
+
 
     const codigoInput =
         document.getElementById("codigo");
 
+
     const marcaSelect =
         document.getElementById("marca");
 
+
     const resultado =
         document.getElementById("resultado");
+
 
     const boton =
         document.getElementById("buscarBtn");
@@ -358,10 +654,11 @@ async function buscarCodigo() {
         marcaSelect.value;
 
 
+
     /*
-    ==============================================
-    VALIDAR CÓDIGO
-    ==============================================
+    =============================================
+    VALIDAR
+    =============================================
     */
 
     if (!codigo) {
@@ -375,68 +672,90 @@ async function buscarCodigo() {
 
 
     /*
-    Los DTC normalmente tienen 5 caracteres.
-    Ejemplo: P0420
+    =============================================
+    VALIDAR FORMATO
+    =============================================
     */
 
-    if (!/^[PBCU][0-9A-F]{4}$/.test(codigo)) {
+    if (
+        !/^[PBCU][0-9A-F]{4}$/.test(codigo)
+    ) {
 
         mostrarError(
-            "El código no tiene un formato DTC válido. Ejemplo: P0420, P0300 o C0035."
+            "Código inválido. Ejemplos: P0420, P0300 o C0035."
         );
 
         return;
     }
 
 
+
     /*
-    ==============================================
-    MOSTRAR CARGANDO
-    ==============================================
+    =============================================
+    LOADING
+    =============================================
     */
 
     resultado.style.display = "block";
+
 
     resultado.innerHTML = `
 
         <div class="loading">
 
-            🔄 Consultando base de datos...
+            🔄 Consultando servidor...
 
-            <br><br>
+            <br>
 
-            Código: ${codigo}
+            Código:
+            <strong>${escaparHTML(codigo)}</strong>
 
         </div>
 
     `;
 
+
     boton.disabled = true;
+
 
 
     try {
 
+
         /*
-        ==========================================
-        CONSULTAR API
-        ==========================================
+        =========================================
+        URL DE LA API
+        =========================================
         */
 
         const url =
-            `${API_URL}/${encodeURIComponent(codigo)}?make=${encodeURIComponent(marca)}`;
+        `${API_URL}/${encodeURIComponent(codigo)}?make=${encodeURIComponent(marca)}`;
 
+
+        console.log(
+            "Consultando:",
+            url
+        );
+
+
+        /*
+        =========================================
+        FETCH
+        =========================================
+        */
 
         const response =
             await fetch(url);
 
 
         /*
-        ==========================================
-        ERROR HTTP
-        ==========================================
+        =========================================
+        ERROR
+        =========================================
         */
 
         if (!response.ok) {
+
 
             if (response.status === 404) {
 
@@ -448,26 +767,30 @@ async function buscarCodigo() {
                 return;
             }
 
+
             throw new Error(
-                `Error HTTP ${response.status}`
+                "HTTP " + response.status
             );
+
         }
 
 
+
         /*
-        ==========================================
-        CONVERTIR RESPUESTA
-        ==========================================
+        =========================================
+        JSON
+        =========================================
         */
 
         const data =
             await response.json();
 
 
+
         /*
-        ==========================================
-        MOSTRAR INFORMACIÓN
-        ==========================================
+        =========================================
+        RESULTADO
+        =========================================
         */
 
         mostrarResultado(
@@ -477,37 +800,50 @@ async function buscarCodigo() {
         );
 
 
-    } catch (error) {
+    }
 
-        console.error(error);
+    catch(error) {
+
+
+        console.error(
+            "Error:",
+            error
+        );
+
 
         resultado.style.display = "block";
+
 
         resultado.innerHTML = `
 
             <div class="error">
 
-                ❌ No se pudo conectar con el servidor.
+                ❌ Error al conectar con el servidor.
 
             </div>
 
+
             <br>
+
 
             <div class="warning">
 
-                La API todavía no está conectada
-                o el servidor no está disponible.
+                La API no respondió correctamente.
 
                 <br><br>
 
-                En el siguiente paso vamos a crear
-                tu API.
+                Error:
+
+                ${escaparHTML(error.message)}
 
             </div>
 
         `;
 
-    } finally {
+    }
+
+
+    finally {
 
         boton.disabled = false;
 
@@ -516,10 +852,11 @@ async function buscarCodigo() {
 }
 
 
+
 /*
-==================================================
+=================================================
 MOSTRAR RESULTADO
-==================================================
+=================================================
 */
 
 function mostrarResultado(
@@ -528,6 +865,7 @@ function mostrarResultado(
     marca
 ) {
 
+
     const resultado =
         document.getElementById("resultado");
 
@@ -535,23 +873,33 @@ function mostrarResultado(
     const causas =
         convertirLista(data.causes);
 
+
     const sintomas =
         convertirLista(data.symptoms);
 
+
     const diagnostico =
         convertirLista(data.diagnosis);
+
 
     const arreglos =
         convertirLista(data.repairs);
 
 
-    resultado.style.display = "block";
+
+    resultado.style.display =
+        "block";
+
 
 
     resultado.innerHTML = `
 
         <span class="codigo">
-            ${escaparHTML(data.code || codigo)}
+
+            ${escaparHTML(
+                data.code || codigo
+            )}
+
         </span>
 
 
@@ -568,8 +916,11 @@ function mostrarResultado(
 
         <span class="marca">
 
-            🚗 ${escaparHTML(
-                data.make || marca
+            🚗
+
+            ${escaparHTML(
+                data.make ||
+                marca
             )}
 
         </span>
@@ -579,22 +930,34 @@ function mostrarResultado(
             data.severity
             ?
             `
+
             <span class="gravedad">
 
-                ⚠️ ${escaparHTML(data.severity)}
+                ⚠️
+
+                ${escaparHTML(
+                    data.severity
+                )}
 
             </span>
+
             `
             :
             ""
         }
 
 
+
+        <!-- PROBLEMA -->
+
         <div class="seccion">
 
             <h3>
+
                 🔴 Problema
+
             </h3>
+
 
             <p>
 
@@ -609,46 +972,82 @@ function mostrarResultado(
         </div>
 
 
+
+        <!-- CAUSAS -->
+
         <div class="seccion">
 
             <h3>
+
                 🔍 Causas posibles
+
             </h3>
+
 
             ${crearLista(causas)}
 
         </div>
 
 
+
+        <!-- SÍNTOMAS -->
+
         <div class="seccion">
 
             <h3>
+
                 🚨 Síntomas
+
             </h3>
+
 
             ${crearLista(sintomas)}
 
         </div>
 
 
+
+        <!-- DIAGNÓSTICO -->
+
         <div class="seccion">
 
             <h3>
+
                 🧪 Diagnóstico
+
             </h3>
 
-            ${crearLista(diagnostico, true)}
+
+            ${crearLista(
+                diagnostico,
+                true
+            )}
 
         </div>
 
 
+
+        <!-- ARREGLO -->
+
         <div class="seccion">
 
             <h3>
+
                 🔧 Posibles arreglos
+
             </h3>
 
+
             ${crearLista(arreglos)}
+
+        </div>
+
+
+
+        <div class="success">
+
+            ✅ Información obtenida
+            desde el servidor DTC.
 
         </div>
 
@@ -657,10 +1056,11 @@ function mostrarResultado(
 }
 
 
+
 /*
-==================================================
-CÓDIGO NO ENCONTRADO
-==================================================
+=================================================
+NO ENCONTRADO
+=================================================
 */
 
 function mostrarNoEncontrado(
@@ -668,11 +1068,13 @@ function mostrarNoEncontrado(
     marca
 ) {
 
+
     const resultado =
         document.getElementById("resultado");
 
 
-    resultado.style.display = "block";
+    resultado.style.display =
+        "block";
 
 
     resultado.innerHTML = `
@@ -694,19 +1096,25 @@ function mostrarNoEncontrado(
         <p>
 
             No encontramos información para
-            <strong>${escaparHTML(codigo)}</strong>
-            en la base de datos de
-            <strong>${escaparHTML(marca)}</strong>.
+
+            <strong>
+                ${escaparHTML(codigo)}
+            </strong>
+
+            en la consulta para
+
+            <strong>
+                ${escaparHTML(marca)}
+            </strong>.
 
         </p>
 
 
         <div class="warning">
 
-            💡 Puede tratarse de un código
-            específico del fabricante o de un
-            código que todavía no está incluido
-            en nuestra base de datos.
+            💡 Puede ser un código específico
+            del fabricante o todavía no estar
+            incluido en nuestra base de datos.
 
         </div>
 
@@ -715,26 +1123,33 @@ function mostrarNoEncontrado(
 }
 
 
+
 /*
-==================================================
- ERROR
-==================================================
+=================================================
+ERROR
+=================================================
 */
 
-function mostrarError(mensaje) {
+function mostrarError(
+    mensaje
+) {
+
 
     const resultado =
         document.getElementById("resultado");
 
 
-    resultado.style.display = "block";
+    resultado.style.display =
+        "block";
 
 
     resultado.innerHTML = `
 
         <div class="error">
 
-            ⚠️ ${escaparHTML(mensaje)}
+            ⚠️
+
+            ${escaparHTML(mensaje)}
 
         </div>
 
@@ -743,21 +1158,29 @@ function mostrarError(mensaje) {
 }
 
 
+
 /*
-==================================================
- CONVERTIR LISTAS
-==================================================
+=================================================
+CONVERTIR LISTA
+=================================================
 */
 
-function convertirLista(valor) {
+function convertirLista(
+    valor
+) {
+
 
     if (!valor) {
+
         return [];
+
     }
 
 
     if (Array.isArray(valor)) {
+
         return valor;
+
     }
 
 
@@ -765,7 +1188,9 @@ function convertirLista(valor) {
 
         return valor
             .split("\n")
-            .map(x => x.trim())
+            .map(
+                x => x.trim()
+            )
             .filter(Boolean);
 
     }
@@ -776,10 +1201,11 @@ function convertirLista(valor) {
 }
 
 
+
 /*
-==================================================
- CREAR LISTA HTML
-==================================================
+=================================================
+CREAR LISTA
+=================================================
 */
 
 function crearLista(
@@ -787,29 +1213,39 @@ function crearLista(
     numerada = false
 ) {
 
+
     if (!elementos.length) {
 
         return `
+
             <p>
+
                 No hay información disponible.
+
             </p>
+
         `;
 
     }
 
 
     const etiqueta =
-        numerada ? "ol" : "ul";
+        numerada
+        ? "ol"
+        : "ul";
 
 
     return `
 
         <${etiqueta}>
 
-            ${elementos
+            ${
+                elementos
                 .map(
                     elemento =>
-                    `<li>${escaparHTML(elemento)}</li>`
+                    `<li>
+                        ${escaparHTML(elemento)}
+                    </li>`
                 )
                 .join("")
             }
@@ -821,21 +1257,22 @@ function crearLista(
 }
 
 
+
 /*
-==================================================
- PROTECCIÓN HTML
-==================================================
-
-Evita que texto recibido desde la API
-pueda convertirse accidentalmente en HTML.
-
-==================================================
+=================================================
+PROTEGER HTML
+=================================================
 */
 
-function escaparHTML(texto) {
+function escaparHTML(
+    texto
+) {
 
-    if (texto === null ||
-        texto === undefined) {
+
+    if (
+        texto === null ||
+        texto === undefined
+    ) {
 
         return "";
 
@@ -843,37 +1280,62 @@ function escaparHTML(texto) {
 
 
     return String(texto)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
 
+
 /*
-==================================================
- ENTER = BUSCAR
-==================================================
+=================================================
+ENTER = BUSCAR
+=================================================
 */
 
 document
-    .getElementById("codigo")
-    .addEventListener(
-        "keydown",
-        function(event) {
+.getElementById("codigo")
+.addEventListener(
+    "keydown",
+    function(event) {
 
-            if (event.key === "Enter") {
+        if (
+            event.key === "Enter"
+        ) {
 
-                buscarCodigo();
-
-            }
+            buscarCodigo();
 
         }
-    );
+
+    }
+);
 
 </script>
 
+
 </body>
-                         </html>
+
+    </html>
