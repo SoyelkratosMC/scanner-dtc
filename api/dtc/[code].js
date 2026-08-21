@@ -2,12 +2,14 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_KEY
 );
 
 export default async function handler(req, res) {
   try {
-    const code = String(req.query.code || "").toUpperCase().trim();
+    const code = String(req.query.code || "")
+      .toUpperCase()
+      .trim();
 
     if (!code) {
       return res.status(400).json({
@@ -20,15 +22,14 @@ export default async function handler(req, res) {
       .from("dtc_codes")
       .select("*")
       .eq("code", code)
-      .limit(1)
       .maybeSingle();
 
     if (error) {
-      console.error(error);
+      console.error("SUPABASE ERROR:", error);
 
       return res.status(500).json({
         success: false,
-        error: "Error consultando la base de datos"
+        error: error.message
       });
     }
 
@@ -55,11 +56,11 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("SERVER ERROR:", error);
 
     return res.status(500).json({
       success: false,
-      error: "Error interno del servidor"
+      error: error.message
     });
   }
 }
