@@ -264,10 +264,6 @@ button:disabled {
 }
 
 
-/* =========================
-   FUENTE
-========================= */
-
 .source {
 
     display: inline-block;
@@ -587,26 +583,18 @@ CÓDIGO DTC
 
 
 <input
-
-id="codigo"
-
-type="text"
-
-placeholder="Ejemplo: P0420"
-
-maxlength="5"
-
-autocomplete="off"
-
-spellcheck="false"
-
+    id="codigo"
+    type="text"
+    placeholder="Ejemplo: P0420"
+    maxlength="5"
+    autocomplete="off"
+    spellcheck="false"
 >
 
 
 <button
-id="buscarBtn"
-type="button"
-onclick="buscarCodigo()"
+    id="buscarBtn"
+    type="button"
 >
 
 🔎 BUSCAR CÓDIGO
@@ -622,8 +610,8 @@ onclick="buscarCodigo()"
 ========================= -->
 
 <div
-id="resultado"
-class="card"
+    id="resultado"
+    class="card"
 ></div>
 
 
@@ -652,28 +640,41 @@ const API_URL =
 
 /*
 =================================================
+ELEMENTOS
+=================================================
+*/
+
+const codigoInput =
+    document.getElementById("codigo");
+
+const marcaSelect =
+    document.getElementById("marca");
+
+const resultado =
+    document.getElementById("resultado");
+
+const boton =
+    document.getElementById("buscarBtn");
+
+
+/*
+=================================================
 BUSCAR CÓDIGO
 =================================================
 */
 
 async function buscarCodigo() {
 
-
-    const codigoInput =
-        document.getElementById("codigo");
-
-
-    const marcaSelect =
-        document.getElementById("marca");
+    console.log(
+        "BOTÓN PRESIONADO"
+    );
 
 
-    const resultado =
-        document.getElementById("resultado");
-
-
-    const boton =
-        document.getElementById("buscarBtn");
-
+    /*
+    =============================================
+    OBTENER DATOS
+    =============================================
+    */
 
     const codigo =
         codigoInput.value
@@ -689,7 +690,7 @@ async function buscarCodigo() {
 
     /*
     =============================================
-    MOSTRAR "CONSULTANDO" INMEDIATAMENTE
+    CONSULTANDO INMEDIATAMENTE
     =============================================
     */
 
@@ -707,11 +708,11 @@ async function buscarCodigo() {
 
         <div class="loading">
 
-            🔄 Consultando...
+            🔄 Consultando servidor...
 
             <br><br>
 
-            Preparando consulta del código:
+            Código:
 
             <strong>
                 ${escaparHTML(
@@ -736,10 +737,7 @@ async function buscarCodigo() {
             "Escribe un código DTC, por ejemplo P0420."
         );
 
-        boton.disabled = false;
-
-        boton.textContent =
-            "🔎 BUSCAR CÓDIGO";
+        terminarBusqueda();
 
         codigoInput.focus();
 
@@ -750,7 +748,7 @@ async function buscarCodigo() {
 
     /*
     =============================================
-    VALIDAR FORMATO
+    FORMATO DTC
     =============================================
     */
 
@@ -764,10 +762,7 @@ async function buscarCodigo() {
             "Código inválido. Ejemplos: P0420, P0300 o C0035."
         );
 
-        boton.disabled = false;
-
-        boton.textContent =
-            "🔎 BUSCAR CÓDIGO";
+        terminarBusqueda();
 
         codigoInput.focus();
 
@@ -778,71 +773,33 @@ async function buscarCodigo() {
 
     /*
     =============================================
-    MOSTRAR CONSULTA
+    URL
     =============================================
     */
 
-    resultado.innerHTML = `
+    const url =
+        API_URL +
+        "/" +
+        encodeURIComponent(
+            codigo
+        ) +
+        "?make=" +
+        encodeURIComponent(
+            marca
+        );
 
-        <div class="loading">
 
-            🔄 Consultando servidor...
-
-            <br><br>
-
-            Código:
-
-            <strong>
-                ${escaparHTML(
-                    codigo
-                )}
-            </strong>
-
-            <br>
-
-            Marca:
-
-            <strong>
-                ${escaparHTML(
-                    marca
-                )}
-            </strong>
-
-        </div>
-
-    `;
+    console.log(
+        "CONSULTANDO:",
+        url
+    );
 
 
     try {
 
-
         /*
         =========================================
-        CREAR URL
-        =========================================
-        */
-
-        const url =
-            API_URL +
-            "/" +
-            encodeURIComponent(
-                codigo
-            ) +
-            "?make=" +
-            encodeURIComponent(
-                marca
-            );
-
-
-        console.log(
-            "Consultando API:",
-            url
-        );
-
-
-        /*
-        =========================================
-        FETCH
+        PETICIÓN
         =========================================
         */
 
@@ -863,31 +820,31 @@ async function buscarCodigo() {
             );
 
 
-        /*
-        =========================================
-        LEER RESPUESTA
-        =========================================
-        */
-
-        const responseText =
-            await response.text();
-
-
         console.log(
-            "HTTP:",
+            "STATUS:",
             response.status
         );
 
 
+        /*
+        =========================================
+        TEXTO
+        =========================================
+        */
+
+        const texto =
+            await response.text();
+
+
         console.log(
-            "Respuesta:",
-            responseText
+            "RESPUESTA:",
+            texto
         );
 
 
         /*
         =========================================
-        CONVERTIR JSON
+        JSON
         =========================================
         */
 
@@ -898,22 +855,20 @@ async function buscarCodigo() {
 
             data =
                 JSON.parse(
-                    responseText
+                    texto
                 );
 
         }
 
         catch(error) {
 
-            console.error(
-                "JSON ERROR:",
-                error
+            mostrarError(
+
+                "El servidor no devolvió JSON válido."
+
             );
 
-            throw new Error(
-                "El servidor no devolvió JSON válido. HTTP " +
-                response.status
-            );
+            return;
 
         }
 
@@ -940,7 +895,7 @@ async function buscarCodigo() {
 
         /*
         =========================================
-        VALIDAR SUCCESS
+        ERROR API
         =========================================
         */
 
@@ -961,7 +916,7 @@ async function buscarCodigo() {
 
         /*
         =========================================
-        MOSTRAR RESULTADO
+        MOSTRAR
         =========================================
         */
 
@@ -976,9 +931,8 @@ async function buscarCodigo() {
 
     catch(error) {
 
-
         console.error(
-            "FETCH ERROR:",
+            "ERROR FETCH:",
             error
         );
 
@@ -1011,35 +965,36 @@ async function buscarCodigo() {
                     error.message
                 )}
 
-                <br><br>
-
-                <strong>
-                    API:
-                </strong>
-
-                ${escaparHTML(
-                    API_URL
-                )}
-
             </div>
 
         `;
 
     }
 
-
     finally {
 
-        boton.disabled =
-            false;
-
-        boton.textContent =
-            "🔎 BUSCAR CÓDIGO";
+        terminarBusqueda();
 
     }
 
 }
 
+
+/*
+=================================================
+TERMINAR BÚSQUEDA
+=================================================
+*/
+
+function terminarBusqueda() {
+
+    boton.disabled =
+        false;
+
+    boton.textContent =
+        "🔎 BUSCAR CÓDIGO";
+
+}
 
 
 /*
@@ -1053,12 +1008,6 @@ function mostrarResultado(
     codigo,
     marca
 ) {
-
-
-    const resultado =
-        document.getElementById(
-            "resultado"
-        );
 
 
     const causas =
@@ -1120,7 +1069,7 @@ function mostrarResultado(
 
             <span class="source">
 
-                🤖 IA
+                🤖 OpenRouter / IA
 
             </span>
 
@@ -1131,7 +1080,7 @@ function mostrarResultado(
 
     /*
     =============================================
-    MOSTRAR
+    RESULTADO
     =============================================
     */
 
@@ -1155,7 +1104,6 @@ function mostrarResultado(
 
             ${escaparHTML(
                 data.title ||
-                data.definition ||
                 "Código DTC"
             )}
 
@@ -1199,7 +1147,9 @@ function mostrarResultado(
         ${fuente}
 
 
-        <!-- PROBLEMA -->
+        <!-- =========================
+             PROBLEMA
+        ========================== -->
 
         <div class="seccion">
 
@@ -1214,7 +1164,6 @@ function mostrarResultado(
 
                 ${escaparHTML(
                     data.problem ||
-                    data.description ||
                     "No hay descripción disponible."
                 )}
 
@@ -1223,7 +1172,9 @@ function mostrarResultado(
         </div>
 
 
-        <!-- CAUSAS -->
+        <!-- =========================
+             CAUSAS
+        ========================== -->
 
         <div class="seccion">
 
@@ -1241,7 +1192,9 @@ function mostrarResultado(
         </div>
 
 
-        <!-- SÍNTOMAS -->
+        <!-- =========================
+             SÍNTOMAS
+        ========================== -->
 
         <div class="seccion">
 
@@ -1259,7 +1212,9 @@ function mostrarResultado(
         </div>
 
 
-        <!-- DIAGNÓSTICO -->
+        <!-- =========================
+             DIAGNÓSTICO
+        ========================== -->
 
         <div class="seccion">
 
@@ -1278,7 +1233,9 @@ function mostrarResultado(
         </div>
 
 
-        <!-- REPARACIONES -->
+        <!-- =========================
+             REPARACIONES
+        ========================== -->
 
         <div class="seccion">
 
@@ -1296,31 +1253,19 @@ function mostrarResultado(
         </div>
 
 
-        <!-- ÉXITO -->
+        <!-- =========================
+             ÉXITO
+        ========================== -->
 
         <div class="success">
 
             ✅ Información obtenida correctamente.
-
-            <br><br>
-
-            Fuente:
-
-            <strong>
-
-                ${escaparHTML(
-                    data.source ||
-                    "servidor"
-                )}
-
-            </strong>
 
         </div>
 
     `;
 
 }
-
 
 
 /*
@@ -1333,12 +1278,6 @@ function mostrarErrorServidor(
     status,
     data
 ) {
-
-
-    const resultado =
-        document.getElementById(
-            "resultado"
-        );
 
 
     let mensaje =
@@ -1414,9 +1353,7 @@ function mostrarErrorServidor(
 
         </div>
 
-
         <br>
-
 
         <div class="warning">
 
@@ -1467,22 +1404,15 @@ function mostrarErrorServidor(
 }
 
 
-
 /*
 =================================================
-MOSTRAR ERROR
+ERROR NORMAL
 =================================================
 */
 
 function mostrarError(
     mensaje
 ) {
-
-
-    const resultado =
-        document.getElementById(
-            "resultado"
-        );
 
 
     resultado.style.display =
@@ -1504,7 +1434,6 @@ function mostrarError(
     `;
 
 }
-
 
 
 /*
@@ -1570,8 +1499,73 @@ function convertirLista(
 }
 
 
-
 /*
 =================================================
 CREAR LISTA
-===========================
+=================================================
+*/
+
+function crearLista(
+    elementos,
+    numerada = false
+) {
+
+
+    if (
+        !elementos ||
+        elementos.length === 0
+    ) {
+
+        return `
+
+            <p>
+
+                No hay información disponible.
+
+            </p>
+
+        `;
+
+    }
+
+
+    const etiqueta =
+        numerada
+        ?
+        "ol"
+        :
+        "ul";
+
+
+    return `
+
+        <${etiqueta}>
+
+            ${
+                elementos
+                    .map(
+                        elemento =>
+
+                        `<li>
+
+                            ${escaparHTML(
+                                elemento
+                            )}
+
+                        </li>`
+
+                    )
+                    .join("")
+            }
+
+        </${etiqueta}>
+
+    `;
+
+}
+
+
+/*
+=================================================
+PROTEGER HTML
+=======================================
