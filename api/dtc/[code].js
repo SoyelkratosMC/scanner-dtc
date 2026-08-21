@@ -42,23 +42,6 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    VALIDAR FORMATO
-    =================================================
-    */
-
-    if (!/^[PBCU][0-9A-F]{4}$/.test(code)) {
-
-      return res.status(400).json({
-        success: false,
-        error: "Código DTC inválido",
-        code
-      });
-
-    }
-
-
-    /*
-    =================================================
     BUSCAR PRIMERO EN SUPABASE
     =================================================
     */
@@ -115,21 +98,13 @@ export default async function handler(req, res) {
 
         problem: dtc.problem,
 
-        causes: Array.isArray(dtc.causes)
-          ? dtc.causes
-          : [],
+        causes: dtc.causes || [],
 
-        symptoms: Array.isArray(dtc.symptoms)
-          ? dtc.symptoms
-          : [],
+        symptoms: dtc.symptoms || [],
 
-        diagnosis: Array.isArray(dtc.diagnosis)
-          ? dtc.diagnosis
-          : [],
+        diagnosis: dtc.diagnosis || [],
 
-        repairs: Array.isArray(dtc.repairs)
-          ? dtc.repairs
-          : [],
+        repairs: dtc.repairs || [],
 
         severity: dtc.severity,
 
@@ -174,89 +149,76 @@ export default async function handler(req, res) {
 
     const prompt = `
 
-Eres un especialista profesional en diagnóstico
-automotriz.
+Eres un especialista en diagnóstico automotriz.
 
-Necesito información REAL y útil sobre este código DTC.
+Necesito información sobre este código DTC:
 
-CÓDIGO:
+Código:
 ${code}
 
-MARCA:
+Marca seleccionada:
 ${make || "genérica"}
+
+Tu trabajo es generar información útil,
+clara y prudente para un scanner automotriz.
 
 IMPORTANTE:
 
-- Identifica correctamente el significado del código.
-- Si el código es genérico OBD-II, explica su significado
-  correctamente.
-- Si la marca puede cambiar el significado, tenlo en cuenta.
-- NO inventes una falla confirmada.
-- Las causas deben ser posibilidades razonables.
-- Los síntomas deben ser síntomas relacionados con el código.
-- El diagnóstico debe indicar pruebas generales que un técnico
-  puede realizar.
-- Las reparaciones deben ser posibles soluciones después de
-  confirmar la causa.
-- No inventes números de piezas.
-- No inventes años de vehículos.
-- No inventes valores de voltaje específicos.
-- Responde TODO en español.
-- Debes proporcionar información completa.
-- NO dejes campos vacíos.
-- causes debe tener al menos 3 elementos.
-- symptoms debe tener al menos 3 elementos.
-- diagnosis debe tener al menos 3 elementos.
-- repairs debe tener al menos 3 elementos.
+1. No inventes una falla confirmada.
+2. Las causas son POSIBLES causas.
+3. No afirmes que una pieza está dañada sin
+   pruebas de diagnóstico.
+4. Si el significado puede variar entre fabricantes,
+   indícalo.
+5. No inventes años específicos de vehículos.
+6. No inventes números de piezas.
+7. No inventes voltajes o valores de prueba
+   específicos si no son confiables.
+8. Explica el diagnóstico de forma general.
+9. La respuesta debe estar en español.
+10. Devuelve solamente JSON válido.
 
-Devuelve ÚNICAMENTE un objeto JSON.
-
-La estructura OBLIGATORIA es:
+El JSON debe tener EXACTAMENTE esta estructura:
 
 {
-  "code": "${code}",
-  "make": "${make || "genérica"}",
-  "title": "significado corto y correcto del código",
-  "problem": "explicación clara del problema que representa el código",
+  "code": "string",
+  "make": "string",
+  "title": "string",
+  "problem": "string",
   "causes": [
-    "causa posible 1",
-    "causa posible 2",
-    "causa posible 3"
+    "string"
   ],
   "symptoms": [
-    "síntoma 1",
-    "síntoma 2",
-    "síntoma 3"
+    "string"
   ],
   "diagnosis": [
-    "paso de diagnóstico 1",
-    "paso de diagnóstico 2",
-    "paso de diagnóstico 3"
+    "string"
   ],
   "repairs": [
-    "reparación posible 1",
-    "reparación posible 2",
-    "reparación posible 3"
+    "string"
   ],
-  "severity": "MEDIA",
+  "severity": "BAJA",
   "vehicle_years": "No especificado"
 }
 
-severity DEBE ser exactamente uno de:
+severity solamente puede ser:
 
 BAJA
 MEDIA
 ALTA
 CRÍTICA
 
-Si no existen años específicos confiables:
+Si no conoces los años/modelos exactos,
+utiliza:
 
-"vehicle_years": "No especificado"
+"No especificado"
 
-NO escribas Markdown.
-NO escribas explicaciones fuera del JSON.
-NO escribas bloques de código.
-SOLO JSON.
+Código:
+${code}
+
+Marca:
+${make || "genérica"}
+
 `;
 
 
@@ -300,7 +262,7 @@ SOLO JSON.
               role: "system",
 
               content:
-                "Eres un especialista profesional en diagnóstico automotriz. Debes responder exclusivamente con JSON válido y completo."
+                "Eres un especialista en diagnóstico automotriz. Responde únicamente con JSON válido."
 
             },
 
@@ -321,9 +283,9 @@ SOLO JSON.
 
           },
 
-          temperature: 0.1,
+          temperature: 0.2,
 
-          max_tokens: 2000
+          max_tokens: 1800
 
         })
 
@@ -364,7 +326,7 @@ SOLO JSON.
 
     /*
     =================================================
-    OBTENER RESPUESTA OPENROUTER
+    OBTENER RESPUESTA
     =================================================
     */
 
@@ -372,78 +334,17 @@ SOLO JSON.
       await openRouterResponse.json();
 
 
-    console.log(
-      "OPENROUTER RESPONSE:",
-      JSON.stringify(
-        openRouterData
-      )
-    );
-
-
-    /*
-    =================================================
-    EXTRAER CONTENIDO
-    =================================================
-    */
-
-    let generatedText =
+    const generatedText =
       openRouterData
         ?.choices?.[0]
         ?.message
         ?.content;
 
 
-    /*
-    =================================================
-    ALGUNOS MODELOS PUEDEN DEVOLVER CONTENIDO
-    COMO ARRAY
-    =================================================
-    */
-
-    if (Array.isArray(generatedText)) {
-
-      generatedText =
-        generatedText
-          .map(item => {
-
-            if (
-              typeof item === "string"
-            ) {
-
-              return item;
-
-            }
-
-            if (
-              item &&
-              typeof item.text === "string"
-            ) {
-
-              return item.text;
-
-            }
-
-            return "";
-
-          })
-          .join("");
-
-    }
-
-
-    /*
-    =================================================
-    VALIDAR RESPUESTA
-    =================================================
-    */
-
-    if (
-      !generatedText ||
-      String(generatedText).trim() === ""
-    ) {
+    if (!generatedText) {
 
       console.error(
-        "OPENROUTER NO DEVOLVIÓ CONTENT:",
+        "OPENROUTER RESPONSE:",
         JSON.stringify(
           openRouterData
         )
@@ -454,44 +355,9 @@ SOLO JSON.
         success: false,
 
         error:
-          "OpenRouter no devolvió información válida.",
-
-        details:
-          JSON.stringify(
-            openRouterData
-          )
+          "OpenRouter no devolvió información válida."
 
       });
-
-    }
-
-
-    /*
-    =================================================
-    LIMPIAR POSIBLE MARKDOWN
-    =================================================
-    */
-
-    generatedText =
-      String(generatedText)
-        .trim();
-
-
-    if (
-      generatedText.startsWith("```")
-    ) {
-
-      generatedText =
-        generatedText
-          .replace(
-            /^```(?:json)?/i,
-            ""
-          )
-          .replace(
-            /```$/i,
-            ""
-          )
-          .trim();
 
     }
 
@@ -507,9 +373,9 @@ SOLO JSON.
     try {
 
       dtc =
-        JSON.parse(
-          generatedText
-        );
+        typeof generatedText === "string"
+          ? JSON.parse(generatedText)
+          : generatedText;
 
     } catch (jsonError) {
 
@@ -519,7 +385,7 @@ SOLO JSON.
       );
 
       console.error(
-        "RESPUESTA IA:",
+        "RESPUESTA:",
         generatedText
       );
 
@@ -531,7 +397,7 @@ SOLO JSON.
           "La IA devolvió información que no pudo convertirse a JSON.",
 
         details:
-          generatedText
+          String(generatedText)
 
       });
 
@@ -540,7 +406,7 @@ SOLO JSON.
 
     /*
     =================================================
-    NORMALIZAR CÓDIGO
+    NORMALIZAR
     =================================================
     */
 
@@ -552,62 +418,33 @@ SOLO JSON.
       .trim();
 
 
-    /*
-    =================================================
-    NORMALIZAR MARCA
-    =================================================
-    */
-
     dtc.make =
       String(
         dtc.make ||
         make ||
         "genérica"
-      )
-      .trim();
+      );
 
-
-    /*
-    =================================================
-    NORMALIZAR TÍTULO
-    =================================================
-    */
 
     dtc.title =
       String(
-        dtc.title || ""
-      )
-      .trim();
+        dtc.title ||
+        "Código DTC"
+      );
 
-
-    /*
-    =================================================
-    NORMALIZAR PROBLEMA
-    =================================================
-    */
 
     dtc.problem =
       String(
-        dtc.problem || ""
-      )
-      .trim();
+        dtc.problem ||
+        "No hay información disponible."
+      );
 
-
-    /*
-    =================================================
-    NORMALIZAR LISTAS
-    =================================================
-    */
 
     dtc.causes =
       Array.isArray(
         dtc.causes
       )
       ? dtc.causes
-          .map(
-            item => String(item).trim()
-          )
-          .filter(Boolean)
       : [];
 
 
@@ -616,10 +453,6 @@ SOLO JSON.
         dtc.symptoms
       )
       ? dtc.symptoms
-          .map(
-            item => String(item).trim()
-          )
-          .filter(Boolean)
       : [];
 
 
@@ -628,10 +461,6 @@ SOLO JSON.
         dtc.diagnosis
       )
       ? dtc.diagnosis
-          .map(
-            item => String(item).trim()
-          )
-          .filter(Boolean)
       : [];
 
 
@@ -640,161 +469,78 @@ SOLO JSON.
         dtc.repairs
       )
       ? dtc.repairs
-          .map(
-            item => String(item).trim()
-          )
-          .filter(Boolean)
       : [];
-
-
-    /*
-    =================================================
-    NORMALIZAR SEVERIDAD
-    =================================================
-    */
-
-    const severidades = [
-      "BAJA",
-      "MEDIA",
-      "ALTA",
-      "CRÍTICA"
-    ];
 
 
     dtc.severity =
       String(
         dtc.severity ||
         "MEDIA"
-      )
-      .toUpperCase()
-      .trim();
+      );
 
-
-    if (
-      !severidades.includes(
-        dtc.severity
-      )
-    ) {
-
-      dtc.severity =
-        "MEDIA";
-
-    }
-
-
-    /*
-    =================================================
-    AÑOS
-    =================================================
-    */
 
     dtc.vehicle_years =
       String(
         dtc.vehicle_years ||
         "No especificado"
-      )
-      .trim();
-
-
-    /*
-    =================================================
-    VALIDACIÓN FUERTE
-    =================================================
-
-    NO guardamos información incompleta.
-    */
-
-    const respuestaIncompleta =
-      !dtc.title ||
-      !dtc.problem ||
-      dtc.causes.length < 3 ||
-      dtc.symptoms.length < 3 ||
-      dtc.diagnosis.length < 3 ||
-      dtc.repairs.length < 3;
-
-
-    if (respuestaIncompleta) {
-
-      console.error(
-        "RESPUESTA IA INCOMPLETA:",
-        JSON.stringify(
-          dtc
-        )
       );
-
-      return res.status(502).json({
-
-        success: false,
-
-        error:
-          "OpenRouter devolvió información incompleta. No se guardó el código en Supabase.",
-
-        details:
-          dtc
-
-      });
-
-    }
-
-
-    /*
-    =================================================
-    ASEGURAR QUE EL CÓDIGO COINCIDA
-    =================================================
-    */
-
-    if (
-      dtc.code !== code
-    ) {
-
-      dtc.code =
-        code;
-
-    }
 
 
     /*
     =================================================
     GUARDAR EN SUPABASE
     =================================================
+
+    CAMBIO:
+    Usamos UPSERT en lugar de INSERT.
+
+    Esto permite guardar el código y evita
+    crear duplicados.
+    =================================================
     */
 
-    const { error: insertError } =
+    const { data: savedData, error: saveError } =
       await supabase
         .from("dtc_codes")
-        .insert({
+        .upsert(
+          {
+            code:
+              dtc.code,
 
-          code:
-            dtc.code,
+            make:
+              dtc.make,
 
-          make:
-            dtc.make,
+            title:
+              dtc.title,
 
-          title:
-            dtc.title,
+            problem:
+              dtc.problem,
 
-          problem:
-            dtc.problem,
+            causes:
+              dtc.causes,
 
-          causes:
-            dtc.causes,
+            symptoms:
+              dtc.symptoms,
 
-          symptoms:
-            dtc.symptoms,
+            diagnosis:
+              dtc.diagnosis,
 
-          diagnosis:
-            dtc.diagnosis,
+            repairs:
+              dtc.repairs,
 
-          repairs:
-            dtc.repairs,
+            severity:
+              dtc.severity,
 
-          severity:
-            dtc.severity,
+            vehicle_years:
+              dtc.vehicle_years
 
-          vehicle_years:
-            dtc.vehicle_years
-
-        });
+          },
+          {
+            onConflict:
+              "code"
+          }
+        )
+        .select();
 
 
     /*
@@ -803,20 +549,76 @@ SOLO JSON.
     =================================================
     */
 
-    if (insertError) {
+    if (saveError) {
 
       console.error(
-        "SUPABASE INSERT ERROR:",
-        insertError
+        "SUPABASE SAVE ERROR:",
+        saveError
       );
 
       /*
-      Si el código ya fue agregado por otra
-      solicitud al mismo tiempo, todavía
-      devolvemos la información generada.
+      IMPORTANTE:
+      La IA sí generó la información,
+      pero avisamos que no pudo guardarse.
       */
 
+      return res.status(200).json({
+
+        success: true,
+
+        source: "openrouter",
+
+        warning:
+          "La información fue generada, pero no pudo guardarse en Supabase.",
+
+        save_error:
+          saveError.message,
+
+        code:
+          dtc.code,
+
+        make:
+          dtc.make,
+
+        title:
+          dtc.title,
+
+        problem:
+          dtc.problem,
+
+        causes:
+          dtc.causes,
+
+        symptoms:
+          dtc.symptoms,
+
+        diagnosis:
+          dtc.diagnosis,
+
+        repairs:
+          dtc.repairs,
+
+        severity:
+          dtc.severity,
+
+        vehicle_years:
+          dtc.vehicle_years
+
+      });
+
     }
+
+
+    /*
+    =================================================
+    CONFIRMAR GUARDADO
+    =================================================
+    */
+
+    console.log(
+      "DTC GUARDADO CORRECTAMENTE:",
+      dtc.code
+    );
 
 
     /*
@@ -829,8 +631,9 @@ SOLO JSON.
 
       success: true,
 
-      source:
-        "openrouter",
+      source: "openrouter",
+
+      saved: true,
 
       code:
         dtc.code,
@@ -883,4 +686,4 @@ SOLO JSON.
 
   }
 
-          }
+}
