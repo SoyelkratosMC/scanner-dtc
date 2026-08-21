@@ -76,7 +76,7 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    SI YA EXISTE EN SUPABASE
+    SI YA EXISTE
     =================================================
     */
 
@@ -118,23 +118,23 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    NO EXISTE EN SUPABASE
-    → CONSULTAR GEMINI
+    NO EXISTE
+    → OPENROUTER
     =================================================
     */
 
-    const geminiKey =
-      process.env.GEMINI_API_KEY;
+    const openRouterKey =
+      process.env.OPENROUTER_API_KEY;
 
 
-    if (!geminiKey) {
+    if (!openRouterKey) {
 
       return res.status(500).json({
 
         success: false,
 
         error:
-          "El código no está en la base de datos y falta configurar GEMINI_API_KEY."
+          "El código no está en la base de datos y falta configurar OPENROUTER_API_KEY."
 
       });
 
@@ -151,45 +151,69 @@ export default async function handler(req, res) {
 
 Eres un especialista en diagnóstico automotriz.
 
-Necesito información técnica sobre este código DTC:
+Necesito información sobre este código DTC:
 
-Código: ${code}
+Código:
+${code}
 
 Marca seleccionada:
 ${make || "genérica"}
 
-Genera información útil para un scanner
-automotriz.
+Tu trabajo es generar información útil,
+clara y prudente para un scanner automotriz.
 
 IMPORTANTE:
 
-- No inventes una falla confirmada.
-- Explica que las causas son posibles causas.
-- Si el significado puede variar según fabricante,
-  indícalo.
-- No inventes años específicos si no tienes
-  información confiable.
-- La información debe ser clara y técnica.
-- Devuelve ÚNICAMENTE JSON válido.
-- No uses Markdown.
-- No agregues explicaciones fuera del JSON.
+1. No inventes una falla confirmada.
+2. Las causas son POSIBLES causas.
+3. No afirmes que una pieza está dañada sin
+   pruebas de diagnóstico.
+4. Si el significado puede variar entre fabricantes,
+   indícalo.
+5. No inventes años específicos de vehículos.
+6. No inventes números de piezas.
+7. No inventes voltajes o valores de prueba
+   específicos si no son confiables.
+8. Explica el diagnóstico de forma general.
+9. La respuesta debe estar en español.
+10. Devuelve solamente JSON válido.
 
-Necesito exactamente estos campos:
+El JSON debe tener EXACTAMENTE esta estructura:
 
 {
   "code": "string",
   "make": "string",
   "title": "string",
   "problem": "string",
-  "causes": ["string"],
-  "symptoms": ["string"],
-  "diagnosis": ["string"],
-  "repairs": ["string"],
-  "severity": "BAJA | MEDIA | ALTA | CRÍTICA",
-  "vehicle_years": "string"
+  "causes": [
+    "string"
+  ],
+  "symptoms": [
+    "string"
+  ],
+  "diagnosis": [
+    "string"
+  ],
+  "repairs": [
+    "string"
+  ],
+  "severity": "BAJA",
+  "vehicle_years": "No especificado"
 }
 
-Código DTC:
+severity solamente puede ser:
+
+BAJA
+MEDIA
+ALTA
+CRÍTICA
+
+Si no conoces los años/modelos exactos,
+utiliza:
+
+"No especificado"
+
+Código:
 ${code}
 
 Marca:
@@ -200,76 +224,91 @@ ${make || "genérica"}
 
     /*
     =================================================
-    LLAMAR A GEMINI
+    LLAMAR A OPENROUTER
     =================================================
+
+    openrouter/free selecciona automáticamente
+    un modelo gratuito disponible.
     */
 
-    const geminiResponse = await fetch(
-
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
-
+    const openRouterResponse = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
       {
 
         method: "POST",
 
         headers: {
 
+          "Authorization":
+            `Bearer ${openRouterKey}`,
+
           "Content-Type":
             "application/json",
 
-          "x-goog-api-key":
-            geminiKey
+          "HTTP-Referer":
+            "https://scanner-dtc.vercel.app",
+
+          "X-Title":
+            "Scanner DTC Automotriz"
 
         },
 
         body: JSON.stringify({
 
-          contents: [
+          model:
+            "openrouter/free",
+
+          messages: [
+
+            {
+
+              role: "system",
+
+              content:
+                "Eres un especialista en diagnóstico automotriz. Responde únicamente con JSON válido."
+
+            },
 
             {
 
               role: "user",
 
-              parts: [
-
-                {
-                  text: prompt
-                }
-
-              ]
+              content:
+                prompt
 
             }
 
           ],
 
-          tools: [
+          response_format: {
 
-            {
-              google_search: {}
-            }
+            type: "json_object"
 
-          ]
+          },
+
+          temperature: 0.2,
+
+          max_tokens: 1800
 
         })
 
       }
-
     );
 
 
     /*
     =================================================
-    ERROR GEMINI
+    ERROR OPENROUTER
     =================================================
     */
 
-    if (!geminiResponse.ok) {
+    if (!openRouterResponse.ok) {
 
       const errorText =
-        await geminiResponse.text();
+        await openRouterResponse.text();
 
       console.error(
-        "GEMINI ERROR:",
+        "OPENROUTER ERROR:",
         errorText
       );
 
@@ -278,7 +317,7 @@ ${make || "genérica"}
         success: false,
 
         error:
-          "Gemini no pudo generar la información.",
+          "OpenRouter no pudo generar la información.",
 
         details:
           errorText
@@ -290,33 +329,27 @@ ${make || "genérica"}
 
     /*
     =================================================
-    LEER RESPUESTA GEMINI
+    OBTENER RESPUESTA
     =================================================
     */
 
-    const geminiData =
-      await geminiResponse.json();
-
-
-    const parts =
-      geminiData
-        ?.candidates?.[0]
-        ?.content?.parts || [];
+    const openRouterData =
+      await openRouterResponse.json();
 
 
     const generatedText =
-      parts
-        .map(part => part.text || "")
-        .join("")
-        .trim();
+      openRouterData
+        ?.choices?.[0]
+        ?.message
+        ?.content;
 
 
     if (!generatedText) {
 
       console.error(
-        "GEMINI RESPONSE:",
+        "OPENROUTER RESPONSE:",
         JSON.stringify(
-          geminiData
+          openRouterData
         )
       );
 
@@ -325,7 +358,7 @@ ${make || "genérica"}
         success: false,
 
         error:
-          "Gemini no devolvió información válida."
+          "OpenRouter no devolvió información válida."
 
       });
 
@@ -334,21 +367,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    LIMPIAR JSON
-    =================================================
-    */
-
-    let cleanText =
-      generatedText
-        .replace(/^```json\s*/i, "")
-        .replace(/^```\s*/i, "")
-        .replace(/\s*```$/i, "")
-        .trim();
-
-
-    /*
-    =================================================
-    CONVERTIR RESPUESTA A JSON
+    CONVERTIR JSON
     =================================================
     */
 
@@ -357,19 +376,19 @@ ${make || "genérica"}
     try {
 
       dtc =
-        JSON.parse(
-          cleanText
-        );
+        typeof generatedText === "string"
+          ? JSON.parse(generatedText)
+          : generatedText;
 
     } catch (jsonError) {
 
       console.error(
-        "JSON GEMINI ERROR:",
+        "JSON OPENROUTER ERROR:",
         jsonError
       );
 
       console.error(
-        "GEMINI TEXT:",
+        "RESPUESTA:",
         generatedText
       );
 
@@ -378,10 +397,10 @@ ${make || "genérica"}
         success: false,
 
         error:
-          "Gemini devolvió una respuesta que no es JSON válido.",
+          "La IA devolvió información que no pudo convertirse a JSON.",
 
         details:
-          generatedText
+          String(generatedText)
 
       });
 
@@ -390,7 +409,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    NORMALIZAR DATOS
+    NORMALIZAR
     =================================================
     */
 
@@ -472,7 +491,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    GUARDAR AUTOMÁTICAMENTE EN SUPABASE
+    GUARDAR EN SUPABASE
     =================================================
     */
 
@@ -516,7 +535,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    SI NO PUDO GUARDAR
+    ERROR AL GUARDAR
     =================================================
     */
 
@@ -528,9 +547,9 @@ ${make || "genérica"}
       );
 
       /*
-      No detenemos la respuesta.
-      La información de Gemini todavía
-      puede mostrarse al usuario.
+      No detenemos el resultado.
+      El usuario todavía puede recibir
+      la información generada por la IA.
       */
 
     }
@@ -538,7 +557,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    DEVOLVER RESULTADO
+    RESPUESTA FINAL
     =================================================
     */
 
@@ -546,7 +565,7 @@ ${make || "genérica"}
 
       success: true,
 
-      source: "gemini",
+      source: "openrouter",
 
       code:
         dtc.code,
@@ -599,4 +618,4 @@ ${make || "genérica"}
 
   }
 
-          }
+      }
