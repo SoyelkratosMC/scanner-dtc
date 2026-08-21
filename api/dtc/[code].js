@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       .from("dtc_codes")
       .select("*")
       .eq("code", code)
-      .maybeSingle();
+      .limit(1);
 
     if (error) {
       console.error("SUPABASE ERROR:", error);
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
       });
     }
 
-    if (!data) {
+    if (!data || data.length === 0) {
       return res.status(404).json({
         success: false,
         error: "Código no encontrado",
@@ -41,18 +41,20 @@ export default async function handler(req, res) {
       });
     }
 
+    const dtc = data[0];
+
     return res.status(200).json({
       success: true,
-      code: data.code,
-      make: data.make,
-      title: data.title,
-      problem: data.problem,
-      causes: data.causes || [],
-      symptoms: data.symptoms || [],
-      diagnosis: data.diagnosis || [],
-      repairs: data.repairs || [],
-      severity: data.severity,
-      vehicle_years: data.vehicle_years
+      code: dtc.code,
+      make: dtc.make,
+      title: dtc.title,
+      problem: dtc.problem,
+      causes: dtc.causes || [],
+      symptoms: dtc.symptoms || [],
+      diagnosis: dtc.diagnosis || [],
+      repairs: dtc.repairs || [],
+      severity: dtc.severity,
+      vehicle_years: dtc.vehicle_years
     });
 
   } catch (error) {
@@ -63,4 +65,4 @@ export default async function handler(req, res) {
       error: error.message
     });
   }
-        }
+}
