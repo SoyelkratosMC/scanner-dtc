@@ -1,1571 +1,212 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Scanner DTC Automotriz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scanner DTC - Prueba</title>
 
 <style>
-
-* {
-    box-sizing: border-box;
-}
-
 body {
-
     margin: 0;
-
     padding: 20px;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
     background: #080d18;
-
-    color: #f8fafc;
+    color: white;
+    font-family: Arial, sans-serif;
 }
-
 
 .container {
-
-    width: 100%;
-
-    max-width: 750px;
-
+    max-width: 700px;
     margin: auto;
 }
 
-
-/* =========================
-   HEADER
-========================= */
-
-header {
-
-    text-align: center;
-
-    margin-bottom: 25px;
-}
-
-
-h1 {
-
-    margin: 0 0 6px;
-
-    color: #ef4444;
-
-    font-size: 30px;
-}
-
-
-.subtitle {
-
-    margin: 0;
-
-    color: #94a3b8;
-
-    font-size: 14px;
-}
-
-
-/* =========================
-   CARDS
-========================= */
-
 .card {
-
     background: #151e2e;
-
-    border: 1px solid #29364d;
-
-    border-radius: 16px;
-
     padding: 20px;
-
-    margin-bottom: 20px;
-
-    box-shadow:
-        0 8px 30px rgba(0,0,0,.25);
+    border-radius: 15px;
 }
 
-
-/* =========================
-   FORMULARIO
-========================= */
-
-label {
-
-    display: block;
-
-    color: #94a3b8;
-
-    font-size: 13px;
-
-    font-weight: bold;
-
-    margin-bottom: 7px;
-}
-
-
-input,
-select {
-
+input, select, button {
     width: 100%;
-
-    padding: 14px;
-
+    padding: 15px;
     margin-bottom: 15px;
-
-    background: #0b1220;
-
-    color: white;
-
-    border: 1px solid #334155;
-
-    border-radius: 9px;
-
+    box-sizing: border-box;
+    border-radius: 8px;
     font-size: 16px;
-
-    outline: none;
 }
 
-
-input:focus,
-select:focus {
-
-    border-color: #ef4444;
+input, select {
+    background: #0b1220;
+    color: white;
+    border: 1px solid #334155;
 }
-
 
 button {
-
-    width: 100%;
-
-    padding: 15px;
-
-    border: none;
-
-    border-radius: 9px;
-
+    border: 0;
     background: #ef4444;
-
     color: white;
-
-    font-size: 16px;
-
     font-weight: bold;
-
-    cursor: pointer;
-
-    transition: .2s;
 }
-
-
-button:hover {
-
-    background: #dc2626;
-}
-
-
-button:disabled {
-
-    opacity: .6;
-
-    cursor: wait;
-}
-
-
-/* =========================
-   RESULTADO
-========================= */
 
 #resultado {
-
-    display: none;
-}
-
-
-.codigo {
-
-    display: inline-block;
-
-    background: #ef4444;
-
-    color: white;
-
-    padding: 8px 14px;
-
-    border-radius: 8px;
-
-    font-size: 25px;
-
-    font-weight: bold;
-}
-
-
-.titulo {
-
-    font-size: 21px;
-
-    font-weight: bold;
-
-    margin-top: 14px;
-
-    line-height: 1.3;
-}
-
-
-.marca {
-
-    display: inline-block;
-
-    margin-top: 10px;
-
-    padding: 5px 9px;
-
-    border-radius: 6px;
-
-    background: #334155;
-
-    color: #cbd5e1;
-
-    font-size: 13px;
-}
-
-
-.gravedad {
-
-    display: inline-block;
-
-    margin-top: 10px;
-
-    margin-left: 5px;
-
-    padding: 5px 9px;
-
-    border-radius: 6px;
-
-    background: #f59e0b;
-
-    color: #111827;
-
-    font-size: 13px;
-
-    font-weight: bold;
-}
-
-
-.source {
-
-    display: inline-block;
-
-    margin-top: 10px;
-
-    margin-left: 5px;
-
-    padding: 5px 9px;
-
-    border-radius: 6px;
-
-    background: #1e3a8a;
-
-    color: #bfdbfe;
-
-    font-size: 13px;
-
-    font-weight: bold;
-}
-
-
-/* =========================
-   SECCIONES
-========================= */
-
-.seccion {
-
-    margin-top: 22px;
-}
-
-
-.seccion h3 {
-
-    color: #38bdf8;
-
-    border-bottom: 1px solid #334155;
-
-    padding-bottom: 7px;
-
-    margin-bottom: 10px;
-}
-
-
-.seccion p {
-
-    color: #cbd5e1;
-
-    line-height: 1.6;
-}
-
-
-ul,
-ol {
-
-    color: #cbd5e1;
-
-    padding-left: 25px;
-}
-
-
-li {
-
-    margin-bottom: 9px;
-
-    line-height: 1.4;
-}
-
-
-/* =========================
-   ESTADOS
-========================= */
-
-.loading {
-
-    text-align: center;
-
-    color: #38bdf8;
-
-    font-weight: bold;
-
-    line-height: 1.6;
-}
-
-
-.error {
-
-    color: #f87171;
-
-    font-weight: bold;
-
-    line-height: 1.6;
-}
-
-
-.warning {
-
-    background: #422006;
-
-    border: 1px solid #92400e;
-
-    padding: 12px;
-
-    border-radius: 8px;
-
-    color: #fed7aa;
-
-    line-height: 1.5;
-
+    margin-top: 20px;
+    padding: 15px;
+    background: #0b1220;
+    border-radius: 10px;
+    white-space: pre-wrap;
     word-break: break-word;
 }
-
-
-.success {
-
-    background: #052e1b;
-
-    border: 1px solid #166534;
-
-    padding: 12px;
-
-    border-radius: 8px;
-
-    color: #bbf7d0;
-
-    margin-top: 15px;
-}
-
-
-/* =========================
-   FOOTER
-========================= */
-
-footer {
-
-    text-align: center;
-
-    color: #64748b;
-
-    font-size: 12px;
-
-    margin-top: 20px;
-}
-
-
-/* =========================
-   CELULAR
-========================= */
-
-@media(max-width:600px) {
-
-    body {
-
-        padding: 12px;
-    }
-
-
-    .card {
-
-        padding: 16px;
-    }
-
-
-    h1 {
-
-        font-size: 26px;
-    }
-
-
-    .titulo {
-
-        font-size: 19px;
-    }
-
-}
-
 </style>
-
 </head>
-
 
 <body>
 
-
 <div class="container">
-
-
-<header>
-
-<h1>
-🚗 Scanner DTC
-</h1>
-
-<p class="subtitle">
-Diagnóstico de códigos de falla automotrices
-</p>
-
-</header>
-
-
-<!-- =========================
-     BUSCADOR
-========================= -->
 
 <div class="card">
 
-
-<label for="marca">
-MARCA DEL VEHÍCULO
-</label>
-
+<h1>🚗 Scanner DTC</h1>
 
 <select id="marca">
-
-<option value="chevrolet">
-Chevrolet
-</option>
-
-<option value="ford">
-Ford
-</option>
-
-<option value="nissan">
-Nissan
-</option>
-
-<option value="dodge">
-Dodge
-</option>
-
-<option value="toyota">
-Toyota
-</option>
-
-<option value="honda">
-Honda
-</option>
-
-<option value="kia">
-Kia
-</option>
-
-<option value="hyundai">
-Hyundai
-</option>
-
-<option value="volkswagen">
-Volkswagen
-</option>
-
-<option value="mazda">
-Mazda
-</option>
-
-<option value="jeep">
-Jeep
-</option>
-
-<option value="chrysler">
-Chrysler
-</option>
-
-<option value="gmc">
-GMC
-</option>
-
-<option value="cadillac">
-Cadillac
-</option>
-
-<option value="buick">
-Buick
-</option>
-
-<option value="lexus">
-Lexus
-</option>
-
-<option value="infiniti">
-Infiniti
-</option>
-
-<option value="acura">
-Acura
-</option>
-
-<option value="subaru">
-Subaru
-</option>
-
-<option value="mitsubishi">
-Mitsubishi
-</option>
-
-<option value="volvo">
-Volvo
-</option>
-
-<option value="audi">
-Audi
-</option>
-
-<option value="bmw">
-BMW
-</option>
-
-<option value="mercedes-benz">
-Mercedes-Benz
-</option>
-
+<option value="chevrolet">Chevrolet</option>
+<option value="ford">Ford</option>
+<option value="nissan">Nissan</option>
+<option value="dodge">Dodge</option>
+<option value="toyota">Toyota</option>
+<option value="honda">Honda</option>
 </select>
-
-
-<label for="codigo">
-CÓDIGO DTC
-</label>
-
 
 <input
     id="codigo"
     type="text"
-    placeholder="Ejemplo: P0420"
+    placeholder="Ejemplo: P0300"
     maxlength="5"
-    autocomplete="off"
-    spellcheck="false"
 >
 
-
-<button
-    id="buscarBtn"
-    type="button"
->
-
+<button id="buscarBtn" type="button">
 🔎 BUSCAR CÓDIGO
-
 </button>
 
+<div id="resultado">
+Escribe un código y pulsa buscar.
+</div>
 
 </div>
 
-
-<!-- =========================
-     RESULTADO
-========================= -->
-
-<div
-    id="resultado"
-    class="card"
-></div>
-
-
-<footer>
-
-Scanner DTC Automotriz © 2026
-
-</footer>
-
-
 </div>
-
-
 
 <script>
 
-/*
-=================================================
-CONFIGURACIÓN DE LA API
-=================================================
-*/
-
-const API_URL =
+const API =
 "https://scanner-dtc.vercel.app/api/dtc";
 
+const boton =
+document.getElementById("buscarBtn");
 
-/*
-=================================================
-ELEMENTOS
-=================================================
-*/
+const codigo =
+document.getElementById("codigo");
 
-const codigoInput =
-    document.getElementById("codigo");
-
-const marcaSelect =
-    document.getElementById("marca");
+const marca =
+document.getElementById("marca");
 
 const resultado =
-    document.getElementById("resultado");
-
-const boton =
-    document.getElementById("buscarBtn");
+document.getElementById("resultado");
 
 
-/*
-=================================================
-BUSCAR CÓDIGO
-=================================================
-*/
+boton.addEventListener("click", async function () {
 
-async function buscarCodigo() {
+    console.log("BOTON FUNCIONANDO");
 
-    console.log(
-        "BOTÓN PRESIONADO"
-    );
+    const code =
+        codigo.value.trim().toUpperCase();
 
+    const make =
+        marca.value;
 
-    /*
-    =============================================
-    OBTENER DATOS
-    =============================================
-    */
+    if (!code) {
 
-    const codigo =
-        codigoInput.value
-        .trim()
-        .toUpperCase();
+        resultado.textContent =
+            "⚠️ Escribe un código DTC.";
 
+        return;
 
-    const marca =
-        marcaSelect.value
-        .trim()
-        .toLowerCase();
-
-
-    /*
-    =============================================
-    CONSULTANDO INMEDIATAMENTE
-    =============================================
-    */
+    }
 
     boton.disabled = true;
 
     boton.textContent =
         "🔄 Consultando...";
 
-
-    resultado.style.display =
-        "block";
-
-
-    resultado.innerHTML = `
-
-        <div class="loading">
-
-            🔄 Consultando servidor...
-
-            <br><br>
-
-            Código:
-
-            <strong>
-                ${escaparHTML(
-                    codigo || "..."
-                )}
-            </strong>
-
-        </div>
-
-    `;
-
-
-    /*
-    =============================================
-    VALIDAR CÓDIGO
-    =============================================
-    */
-
-    if (!codigo) {
-
-        mostrarError(
-            "Escribe un código DTC, por ejemplo P0420."
-        );
-
-        terminarBusqueda();
-
-        codigoInput.focus();
-
-        return;
-
-    }
-
-
-    /*
-    =============================================
-    FORMATO DTC
-    =============================================
-    */
-
-    if (
-        !/^[PBCU][0-9A-F]{4}$/.test(
-            codigo
-        )
-    ) {
-
-        mostrarError(
-            "Código inválido. Ejemplos: P0420, P0300 o C0035."
-        );
-
-        terminarBusqueda();
-
-        codigoInput.focus();
-
-        return;
-
-    }
-
-
-    /*
-    =============================================
-    URL
-    =============================================
-    */
-
-    const url =
-        API_URL +
-        "/" +
-        encodeURIComponent(
-            codigo
-        ) +
-        "?make=" +
-        encodeURIComponent(
-            marca
-        );
-
-
-    console.log(
-        "CONSULTANDO:",
-        url
-    );
+    resultado.textContent =
+        "🔄 Consultando servidor...";
 
 
     try {
 
-        /*
-        =========================================
-        PETICIÓN
-        =========================================
-        */
+        const url =
+            API +
+            "/" +
+            encodeURIComponent(code) +
+            "?make=" +
+            encodeURIComponent(make);
 
-        const response =
-            await fetch(
-                url,
-                {
-                    method: "GET",
 
-                    headers: {
-                        "Accept":
-                            "application/json"
-                    },
+        console.log("URL:", url);
 
-                    cache:
-                        "no-store"
-                }
+
+        const respuesta =
+            await fetch(url);
+
+
+        const data =
+            await respuesta.json();
+
+
+        console.log(data);
+
+
+        resultado.textContent =
+            JSON.stringify(
+                data,
+                null,
+                2
             );
-
-
-        console.log(
-            "STATUS:",
-            response.status
-        );
-
-
-        /*
-        =========================================
-        TEXTO
-        =========================================
-        */
-
-        const texto =
-            await response.text();
-
-
-        console.log(
-            "RESPUESTA:",
-            texto
-        );
-
-
-        /*
-        =========================================
-        JSON
-        =========================================
-        */
-
-        let data;
-
-
-        try {
-
-            data =
-                JSON.parse(
-                    texto
-                );
-
-        }
-
-        catch(error) {
-
-            mostrarError(
-
-                "El servidor no devolvió JSON válido."
-
-            );
-
-            return;
-
-        }
-
-
-        /*
-        =========================================
-        ERROR HTTP
-        =========================================
-        */
-
-        if (
-            !response.ok
-        ) {
-
-            mostrarErrorServidor(
-                response.status,
-                data
-            );
-
-            return;
-
-        }
-
-
-        /*
-        =========================================
-        ERROR API
-        =========================================
-        */
-
-        if (
-            !data ||
-            data.success !== true
-        ) {
-
-            mostrarErrorServidor(
-                response.status,
-                data
-            );
-
-            return;
-
-        }
-
-
-        /*
-        =========================================
-        MOSTRAR
-        =========================================
-        */
-
-        mostrarResultado(
-            data,
-            codigo,
-            marca
-        );
 
 
     }
 
     catch(error) {
 
-        console.error(
-            "ERROR FETCH:",
-            error
-        );
+        console.error(error);
 
-
-        resultado.style.display =
-            "block";
-
-
-        resultado.innerHTML = `
-
-            <div class="error">
-
-                ❌ Error al conectar con el servidor.
-
-            </div>
-
-            <br>
-
-            <div class="warning">
-
-                La API no respondió correctamente.
-
-                <br><br>
-
-                <strong>
-                    Error:
-                </strong>
-
-                ${escaparHTML(
-                    error.message
-                )}
-
-            </div>
-
-        `;
+        resultado.textContent =
+            "❌ ERROR: " +
+            error.message;
 
     }
 
-    finally {
 
-        terminarBusqueda();
-
-    }
-
-}
-
-
-/*
-=================================================
-TERMINAR BÚSQUEDA
-=================================================
-*/
-
-function terminarBusqueda() {
-
-    boton.disabled =
-        false;
+    boton.disabled = false;
 
     boton.textContent =
         "🔎 BUSCAR CÓDIGO";
 
-}
+});
 
 
-/*
-=================================================
-MOSTRAR RESULTADO
-=================================================
-*/
+codigo.addEventListener(
+    "keydown",
+    function(event) {
 
-function mostrarResultado(
-    data,
-    codigo,
-    marca
-) {
+        if (event.key === "Enter") {
 
-
-    const causas =
-        convertirLista(
-            data.causes
-        );
-
-
-    const sintomas =
-        convertirLista(
-            data.symptoms
-        );
-
-
-    const diagnostico =
-        convertirLista(
-            data.diagnosis
-        );
-
-
-    const arreglos =
-        convertirLista(
-            data.repairs
-        );
-
-
-    /*
-    =============================================
-    FUENTE
-    =============================================
-    */
-
-    let fuente = "";
-
-
-    if (
-        data.source ===
-        "supabase"
-    ) {
-
-        fuente = `
-
-            <span class="source">
-
-                🗄️ Base de datos
-
-            </span>
-
-        `;
-
-    }
-
-    else if (
-        data.source ===
-        "openrouter"
-    ) {
-
-        fuente = `
-
-            <span class="source">
-
-                🤖 OpenRouter / IA
-
-            </span>
-
-        `;
-
-    }
-
-
-    /*
-    =============================================
-    RESULTADO
-    =============================================
-    */
-
-    resultado.style.display =
-        "block";
-
-
-    resultado.innerHTML = `
-
-        <span class="codigo">
-
-            ${escaparHTML(
-                data.code ||
-                codigo
-            )}
-
-        </span>
-
-
-        <div class="titulo">
-
-            ${escaparHTML(
-                data.title ||
-                "Código DTC"
-            )}
-
-        </div>
-
-
-        <span class="marca">
-
-            🚗
-
-            ${escaparHTML(
-                data.make ||
-                marca ||
-                "genérica"
-            )}
-
-        </span>
-
-
-        ${
-            data.severity
-            ?
-            `
-
-            <span class="gravedad">
-
-                ⚠️
-
-                ${escaparHTML(
-                    data.severity
-                )}
-
-            </span>
-
-            `
-            :
-            ""
-        }
-
-
-        ${fuente}
-
-
-        <!-- =========================
-             PROBLEMA
-        ========================== -->
-
-        <div class="seccion">
-
-            <h3>
-
-                🔴 Problema
-
-            </h3>
-
-
-            <p>
-
-                ${escaparHTML(
-                    data.problem ||
-                    "No hay descripción disponible."
-                )}
-
-            </p>
-
-        </div>
-
-
-        <!-- =========================
-             CAUSAS
-        ========================== -->
-
-        <div class="seccion">
-
-            <h3>
-
-                🔍 Causas posibles
-
-            </h3>
-
-
-            ${crearLista(
-                causas
-            )}
-
-        </div>
-
-
-        <!-- =========================
-             SÍNTOMAS
-        ========================== -->
-
-        <div class="seccion">
-
-            <h3>
-
-                🚨 Síntomas
-
-            </h3>
-
-
-            ${crearLista(
-                sintomas
-            )}
-
-        </div>
-
-
-        <!-- =========================
-             DIAGNÓSTICO
-        ========================== -->
-
-        <div class="seccion">
-
-            <h3>
-
-                🧪 Diagnóstico
-
-            </h3>
-
-
-            ${crearLista(
-                diagnostico,
-                true
-            )}
-
-        </div>
-
-
-        <!-- =========================
-             REPARACIONES
-        ========================== -->
-
-        <div class="seccion">
-
-            <h3>
-
-                🔧 Posibles arreglos
-
-            </h3>
-
-
-            ${crearLista(
-                arreglos
-            )}
-
-        </div>
-
-
-        <!-- =========================
-             ÉXITO
-        ========================== -->
-
-        <div class="success">
-
-            ✅ Información obtenida correctamente.
-
-        </div>
-
-    `;
-
-}
-
-
-/*
-=================================================
-ERROR DEL SERVIDOR
-=================================================
-*/
-
-function mostrarErrorServidor(
-    status,
-    data
-) {
-
-
-    let mensaje =
-        "El servidor encontró un problema.";
-
-
-    let detalles =
-        "";
-
-
-    if (
-        data &&
-        data.error
-    ) {
-
-        mensaje =
-            data.error;
-
-    }
-
-
-    if (
-        data &&
-        data.details
-    ) {
-
-        if (
-            typeof data.details ===
-            "string"
-        ) {
-
-            detalles =
-                data.details;
-
-        }
-
-        else {
-
-            try {
-
-                detalles =
-                    JSON.stringify(
-                        data.details,
-                        null,
-                        2
-                    );
-
-            }
-
-            catch(error) {
-
-                detalles =
-                    String(
-                        data.details
-                    );
-
-            }
+            boton.click();
 
         }
 
     }
+);
 
+</script>
 
-    resultado.style.display =
-        "block";
-
-
-    resultado.innerHTML = `
-
-        <div class="error">
-
-            ❌ Error del servidor
-
-        </div>
-
-        <br>
-
-        <div class="warning">
-
-            <strong>
-                HTTP:
-            </strong>
-
-            ${escaparHTML(
-                status
-            )}
-
-            <br><br>
-
-            <strong>
-                Mensaje:
-            </strong>
-
-            ${escaparHTML(
-                mensaje
-            )}
-
-            ${
-                detalles
-                ?
-                `
-
-                <br><br>
-
-                <strong>
-                    Detalles:
-                </strong>
-
-                <br><br>
-
-                ${escaparHTML(
-                    detalles
-                )}
-
-                `
-                :
-                ""
-            }
-
-        </div>
-
-    `;
-
-}
-
-
-/*
-=================================================
-ERROR NORMAL
-=================================================
-*/
-
-function mostrarError(
-    mensaje
-) {
-
-
-    resultado.style.display =
-        "block";
-
-
-    resultado.innerHTML = `
-
-        <div class="error">
-
-            ⚠️
-
-            ${escaparHTML(
-                mensaje
-            )}
-
-        </div>
-
-    `;
-
-}
-
-
-/*
-=================================================
-CONVERTIR LISTA
-=================================================
-*/
-
-function convertirLista(
-    valor
-) {
-
-
-    if (
-        !valor
-    ) {
-
-        return [];
-
-    }
-
-
-    if (
-        Array.isArray(
-            valor
-        )
-    ) {
-
-        return valor
-            .map(
-                elemento =>
-                    String(
-                        elemento
-                    ).trim()
-            )
-            .filter(
-                Boolean
-            );
-
-    }
-
-
-    if (
-        typeof valor ===
-        "string"
-    ) {
-
-        return valor
-            .split("\n")
-            .map(
-                elemento =>
-                    elemento.trim()
-            )
-            .filter(
-                Boolean
-            );
-
-    }
-
-
-    return [];
-
-}
-
-
-/*
-=================================================
-CREAR LISTA
-=================================================
-*/
-
-function crearLista(
-    elementos,
-    numerada = false
-) {
-
-
-    if (
-        !elementos ||
-        elementos.length === 0
-    ) {
-
-        return `
-
-            <p>
-
-                No hay información disponible.
-
-            </p>
-
-        `;
-
-    }
-
-
-    const etiqueta =
-        numerada
-        ?
-        "ol"
-        :
-        "ul";
-
-
-    return `
-
-        <${etiqueta}>
-
-            ${
-                elementos
-                    .map(
-                        elemento =>
-
-                        `<li>
-
-                            ${escaparHTML(
-                                elemento
-                            )}
-
-                        </li>`
-
-                    )
-                    .join("")
-            }
-
-        </${etiqueta}>
-
-    `;
-
-}
-
-
-/*
-=================================================
-PROTEGER HTML
-=======================================
+</body>
+</html>
