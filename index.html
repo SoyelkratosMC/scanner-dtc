@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+
 <meta charset="UTF-8">
 
 <meta
@@ -726,19 +727,6 @@ async function buscarCodigo() {
         =========================================
         URL DE LA API
         =========================================
-
-        IMPORTANTE:
-
-        La función está en:
-
-        api/dtc/[code].js
-
-        Por eso el código va después
-        de /dtc/
-
-        Ejemplo:
-
-        /api/dtc/P2122
         */
 
         const url =
@@ -797,6 +785,25 @@ async function buscarCodigo() {
 
         const data =
             await response.json();
+
+
+
+        /*
+        =========================================
+        COMPROBAR RESPUESTA
+        =========================================
+        */
+
+        if (
+            data.success === false
+        ) {
+
+            throw new Error(
+                data.error ||
+                "La API devolvió un error."
+            );
+
+        }
 
 
 
@@ -1059,8 +1066,18 @@ function mostrarResultado(
 
         <div class="success">
 
-            ✅ Información obtenida
-            desde el servidor DTC.
+            ${
+                data.source === "openrouter"
+
+                ?
+
+                "🤖 Información generada por IA y guardada en la base de datos."
+
+                :
+
+                "✅ Información obtenida desde la base de datos DTC."
+
+            }
 
         </div>
 
