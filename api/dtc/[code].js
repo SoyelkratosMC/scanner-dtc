@@ -42,6 +42,23 @@ export default async function handler(req, res) {
 
     /*
     =================================================
+    VALIDAR FORMATO
+    =================================================
+    */
+
+    if (!/^[PBCU][0-9A-F]{4}$/.test(code)) {
+
+      return res.status(400).json({
+        success: false,
+        error: "Código DTC inválido",
+        code
+      });
+
+    }
+
+
+    /*
+    =================================================
     BUSCAR PRIMERO EN SUPABASE
     =================================================
     */
@@ -98,13 +115,21 @@ export default async function handler(req, res) {
 
         problem: dtc.problem,
 
-        causes: dtc.causes || [],
+        causes: Array.isArray(dtc.causes)
+          ? dtc.causes
+          : [],
 
-        symptoms: dtc.symptoms || [],
+        symptoms: Array.isArray(dtc.symptoms)
+          ? dtc.symptoms
+          : [],
 
-        diagnosis: dtc.diagnosis || [],
+        diagnosis: Array.isArray(dtc.diagnosis)
+          ? dtc.diagnosis
+          : [],
 
-        repairs: dtc.repairs || [],
+        repairs: Array.isArray(dtc.repairs)
+          ? dtc.repairs
+          : [],
 
         severity: dtc.severity,
 
@@ -149,76 +174,89 @@ export default async function handler(req, res) {
 
     const prompt = `
 
-Eres un especialista en diagnóstico automotriz.
+Eres un especialista profesional en diagnóstico
+automotriz.
 
-Necesito información sobre este código DTC:
+Necesito información REAL y útil sobre este código DTC.
 
-Código:
+CÓDIGO:
 ${code}
 
-Marca seleccionada:
+MARCA:
 ${make || "genérica"}
-
-Tu trabajo es generar información útil,
-clara y prudente para un scanner automotriz.
 
 IMPORTANTE:
 
-1. No inventes una falla confirmada.
-2. Las causas son POSIBLES causas.
-3. No afirmes que una pieza está dañada sin
-   pruebas de diagnóstico.
-4. Si el significado puede variar entre fabricantes,
-   indícalo.
-5. No inventes años específicos de vehículos.
-6. No inventes números de piezas.
-7. No inventes voltajes o valores de prueba
-   específicos si no son confiables.
-8. Explica el diagnóstico de forma general.
-9. La respuesta debe estar en español.
-10. Devuelve solamente JSON válido.
+- Identifica correctamente el significado del código.
+- Si el código es genérico OBD-II, explica su significado
+  correctamente.
+- Si la marca puede cambiar el significado, tenlo en cuenta.
+- NO inventes una falla confirmada.
+- Las causas deben ser posibilidades razonables.
+- Los síntomas deben ser síntomas relacionados con el código.
+- El diagnóstico debe indicar pruebas generales que un técnico
+  puede realizar.
+- Las reparaciones deben ser posibles soluciones después de
+  confirmar la causa.
+- No inventes números de piezas.
+- No inventes años de vehículos.
+- No inventes valores de voltaje específicos.
+- Responde TODO en español.
+- Debes proporcionar información completa.
+- NO dejes campos vacíos.
+- causes debe tener al menos 3 elementos.
+- symptoms debe tener al menos 3 elementos.
+- diagnosis debe tener al menos 3 elementos.
+- repairs debe tener al menos 3 elementos.
 
-El JSON debe tener EXACTAMENTE esta estructura:
+Devuelve ÚNICAMENTE un objeto JSON.
+
+La estructura OBLIGATORIA es:
 
 {
-  "code": "string",
-  "make": "string",
-  "title": "string",
-  "problem": "string",
+  "code": "${code}",
+  "make": "${make || "genérica"}",
+  "title": "significado corto y correcto del código",
+  "problem": "explicación clara del problema que representa el código",
   "causes": [
-    "string"
+    "causa posible 1",
+    "causa posible 2",
+    "causa posible 3"
   ],
   "symptoms": [
-    "string"
+    "síntoma 1",
+    "síntoma 2",
+    "síntoma 3"
   ],
   "diagnosis": [
-    "string"
+    "paso de diagnóstico 1",
+    "paso de diagnóstico 2",
+    "paso de diagnóstico 3"
   ],
   "repairs": [
-    "string"
+    "reparación posible 1",
+    "reparación posible 2",
+    "reparación posible 3"
   ],
-  "severity": "BAJA",
+  "severity": "MEDIA",
   "vehicle_years": "No especificado"
 }
 
-severity solamente puede ser:
+severity DEBE ser exactamente uno de:
 
 BAJA
 MEDIA
 ALTA
 CRÍTICA
 
-Si no conoces los años/modelos exactos,
-utiliza:
+Si no existen años específicos confiables:
 
-"No especificado"
+"vehicle_years": "No especificado"
 
-Código:
-${code}
-
-Marca:
-${make || "genérica"}
-
+NO escribas Markdown.
+NO escribas explicaciones fuera del JSON.
+NO escribas bloques de código.
+SOLO JSON.
 `;
 
 
@@ -226,9 +264,6 @@ ${make || "genérica"}
     =================================================
     LLAMAR A OPENROUTER
     =================================================
-
-    openrouter/free selecciona automáticamente
-    un modelo gratuito disponible.
     */
 
     const openRouterResponse = await fetch(
@@ -265,7 +300,7 @@ ${make || "genérica"}
               role: "system",
 
               content:
-                "Eres un especialista en diagnóstico automotriz. Responde únicamente con JSON válido."
+                "Eres un especialista profesional en diagnóstico automotriz. Debes responder exclusivamente con JSON válido y completo."
 
             },
 
@@ -286,9 +321,9 @@ ${make || "genérica"}
 
           },
 
-          temperature: 0.2,
+          temperature: 0.1,
 
-          max_tokens: 1800
+          max_tokens: 2000
 
         })
 
@@ -329,7 +364,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    OBTENER RESPUESTA
+    OBTENER RESPUESTA OPENROUTER
     =================================================
     */
 
@@ -337,17 +372,78 @@ ${make || "genérica"}
       await openRouterResponse.json();
 
 
-    const generatedText =
+    console.log(
+      "OPENROUTER RESPONSE:",
+      JSON.stringify(
+        openRouterData
+      )
+    );
+
+
+    /*
+    =================================================
+    EXTRAER CONTENIDO
+    =================================================
+    */
+
+    let generatedText =
       openRouterData
         ?.choices?.[0]
         ?.message
         ?.content;
 
 
-    if (!generatedText) {
+    /*
+    =================================================
+    ALGUNOS MODELOS PUEDEN DEVOLVER CONTENIDO
+    COMO ARRAY
+    =================================================
+    */
+
+    if (Array.isArray(generatedText)) {
+
+      generatedText =
+        generatedText
+          .map(item => {
+
+            if (
+              typeof item === "string"
+            ) {
+
+              return item;
+
+            }
+
+            if (
+              item &&
+              typeof item.text === "string"
+            ) {
+
+              return item.text;
+
+            }
+
+            return "";
+
+          })
+          .join("");
+
+    }
+
+
+    /*
+    =================================================
+    VALIDAR RESPUESTA
+    =================================================
+    */
+
+    if (
+      !generatedText ||
+      String(generatedText).trim() === ""
+    ) {
 
       console.error(
-        "OPENROUTER RESPONSE:",
+        "OPENROUTER NO DEVOLVIÓ CONTENT:",
         JSON.stringify(
           openRouterData
         )
@@ -358,9 +454,44 @@ ${make || "genérica"}
         success: false,
 
         error:
-          "OpenRouter no devolvió información válida."
+          "OpenRouter no devolvió información válida.",
+
+        details:
+          JSON.stringify(
+            openRouterData
+          )
 
       });
+
+    }
+
+
+    /*
+    =================================================
+    LIMPIAR POSIBLE MARKDOWN
+    =================================================
+    */
+
+    generatedText =
+      String(generatedText)
+        .trim();
+
+
+    if (
+      generatedText.startsWith("```")
+    ) {
+
+      generatedText =
+        generatedText
+          .replace(
+            /^```(?:json)?/i,
+            ""
+          )
+          .replace(
+            /```$/i,
+            ""
+          )
+          .trim();
 
     }
 
@@ -376,9 +507,9 @@ ${make || "genérica"}
     try {
 
       dtc =
-        typeof generatedText === "string"
-          ? JSON.parse(generatedText)
-          : generatedText;
+        JSON.parse(
+          generatedText
+        );
 
     } catch (jsonError) {
 
@@ -388,7 +519,7 @@ ${make || "genérica"}
       );
 
       console.error(
-        "RESPUESTA:",
+        "RESPUESTA IA:",
         generatedText
       );
 
@@ -400,7 +531,7 @@ ${make || "genérica"}
           "La IA devolvió información que no pudo convertirse a JSON.",
 
         details:
-          String(generatedText)
+          generatedText
 
       });
 
@@ -409,7 +540,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    NORMALIZAR
+    NORMALIZAR CÓDIGO
     =================================================
     */
 
@@ -421,33 +552,62 @@ ${make || "genérica"}
       .trim();
 
 
+    /*
+    =================================================
+    NORMALIZAR MARCA
+    =================================================
+    */
+
     dtc.make =
       String(
         dtc.make ||
         make ||
         "genérica"
-      );
+      )
+      .trim();
 
+
+    /*
+    =================================================
+    NORMALIZAR TÍTULO
+    =================================================
+    */
 
     dtc.title =
       String(
-        dtc.title ||
-        "Código DTC"
-      );
+        dtc.title || ""
+      )
+      .trim();
 
+
+    /*
+    =================================================
+    NORMALIZAR PROBLEMA
+    =================================================
+    */
 
     dtc.problem =
       String(
-        dtc.problem ||
-        "No hay información disponible."
-      );
+        dtc.problem || ""
+      )
+      .trim();
 
+
+    /*
+    =================================================
+    NORMALIZAR LISTAS
+    =================================================
+    */
 
     dtc.causes =
       Array.isArray(
         dtc.causes
       )
       ? dtc.causes
+          .map(
+            item => String(item).trim()
+          )
+          .filter(Boolean)
       : [];
 
 
@@ -456,6 +616,10 @@ ${make || "genérica"}
         dtc.symptoms
       )
       ? dtc.symptoms
+          .map(
+            item => String(item).trim()
+          )
+          .filter(Boolean)
       : [];
 
 
@@ -464,6 +628,10 @@ ${make || "genérica"}
         dtc.diagnosis
       )
       ? dtc.diagnosis
+          .map(
+            item => String(item).trim()
+          )
+          .filter(Boolean)
       : [];
 
 
@@ -472,21 +640,117 @@ ${make || "genérica"}
         dtc.repairs
       )
       ? dtc.repairs
+          .map(
+            item => String(item).trim()
+          )
+          .filter(Boolean)
       : [];
+
+
+    /*
+    =================================================
+    NORMALIZAR SEVERIDAD
+    =================================================
+    */
+
+    const severidades = [
+      "BAJA",
+      "MEDIA",
+      "ALTA",
+      "CRÍTICA"
+    ];
 
 
     dtc.severity =
       String(
         dtc.severity ||
         "MEDIA"
-      );
+      )
+      .toUpperCase()
+      .trim();
 
+
+    if (
+      !severidades.includes(
+        dtc.severity
+      )
+    ) {
+
+      dtc.severity =
+        "MEDIA";
+
+    }
+
+
+    /*
+    =================================================
+    AÑOS
+    =================================================
+    */
 
     dtc.vehicle_years =
       String(
         dtc.vehicle_years ||
         "No especificado"
+      )
+      .trim();
+
+
+    /*
+    =================================================
+    VALIDACIÓN FUERTE
+    =================================================
+
+    NO guardamos información incompleta.
+    */
+
+    const respuestaIncompleta =
+      !dtc.title ||
+      !dtc.problem ||
+      dtc.causes.length < 3 ||
+      dtc.symptoms.length < 3 ||
+      dtc.diagnosis.length < 3 ||
+      dtc.repairs.length < 3;
+
+
+    if (respuestaIncompleta) {
+
+      console.error(
+        "RESPUESTA IA INCOMPLETA:",
+        JSON.stringify(
+          dtc
+        )
       );
+
+      return res.status(502).json({
+
+        success: false,
+
+        error:
+          "OpenRouter devolvió información incompleta. No se guardó el código en Supabase.",
+
+        details:
+          dtc
+
+      });
+
+    }
+
+
+    /*
+    =================================================
+    ASEGURAR QUE EL CÓDIGO COINCIDA
+    =================================================
+    */
+
+    if (
+      dtc.code !== code
+    ) {
+
+      dtc.code =
+        code;
+
+    }
 
 
     /*
@@ -547,9 +811,9 @@ ${make || "genérica"}
       );
 
       /*
-      No detenemos el resultado.
-      El usuario todavía puede recibir
-      la información generada por la IA.
+      Si el código ya fue agregado por otra
+      solicitud al mismo tiempo, todavía
+      devolvemos la información generada.
       */
 
     }
@@ -565,7 +829,8 @@ ${make || "genérica"}
 
       success: true,
 
-      source: "openrouter",
+      source:
+        "openrouter",
 
       code:
         dtc.code,
@@ -618,4 +883,4 @@ ${make || "genérica"}
 
   }
 
-      }
+          }
