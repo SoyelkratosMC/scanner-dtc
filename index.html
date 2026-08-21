@@ -14,6 +14,10 @@
 
 <style>
 
+/* =================================================
+   GENERAL
+================================================= */
+
 * {
     box-sizing: border-box;
 }
@@ -45,9 +49,9 @@ body {
 }
 
 
-/* =========================
+/* =================================================
    HEADER
-========================= */
+================================================= */
 
 header {
 
@@ -77,9 +81,9 @@ h1 {
 }
 
 
-/* =========================
+/* =================================================
    CARDS
-========================= */
+================================================= */
 
 .card {
 
@@ -98,9 +102,9 @@ h1 {
 }
 
 
-/* =========================
+/* =================================================
    FORMULARIO
-========================= */
+================================================= */
 
 label {
 
@@ -184,9 +188,9 @@ button:disabled {
 }
 
 
-/* =========================
+/* =================================================
    RESULTADO
-========================= */
+================================================= */
 
 #resultado {
 
@@ -264,9 +268,9 @@ button:disabled {
 }
 
 
-/* =========================
+/* =================================================
    SECCIONES
-========================= */
+================================================= */
 
 .seccion {
 
@@ -311,9 +315,9 @@ li {
 }
 
 
-/* =========================
+/* =================================================
    ESTADOS
-========================= */
+================================================= */
 
 .loading {
 
@@ -332,6 +336,8 @@ li {
     color: #f87171;
 
     font-weight: bold;
+
+    line-height: 1.6;
 }
 
 
@@ -367,9 +373,35 @@ li {
 }
 
 
-/* =========================
+/* =================================================
+   INFORMACIÓN DE FUENTE
+================================================= */
+
+.source {
+
+    display: inline-block;
+
+    margin-top: 10px;
+
+    margin-left: 5px;
+
+    padding: 5px 9px;
+
+    border-radius: 6px;
+
+    background: #1e3a8a;
+
+    color: #bfdbfe;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+
+/* =================================================
    FOOTER
-========================= */
+================================================= */
 
 footer {
 
@@ -383,9 +415,9 @@ footer {
 }
 
 
-/* =========================
+/* =================================================
    CELULAR
-========================= */
+================================================= */
 
 @media(max-width:600px) {
 
@@ -438,9 +470,9 @@ Diagnóstico de códigos de falla automotrices
 </header>
 
 
-<!-- =========================
+<!-- =================================================
      BUSCADOR
-========================= -->
+================================================= -->
 
 <div class="card">
 
@@ -575,6 +607,7 @@ spellcheck="false"
 
 <button
 id="buscarBtn"
+type="button"
 onclick="buscarCodigo()"
 >
 
@@ -586,9 +619,9 @@ onclick="buscarCodigo()"
 </div>
 
 
-<!-- =========================
+<!-- =================================================
      RESULTADO
-========================= -->
+================================================= -->
 
 <div
 id="resultado"
@@ -611,13 +644,23 @@ Scanner DTC Automotriz © 2026
 
 /*
 =================================================
-CONFIGURACIÓN DE LA API
+CONFIGURACIÓN
 =================================================
+*/
+
+/*
+ IMPORTANTE:
+
+ Esta es la URL de TU API de Vercel.
+
+ NO pongas /P2123 aquí.
+
+ El código se agrega automáticamente
+ más abajo.
 */
 
 const API_URL =
 "https://scanner-dtc.vercel.app/api/dtc";
-
 
 
 /*
@@ -652,13 +695,14 @@ async function buscarCodigo() {
 
 
     const marca =
-        marcaSelect.value;
-
+        marcaSelect.value
+        .trim()
+        .toLowerCase();
 
 
     /*
     =============================================
-    VALIDAR
+    VALIDAR CÓDIGO VACÍO
     =============================================
     */
 
@@ -667,6 +711,8 @@ async function buscarCodigo() {
         mostrarError(
             "Escribe un código DTC, por ejemplo P0420."
         );
+
+        codigoInput.focus();
 
         return;
     }
@@ -686,18 +732,20 @@ async function buscarCodigo() {
             "Código inválido. Ejemplos: P0420, P0300 o C0035."
         );
 
+        codigoInput.focus();
+
         return;
     }
 
 
-
     /*
     =============================================
-    LOADING
+    MOSTRAR RESULTADO
     =============================================
     */
 
-    resultado.style.display = "block";
+    resultado.style.display =
+        "block";
 
 
     resultado.innerHTML = `
@@ -706,18 +754,26 @@ async function buscarCodigo() {
 
             🔄 Consultando servidor...
 
-            <br>
+            <br><br>
 
             Código:
-            <strong>${escaparHTML(codigo)}</strong>
+
+            <strong>
+                ${escaparHTML(codigo)}
+            </strong>
 
         </div>
 
     `;
 
 
-    boton.disabled = true;
+    /*
+    =============================================
+    DESACTIVAR BOTÓN
+    =============================================
+    */
 
+    boton.disabled = true;
 
 
     try {
@@ -725,16 +781,20 @@ async function buscarCodigo() {
 
         /*
         =========================================
-        URL DE LA API
+        CONSTRUIR URL
         =========================================
         */
 
         const url =
-        `${API_URL}/${encodeURIComponent(codigo)}?make=${encodeURIComponent(marca)}`;
+            API_URL +
+            "/" +
+            encodeURIComponent(codigo) +
+            "?make=" +
+            encodeURIComponent(marca);
 
 
         console.log(
-            "Consultando:",
+            "Scanner DTC:",
             url
         );
 
@@ -746,70 +806,150 @@ async function buscarCodigo() {
         */
 
         const response =
-            await fetch(url);
+            await fetch(
+                url,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Accept":
+                            "application/json"
+                    },
+
+                    cache: "no-store"
+                }
+            );
 
 
         /*
         =========================================
-        ERROR
+        OBTENER TEXTO
+        =========================================
+
+        Primero obtenemos texto para poder
+        mostrar errores JSON correctamente.
+        */
+
+        const responseText =
+            await response.text();
+
+
+        console.log(
+            "HTTP:",
+            response.status
+        );
+
+
+        console.log(
+            "Respuesta:",
+            responseText
+        );
+
+
+        /*
+        =========================================
+        CONVERTIR JSON
+        =========================================
+        */
+
+        let data;
+
+
+        try {
+
+            data =
+                JSON.parse(
+                    responseText
+                );
+
+        }
+
+        catch(jsonError) {
+
+            console.error(
+                "JSON ERROR:",
+                jsonError
+            );
+
+
+            throw new Error(
+                "El servidor no devolvió JSON válido. HTTP " +
+                response.status
+            );
+
+        }
+
+
+        /*
+        =========================================
+        SI HTTP NO ES CORRECTO
         =========================================
         */
 
         if (!response.ok) {
 
 
-            if (response.status === 404) {
+            /*
+            =====================================
+            ERROR 404
+            =====================================
+            */
+
+            if (
+                response.status === 404
+            ) {
 
                 mostrarNoEncontrado(
                     codigo,
-                    marca
+                    marca,
+                    data
                 );
 
                 return;
+
             }
 
 
-            throw new Error(
-                "HTTP " + response.status
+            /*
+            =====================================
+            ERROR DEL SERVIDOR
+            =====================================
+            */
+
+            mostrarErrorServidor(
+                response.status,
+                data
             );
+
+            return;
 
         }
 
 
-
         /*
         =========================================
-        JSON
-        =========================================
-        */
-
-        const data =
-            await response.json();
-
-
-
-        /*
-        =========================================
-        COMPROBAR RESPUESTA
+        VALIDAR RESPUESTA
         =========================================
         */
 
         if (
-            data.success === false
+            !data ||
+            data.success !== true
         ) {
 
-            throw new Error(
-                data.error ||
-                "La API devolvió un error."
+            mostrarErrorServidor(
+                response.status,
+                data
             );
+
+            return;
 
         }
 
 
-
         /*
         =========================================
-        RESULTADO
+        MOSTRAR RESULTADO
         =========================================
         */
 
@@ -822,16 +962,24 @@ async function buscarCodigo() {
 
     }
 
+
     catch(error) {
 
 
         console.error(
-            "Error:",
+            "FETCH ERROR:",
             error
         );
 
 
-        resultado.style.display = "block";
+        /*
+        =========================================
+        ERROR DE CONEXIÓN
+        =========================================
+        */
+
+        resultado.style.display =
+            "block";
 
 
         resultado.innerHTML = `
@@ -852,9 +1000,23 @@ async function buscarCodigo() {
 
                 <br><br>
 
-                Error:
+                <strong>
+                    Error:
+                </strong>
 
-                ${escaparHTML(error.message)}
+                ${escaparHTML(
+                    error.message
+                )}
+
+                <br><br>
+
+                <strong>
+                    API:
+                </strong>
+
+                ${escaparHTML(
+                    API_URL
+                )}
 
             </div>
 
@@ -865,7 +1027,8 @@ async function buscarCodigo() {
 
     finally {
 
-        boton.disabled = false;
+        boton.disabled =
+            false;
 
     }
 
@@ -891,25 +1054,80 @@ function mostrarResultado(
 
 
     const causas =
-        convertirLista(data.causes);
+        convertirLista(
+            data.causes
+        );
 
 
     const sintomas =
-        convertirLista(data.symptoms);
+        convertirLista(
+            data.symptoms
+        );
 
 
     const diagnostico =
-        convertirLista(data.diagnosis);
+        convertirLista(
+            data.diagnosis
+        );
 
 
     const arreglos =
-        convertirLista(data.repairs);
+        convertirLista(
+            data.repairs
+        );
 
 
+    /*
+    =============================================
+    FUENTE
+    =============================================
+    */
+
+    let fuente = "";
+
+
+    if (
+        data.source === "supabase"
+    ) {
+
+        fuente = `
+
+            <span class="source">
+
+                🗄️ Base de datos
+
+            </span>
+
+        `;
+
+    }
+
+
+    else if (
+        data.source === "openrouter"
+    ) {
+
+        fuente = `
+
+            <span class="source">
+
+                🤖 IA
+
+            </span>
+
+        `;
+
+    }
+
+
+    /*
+    =============================================
+    MOSTRAR
+    =============================================
+    */
 
     resultado.style.display =
         "block";
-
 
 
     resultado.innerHTML = `
@@ -940,7 +1158,8 @@ function mostrarResultado(
 
             ${escaparHTML(
                 data.make ||
-                marca
+                marca ||
+                "genérica"
             )}
 
         </span>
@@ -967,8 +1186,12 @@ function mostrarResultado(
         }
 
 
+        ${fuente}
 
-        <!-- PROBLEMA -->
+
+        <!-- =================================
+             PROBLEMA
+        ================================== -->
 
         <div class="seccion">
 
@@ -992,8 +1215,9 @@ function mostrarResultado(
         </div>
 
 
-
-        <!-- CAUSAS -->
+        <!-- =================================
+             CAUSAS
+        ================================== -->
 
         <div class="seccion">
 
@@ -1004,13 +1228,16 @@ function mostrarResultado(
             </h3>
 
 
-            ${crearLista(causas)}
+            ${crearLista(
+                causas
+            )}
 
         </div>
 
 
-
-        <!-- SÍNTOMAS -->
+        <!-- =================================
+             SÍNTOMAS
+        ================================== -->
 
         <div class="seccion">
 
@@ -1021,13 +1248,16 @@ function mostrarResultado(
             </h3>
 
 
-            ${crearLista(sintomas)}
+            ${crearLista(
+                sintomas
+            )}
 
         </div>
 
 
-
-        <!-- DIAGNÓSTICO -->
+        <!-- =================================
+             DIAGNÓSTICO
+        ================================== -->
 
         <div class="seccion">
 
@@ -1046,8 +1276,9 @@ function mostrarResultado(
         </div>
 
 
-
-        <!-- ARREGLO -->
+        <!-- =================================
+             REPARACIONES
+        ================================== -->
 
         <div class="seccion">
 
@@ -1058,26 +1289,33 @@ function mostrarResultado(
             </h3>
 
 
-            ${crearLista(arreglos)}
+            ${crearLista(
+                arreglos
+            )}
 
         </div>
 
 
+        <!-- =================================
+             CONFIRMACIÓN
+        ================================== -->
 
         <div class="success">
 
-            ${
-                data.source === "openrouter"
+            ✅ Información obtenida correctamente.
 
-                ?
+            <br><br>
 
-                "🤖 Información generada por IA y guardada en la base de datos."
+            Fuente:
 
-                :
+            <strong>
 
-                "✅ Información obtenida desde la base de datos DTC."
+                ${escaparHTML(
+                    data.source ||
+                    "servidor"
+                )}
 
-            }
+            </strong>
 
         </div>
 
@@ -1089,13 +1327,14 @@ function mostrarResultado(
 
 /*
 =================================================
-NO ENCONTRADO
+MOSTRAR NO ENCONTRADO
 =================================================
 */
 
 function mostrarNoEncontrado(
     codigo,
-    marca
+    marca,
+    data
 ) {
 
 
@@ -1107,11 +1346,22 @@ function mostrarNoEncontrado(
         "block";
 
 
+    const mensaje =
+        data &&
+        data.error
+        ?
+        data.error
+        :
+        "No encontramos información para este código.";
+
+
     resultado.innerHTML = `
 
         <span class="codigo">
 
-            ${escaparHTML(codigo)}
+            ${escaparHTML(
+                codigo
+            )}
 
         </span>
 
@@ -1125,17 +1375,9 @@ function mostrarNoEncontrado(
 
         <p>
 
-            No encontramos información para
-
-            <strong>
-                ${escaparHTML(codigo)}
-            </strong>
-
-            en la consulta para
-
-            <strong>
-                ${escaparHTML(marca)}
-            </strong>.
+            ${escaparHTML(
+                mensaje
+            )}
 
         </p>
 
@@ -1145,6 +1387,18 @@ function mostrarNoEncontrado(
             💡 Puede ser un código específico
             del fabricante o todavía no estar
             incluido en nuestra base de datos.
+
+            <br><br>
+
+            Marca consultada:
+
+            <strong>
+
+                ${escaparHTML(
+                    marca
+                )}
+
+            </strong>
 
         </div>
 
@@ -1156,12 +1410,13 @@ function mostrarNoEncontrado(
 
 /*
 =================================================
-ERROR
+ERROR DEL SERVIDOR
 =================================================
 */
 
-function mostrarError(
-    mensaje
+function mostrarErrorServidor(
+    status,
+    data
 ) {
 
 
@@ -1173,199 +1428,57 @@ function mostrarError(
         "block";
 
 
-    resultado.innerHTML = `
-
-        <div class="error">
-
-            ⚠️
-
-            ${escaparHTML(mensaje)}
-
-        </div>
-
-    `;
-
-}
+    let mensaje =
+        "El servidor encontró un problema.";
 
 
-
-/*
-=================================================
-CONVERTIR LISTA
-=================================================
-*/
-
-function convertirLista(
-    valor
-) {
-
-
-    if (!valor) {
-
-        return [];
-
-    }
-
-
-    if (Array.isArray(valor)) {
-
-        return valor;
-
-    }
-
-
-    if (typeof valor === "string") {
-
-        return valor
-            .split("\n")
-            .map(
-                x => x.trim()
-            )
-            .filter(Boolean);
-
-    }
-
-
-    return [];
-
-}
-
-
-
-/*
-=================================================
-CREAR LISTA
-=================================================
-*/
-
-function crearLista(
-    elementos,
-    numerada = false
-) {
-
-
-    if (!elementos.length) {
-
-        return `
-
-            <p>
-
-                No hay información disponible.
-
-            </p>
-
-        `;
-
-    }
-
-
-    const etiqueta =
-        numerada
-        ? "ol"
-        : "ul";
-
-
-    return `
-
-        <${etiqueta}>
-
-            ${
-                elementos
-                .map(
-                    elemento =>
-                    `<li>
-                        ${escaparHTML(elemento)}
-                    </li>`
-                )
-                .join("")
-            }
-
-        </${etiqueta}>
-
-    `;
-
-}
-
-
-
-/*
-=================================================
-PROTEGER HTML
-=================================================
-*/
-
-function escaparHTML(
-    texto
-) {
+    let detalles = "";
 
 
     if (
-        texto === null ||
-        texto === undefined
+        data &&
+        data.error
     ) {
 
-        return "";
+        mensaje =
+            data.error;
 
     }
 
 
-    return String(texto)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-
-/*
-=================================================
-ENTER = BUSCAR
-=================================================
-*/
-
-document
-.getElementById("codigo")
-.addEventListener(
-    "keydown",
-    function(event) {
+    if (
+        data &&
+        data.details
+    ) {
 
         if (
-            event.key === "Enter"
+            typeof data.details ===
+            "string"
         ) {
 
-            buscarCodigo();
+            detalles =
+                data.details;
 
         }
 
-    }
-);
+        else {
 
-</script>
+            try {
 
+                detalles =
+                    JSON.stringify(
+                        data.details,
+                        null,
+                        2
+                    );
 
-</body>
+            }
 
-    </html>
+            catch(error) {
+
+                detalles =
+                    String(
+                        data.details
+                    );
+
+   
