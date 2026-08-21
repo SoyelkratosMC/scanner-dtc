@@ -5,27 +5,19 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-
-/*
-=================================================
-FUNCIÓN PRINCIPAL
-=================================================
-*/
-
 export default async function handler(req, res) {
 
   try {
 
     /*
-    =========================================
-    OBTENER CÓDIGO
-    =========================================
+    =================================================
+    OBTENER CÓDIGO Y MARCA
+    =================================================
     */
 
     const code = String(req.query.code || "")
       .toUpperCase()
       .trim();
-
 
     const make = String(req.query.make || "")
       .toLowerCase()
@@ -33,45 +25,38 @@ export default async function handler(req, res) {
 
 
     /*
-    =========================================
+    =================================================
     VALIDAR CÓDIGO
-    =========================================
+    =================================================
     */
 
     if (!code) {
 
       return res.status(400).json({
-
         success: false,
-
         error: "Falta el código DTC"
-
       });
 
     }
 
 
     /*
-    =========================================
+    =================================================
     BUSCAR PRIMERO EN SUPABASE
-    =========================================
+    =================================================
     */
 
     const { data, error } = await supabase
-
       .from("dtc_codes")
-
       .select("*")
-
       .eq("code", code)
-
       .limit(1);
 
 
     /*
-    =========================================
+    =================================================
     ERROR SUPABASE
-    =========================================
+    =================================================
     */
 
     if (error) {
@@ -82,26 +67,22 @@ export default async function handler(req, res) {
       );
 
       return res.status(500).json({
-
         success: false,
-
         error: error.message
-
       });
 
     }
 
 
     /*
-    =========================================
-    SI YA EXISTE
-    =========================================
+    =================================================
+    SI YA EXISTE EN SUPABASE
+    =================================================
     */
 
     if (data && data.length > 0) {
 
       const dtc = data[0];
-
 
       return res.status(200).json({
 
@@ -136,10 +117,10 @@ export default async function handler(req, res) {
 
 
     /*
-    =========================================
-    SI NO EXISTE:
-    USAR GEMINI
-    =========================================
+    =================================================
+    NO EXISTE EN SUPABASE
+    → CONSULTAR GEMINI
+    =================================================
     */
 
     const geminiKey =
@@ -147,10 +128,6 @@ export default async function handler(req, res) {
 
 
     if (!geminiKey) {
-
-      console.error(
-        "FALTA GEMINI_API_KEY"
-      );
 
       return res.status(500).json({
 
@@ -165,107 +142,9 @@ export default async function handler(req, res) {
 
 
     /*
-    =========================================
-    ESQUEMA JSON
-    =========================================
-    */
-
-    const schema = {
-
-      type: "object",
-
-      properties: {
-
-        code: {
-          type: "string"
-        },
-
-        make: {
-          type: "string"
-        },
-
-        title: {
-          type: "string"
-        },
-
-        problem: {
-          type: "string"
-        },
-
-        causes: {
-
-          type: "array",
-
-          items: {
-            type: "string"
-          }
-
-        },
-
-        symptoms: {
-
-          type: "array",
-
-          items: {
-            type: "string"
-          }
-
-        },
-
-        diagnosis: {
-
-          type: "array",
-
-          items: {
-            type: "string"
-          }
-
-        },
-
-        repairs: {
-
-          type: "array",
-
-          items: {
-            type: "string"
-          }
-
-        },
-
-        severity: {
-
-          type: "string"
-        },
-
-        vehicle_years: {
-
-          type: "string"
-        }
-
-      },
-
-      required: [
-
-        "code",
-        "make",
-        "title",
-        "problem",
-        "causes",
-        "symptoms",
-        "diagnosis",
-        "repairs",
-        "severity",
-        "vehicle_years"
-
-      ]
-
-    };
-
-
-    /*
-    =========================================
-    PROMPT PARA GEMINI
-    =========================================
+    =================================================
+    PROMPT
+    =================================================
     */
 
     const prompt = `
@@ -276,69 +155,58 @@ Necesito información técnica sobre este código DTC:
 
 Código: ${code}
 
-Marca seleccionada por el usuario:
+Marca seleccionada:
 ${make || "genérica"}
 
-Investiga el significado del código y proporciona
-información automotriz útil y prudente.
+Genera información útil para un scanner
+automotriz.
 
 IMPORTANTE:
 
-- No inventes especificaciones.
-- Si la información depende del fabricante,
-  indícalo claramente.
-- Distingue entre causas posibles y una causa
-  confirmada.
-- No afirmes que una pieza está defectuosa sin
-  diagnóstico.
-- La información debe ser comprensible para una
-  persona que utiliza un escáner DTC.
-- Devuelve exclusivamente la estructura JSON
-  solicitada.
+- No inventes una falla confirmada.
+- Explica que las causas son posibles causas.
+- Si el significado puede variar según fabricante,
+  indícalo.
+- No inventes años específicos si no tienes
+  información confiable.
+- La información debe ser clara y técnica.
+- Devuelve ÚNICAMENTE JSON válido.
+- No uses Markdown.
+- No agregues explicaciones fuera del JSON.
 
-Organiza la información en:
+Necesito exactamente estos campos:
 
-code
-make
-title
-problem
-causes
-symptoms
-diagnosis
-repairs
-severity
-vehicle_years
+{
+  "code": "string",
+  "make": "string",
+  "title": "string",
+  "problem": "string",
+  "causes": ["string"],
+  "symptoms": ["string"],
+  "diagnosis": ["string"],
+  "repairs": ["string"],
+  "severity": "BAJA | MEDIA | ALTA | CRÍTICA",
+  "vehicle_years": "string"
+}
 
-El campo causes debe ser una lista.
+Código DTC:
+${code}
 
-El campo symptoms debe ser una lista.
-
-El campo diagnosis debe ser una lista ordenada
-con los pasos generales de diagnóstico.
-
-El campo repairs debe ser una lista de posibles
-reparaciones.
-
-severity debe indicar una gravedad general como
-BAJA, MEDIA, ALTA o CRÍTICA.
-
-vehicle_years debe contener los años/modelos
-si existe información confiable. Si no se pueden
-determinar, utiliza "No especificado".
+Marca:
+${make || "genérica"}
 
 `;
 
 
     /*
-    =========================================
-    CONSULTAR GEMINI
-    =========================================
+    =================================================
+    LLAMAR A GEMINI
+    =================================================
     */
 
     const geminiResponse = await fetch(
 
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" +
-      encodeURIComponent(geminiKey),
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
 
       {
 
@@ -347,7 +215,10 @@ determinar, utiliza "No especificado".
         headers: {
 
           "Content-Type":
-            "application/json"
+            "application/json",
+
+          "x-goog-api-key":
+            geminiKey
 
         },
 
@@ -356,6 +227,8 @@ determinar, utiliza "No especificado".
           contents: [
 
             {
+
+              role: "user",
 
               parts: [
 
@@ -375,17 +248,7 @@ determinar, utiliza "No especificado".
               google_search: {}
             }
 
-          ],
-
-          generationConfig: {
-
-            responseMimeType:
-              "application/json",
-
-            responseSchema:
-              schema
-
-          }
+          ]
 
         })
 
@@ -395,9 +258,9 @@ determinar, utiliza "No especificado".
 
 
     /*
-    =========================================
+    =================================================
     ERROR GEMINI
-    =========================================
+    =================================================
     */
 
     if (!geminiResponse.ok) {
@@ -409,7 +272,6 @@ determinar, utiliza "No especificado".
         "GEMINI ERROR:",
         errorText
       );
-
 
       return res.status(502).json({
 
@@ -427,32 +289,36 @@ determinar, utiliza "No especificado".
 
 
     /*
-    =========================================
-    OBTENER RESPUESTA
-    =========================================
+    =================================================
+    LEER RESPUESTA GEMINI
+    =================================================
     */
 
     const geminiData =
       await geminiResponse.json();
 
 
-    const generatedText =
+    const parts =
       geminiData
         ?.candidates?.[0]
-        ?.content
-        ?.parts?.[0]
-        ?.text;
+        ?.content?.parts || [];
+
+
+    const generatedText =
+      parts
+        .map(part => part.text || "")
+        .join("")
+        .trim();
 
 
     if (!generatedText) {
 
       console.error(
-        "GEMINI RESPUESTA:",
+        "GEMINI RESPONSE:",
         JSON.stringify(
           geminiData
         )
       );
-
 
       return res.status(502).json({
 
@@ -467,9 +333,23 @@ determinar, utiliza "No especificado".
 
 
     /*
-    =========================================
-    CONVERTIR JSON
-    =========================================
+    =================================================
+    LIMPIAR JSON
+    =================================================
+    */
+
+    let cleanText =
+      generatedText
+        .replace(/^```json\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/\s*```$/i, "")
+        .trim();
+
+
+    /*
+    =================================================
+    CONVERTIR RESPUESTA A JSON
+    =================================================
     */
 
     let dtc;
@@ -478,7 +358,7 @@ determinar, utiliza "No especificado".
 
       dtc =
         JSON.parse(
-          generatedText
+          cleanText
         );
 
     } catch (jsonError) {
@@ -489,17 +369,19 @@ determinar, utiliza "No especificado".
       );
 
       console.error(
-        "RESPUESTA GEMINI:",
+        "GEMINI TEXT:",
         generatedText
       );
-
 
       return res.status(502).json({
 
         success: false,
 
         error:
-          "Gemini devolvió información que no pudo convertirse a JSON."
+          "Gemini devolvió una respuesta que no es JSON válido.",
+
+        details:
+          generatedText
 
       });
 
@@ -507,9 +389,9 @@ determinar, utiliza "No especificado".
 
 
     /*
-    =========================================
+    =================================================
     NORMALIZAR DATOS
-    =========================================
+    =================================================
     */
 
     dtc.code =
@@ -522,49 +404,62 @@ determinar, utiliza "No especificado".
 
     dtc.make =
       String(
-        dtc.make || make || "genérica"
+        dtc.make ||
+        make ||
+        "genérica"
       );
 
 
     dtc.title =
       String(
-        dtc.title || "Código DTC"
+        dtc.title ||
+        "Código DTC"
       );
 
 
     dtc.problem =
       String(
-        dtc.problem || "No especificado."
+        dtc.problem ||
+        "No hay información disponible."
       );
 
 
     dtc.causes =
-      Array.isArray(dtc.causes)
+      Array.isArray(
+        dtc.causes
+      )
       ? dtc.causes
       : [];
 
 
     dtc.symptoms =
-      Array.isArray(dtc.symptoms)
+      Array.isArray(
+        dtc.symptoms
+      )
       ? dtc.symptoms
       : [];
 
 
     dtc.diagnosis =
-      Array.isArray(dtc.diagnosis)
+      Array.isArray(
+        dtc.diagnosis
+      )
       ? dtc.diagnosis
       : [];
 
 
     dtc.repairs =
-      Array.isArray(dtc.repairs)
+      Array.isArray(
+        dtc.repairs
+      )
       ? dtc.repairs
       : [];
 
 
     dtc.severity =
       String(
-        dtc.severity || "MEDIA"
+        dtc.severity ||
+        "MEDIA"
       );
 
 
@@ -576,38 +471,42 @@ determinar, utiliza "No especificado".
 
 
     /*
-    =========================================
-    GUARDAR EN SUPABASE
-    =========================================
-
-    Así la próxima consulta no necesita
-    volver a llamar a Gemini.
+    =================================================
+    GUARDAR AUTOMÁTICAMENTE EN SUPABASE
+    =================================================
     */
 
     const { error: insertError } =
       await supabase
-
         .from("dtc_codes")
-
         .insert({
 
-          code: dtc.code,
+          code:
+            dtc.code,
 
-          make: dtc.make,
+          make:
+            dtc.make,
 
-          title: dtc.title,
+          title:
+            dtc.title,
 
-          problem: dtc.problem,
+          problem:
+            dtc.problem,
 
-          causes: dtc.causes,
+          causes:
+            dtc.causes,
 
-          symptoms: dtc.symptoms,
+          symptoms:
+            dtc.symptoms,
 
-          diagnosis: dtc.diagnosis,
+          diagnosis:
+            dtc.diagnosis,
 
-          repairs: dtc.repairs,
+          repairs:
+            dtc.repairs,
 
-          severity: dtc.severity,
+          severity:
+            dtc.severity,
 
           vehicle_years:
             dtc.vehicle_years
@@ -616,9 +515,9 @@ determinar, utiliza "No especificado".
 
 
     /*
-    =========================================
-    ERROR AL GUARDAR
-    =========================================
+    =================================================
+    SI NO PUDO GUARDAR
+    =================================================
     */
 
     if (insertError) {
@@ -629,18 +528,18 @@ determinar, utiliza "No especificado".
       );
 
       /*
-      Aunque no se haya podido guardar,
-      devolvemos la información generada
-      para que el usuario pueda verla.
+      No detenemos la respuesta.
+      La información de Gemini todavía
+      puede mostrarse al usuario.
       */
 
     }
 
 
     /*
-    =========================================
+    =================================================
     DEVOLVER RESULTADO
-    =========================================
+    =================================================
     */
 
     return res.status(200).json({
@@ -649,23 +548,32 @@ determinar, utiliza "No especificado".
 
       source: "gemini",
 
-      code: dtc.code,
+      code:
+        dtc.code,
 
-      make: dtc.make,
+      make:
+        dtc.make,
 
-      title: dtc.title,
+      title:
+        dtc.title,
 
-      problem: dtc.problem,
+      problem:
+        dtc.problem,
 
-      causes: dtc.causes,
+      causes:
+        dtc.causes,
 
-      symptoms: dtc.symptoms,
+      symptoms:
+        dtc.symptoms,
 
-      diagnosis: dtc.diagnosis,
+      diagnosis:
+        dtc.diagnosis,
 
-      repairs: dtc.repairs,
+      repairs:
+        dtc.repairs,
 
-      severity: dtc.severity,
+      severity:
+        dtc.severity,
 
       vehicle_years:
         dtc.vehicle_years
@@ -680,15 +588,15 @@ determinar, utiliza "No especificado".
       error
     );
 
-
     return res.status(500).json({
 
       success: false,
 
-      error: error.message
+      error:
+        error.message
 
     });
 
   }
 
-            }
+          }
