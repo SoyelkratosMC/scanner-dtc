@@ -14,10 +14,6 @@
 
 <style>
 
-/* =================================================
-   GENERAL
-================================================= */
-
 * {
     box-sizing: border-box;
 }
@@ -49,9 +45,9 @@ body {
 }
 
 
-/* =================================================
+/* =========================
    HEADER
-================================================= */
+========================= */
 
 header {
 
@@ -81,9 +77,9 @@ h1 {
 }
 
 
-/* =================================================
+/* =========================
    CARDS
-================================================= */
+========================= */
 
 .card {
 
@@ -102,9 +98,9 @@ h1 {
 }
 
 
-/* =================================================
+/* =========================
    FORMULARIO
-================================================= */
+========================= */
 
 label {
 
@@ -188,9 +184,9 @@ button:disabled {
 }
 
 
-/* =================================================
+/* =========================
    RESULTADO
-================================================= */
+========================= */
 
 #resultado {
 
@@ -268,9 +264,35 @@ button:disabled {
 }
 
 
-/* =================================================
+/* =========================
+   FUENTE
+========================= */
+
+.source {
+
+    display: inline-block;
+
+    margin-top: 10px;
+
+    margin-left: 5px;
+
+    padding: 5px 9px;
+
+    border-radius: 6px;
+
+    background: #1e3a8a;
+
+    color: #bfdbfe;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+
+/* =========================
    SECCIONES
-================================================= */
+========================= */
 
 .seccion {
 
@@ -315,9 +337,9 @@ li {
 }
 
 
-/* =================================================
+/* =========================
    ESTADOS
-================================================= */
+========================= */
 
 .loading {
 
@@ -354,6 +376,8 @@ li {
     color: #fed7aa;
 
     line-height: 1.5;
+
+    word-break: break-word;
 }
 
 
@@ -373,35 +397,9 @@ li {
 }
 
 
-/* =================================================
-   INFORMACIÓN DE FUENTE
-================================================= */
-
-.source {
-
-    display: inline-block;
-
-    margin-top: 10px;
-
-    margin-left: 5px;
-
-    padding: 5px 9px;
-
-    border-radius: 6px;
-
-    background: #1e3a8a;
-
-    color: #bfdbfe;
-
-    font-size: 13px;
-
-    font-weight: bold;
-}
-
-
-/* =================================================
+/* =========================
    FOOTER
-================================================= */
+========================= */
 
 footer {
 
@@ -415,9 +413,9 @@ footer {
 }
 
 
-/* =================================================
+/* =========================
    CELULAR
-================================================= */
+========================= */
 
 @media(max-width:600px) {
 
@@ -470,9 +468,9 @@ Diagnóstico de códigos de falla automotrices
 </header>
 
 
-<!-- =================================================
+<!-- =========================
      BUSCADOR
-================================================= -->
+========================= -->
 
 <div class="card">
 
@@ -596,7 +594,7 @@ type="text"
 
 placeholder="Ejemplo: P0420"
 
-maxlength="6"
+maxlength="5"
 
 autocomplete="off"
 
@@ -619,9 +617,9 @@ onclick="buscarCodigo()"
 </div>
 
 
-<!-- =================================================
+<!-- =========================
      RESULTADO
-================================================= -->
+========================= -->
 
 <div
 id="resultado"
@@ -644,19 +642,8 @@ Scanner DTC Automotriz © 2026
 
 /*
 =================================================
-CONFIGURACIÓN
+CONFIGURACIÓN DE LA API
 =================================================
-*/
-
-/*
- IMPORTANTE:
-
- Esta es la URL de TU API de Vercel.
-
- NO pongas /P2123 aquí.
-
- El código se agrega automáticamente
- más abajo.
 */
 
 const API_URL =
@@ -702,7 +689,44 @@ async function buscarCodigo() {
 
     /*
     =============================================
-    VALIDAR CÓDIGO VACÍO
+    MOSTRAR "CONSULTANDO" INMEDIATAMENTE
+    =============================================
+    */
+
+    boton.disabled = true;
+
+    boton.textContent =
+        "🔄 Consultando...";
+
+
+    resultado.style.display =
+        "block";
+
+
+    resultado.innerHTML = `
+
+        <div class="loading">
+
+            🔄 Consultando...
+
+            <br><br>
+
+            Preparando consulta del código:
+
+            <strong>
+                ${escaparHTML(
+                    codigo || "..."
+                )}
+            </strong>
+
+        </div>
+
+    `;
+
+
+    /*
+    =============================================
+    VALIDAR CÓDIGO
     =============================================
     */
 
@@ -712,9 +736,15 @@ async function buscarCodigo() {
             "Escribe un código DTC, por ejemplo P0420."
         );
 
+        boton.disabled = false;
+
+        boton.textContent =
+            "🔎 BUSCAR CÓDIGO";
+
         codigoInput.focus();
 
         return;
+
     }
 
 
@@ -725,28 +755,32 @@ async function buscarCodigo() {
     */
 
     if (
-        !/^[PBCU][0-9A-F]{4}$/.test(codigo)
+        !/^[PBCU][0-9A-F]{4}$/.test(
+            codigo
+        )
     ) {
 
         mostrarError(
             "Código inválido. Ejemplos: P0420, P0300 o C0035."
         );
 
+        boton.disabled = false;
+
+        boton.textContent =
+            "🔎 BUSCAR CÓDIGO";
+
         codigoInput.focus();
 
         return;
+
     }
 
 
     /*
     =============================================
-    MOSTRAR RESULTADO
+    MOSTRAR CONSULTA
     =============================================
     */
-
-    resultado.style.display =
-        "block";
-
 
     resultado.innerHTML = `
 
@@ -759,7 +793,19 @@ async function buscarCodigo() {
             Código:
 
             <strong>
-                ${escaparHTML(codigo)}
+                ${escaparHTML(
+                    codigo
+                )}
+            </strong>
+
+            <br>
+
+            Marca:
+
+            <strong>
+                ${escaparHTML(
+                    marca
+                )}
             </strong>
 
         </div>
@@ -767,34 +813,29 @@ async function buscarCodigo() {
     `;
 
 
-    /*
-    =============================================
-    DESACTIVAR BOTÓN
-    =============================================
-    */
-
-    boton.disabled = true;
-
-
     try {
 
 
         /*
         =========================================
-        CONSTRUIR URL
+        CREAR URL
         =========================================
         */
 
         const url =
             API_URL +
             "/" +
-            encodeURIComponent(codigo) +
+            encodeURIComponent(
+                codigo
+            ) +
             "?make=" +
-            encodeURIComponent(marca);
+            encodeURIComponent(
+                marca
+            );
 
 
         console.log(
-            "Scanner DTC:",
+            "Consultando API:",
             url
         );
 
@@ -816,18 +857,16 @@ async function buscarCodigo() {
                             "application/json"
                     },
 
-                    cache: "no-store"
+                    cache:
+                        "no-store"
                 }
             );
 
 
         /*
         =========================================
-        OBTENER TEXTO
+        LEER RESPUESTA
         =========================================
-
-        Primero obtenemos texto para poder
-        mostrar errores JSON correctamente.
         */
 
         const responseText =
@@ -864,13 +903,12 @@ async function buscarCodigo() {
 
         }
 
-        catch(jsonError) {
+        catch(error) {
 
             console.error(
                 "JSON ERROR:",
-                jsonError
+                error
             );
-
 
             throw new Error(
                 "El servidor no devolvió JSON válido. HTTP " +
@@ -882,39 +920,13 @@ async function buscarCodigo() {
 
         /*
         =========================================
-        SI HTTP NO ES CORRECTO
+        ERROR HTTP
         =========================================
         */
 
-        if (!response.ok) {
-
-
-            /*
-            =====================================
-            ERROR 404
-            =====================================
-            */
-
-            if (
-                response.status === 404
-            ) {
-
-                mostrarNoEncontrado(
-                    codigo,
-                    marca,
-                    data
-                );
-
-                return;
-
-            }
-
-
-            /*
-            =====================================
-            ERROR DEL SERVIDOR
-            =====================================
-            */
+        if (
+            !response.ok
+        ) {
 
             mostrarErrorServidor(
                 response.status,
@@ -928,7 +940,7 @@ async function buscarCodigo() {
 
         /*
         =========================================
-        VALIDAR RESPUESTA
+        VALIDAR SUCCESS
         =========================================
         */
 
@@ -962,7 +974,6 @@ async function buscarCodigo() {
 
     }
 
-
     catch(error) {
 
 
@@ -971,12 +982,6 @@ async function buscarCodigo() {
             error
         );
 
-
-        /*
-        =========================================
-        ERROR DE CONEXIÓN
-        =========================================
-        */
 
         resultado.style.display =
             "block";
@@ -990,9 +995,7 @@ async function buscarCodigo() {
 
             </div>
 
-
             <br>
-
 
             <div class="warning">
 
@@ -1030,6 +1033,9 @@ async function buscarCodigo() {
         boton.disabled =
             false;
 
+        boton.textContent =
+            "🔎 BUSCAR CÓDIGO";
+
     }
 
 }
@@ -1050,7 +1056,9 @@ function mostrarResultado(
 
 
     const resultado =
-        document.getElementById("resultado");
+        document.getElementById(
+            "resultado"
+        );
 
 
     const causas =
@@ -1087,7 +1095,8 @@ function mostrarResultado(
 
 
     if (
-        data.source === "supabase"
+        data.source ===
+        "supabase"
     ) {
 
         fuente = `
@@ -1102,9 +1111,9 @@ function mostrarResultado(
 
     }
 
-
     else if (
-        data.source === "openrouter"
+        data.source ===
+        "openrouter"
     ) {
 
         fuente = `
@@ -1135,7 +1144,8 @@ function mostrarResultado(
         <span class="codigo">
 
             ${escaparHTML(
-                data.code || codigo
+                data.code ||
+                codigo
             )}
 
         </span>
@@ -1189,9 +1199,7 @@ function mostrarResultado(
         ${fuente}
 
 
-        <!-- =================================
-             PROBLEMA
-        ================================== -->
+        <!-- PROBLEMA -->
 
         <div class="seccion">
 
@@ -1215,9 +1223,7 @@ function mostrarResultado(
         </div>
 
 
-        <!-- =================================
-             CAUSAS
-        ================================== -->
+        <!-- CAUSAS -->
 
         <div class="seccion">
 
@@ -1235,9 +1241,7 @@ function mostrarResultado(
         </div>
 
 
-        <!-- =================================
-             SÍNTOMAS
-        ================================== -->
+        <!-- SÍNTOMAS -->
 
         <div class="seccion">
 
@@ -1255,9 +1259,7 @@ function mostrarResultado(
         </div>
 
 
-        <!-- =================================
-             DIAGNÓSTICO
-        ================================== -->
+        <!-- DIAGNÓSTICO -->
 
         <div class="seccion">
 
@@ -1276,9 +1278,7 @@ function mostrarResultado(
         </div>
 
 
-        <!-- =================================
-             REPARACIONES
-        ================================== -->
+        <!-- REPARACIONES -->
 
         <div class="seccion">
 
@@ -1296,9 +1296,7 @@ function mostrarResultado(
         </div>
 
 
-        <!-- =================================
-             CONFIRMACIÓN
-        ================================== -->
+        <!-- ÉXITO -->
 
         <div class="success">
 
@@ -1327,89 +1325,6 @@ function mostrarResultado(
 
 /*
 =================================================
-MOSTRAR NO ENCONTRADO
-=================================================
-*/
-
-function mostrarNoEncontrado(
-    codigo,
-    marca,
-    data
-) {
-
-
-    const resultado =
-        document.getElementById("resultado");
-
-
-    resultado.style.display =
-        "block";
-
-
-    const mensaje =
-        data &&
-        data.error
-        ?
-        data.error
-        :
-        "No encontramos información para este código.";
-
-
-    resultado.innerHTML = `
-
-        <span class="codigo">
-
-            ${escaparHTML(
-                codigo
-            )}
-
-        </span>
-
-
-        <div class="titulo">
-
-            Código no encontrado
-
-        </div>
-
-
-        <p>
-
-            ${escaparHTML(
-                mensaje
-            )}
-
-        </p>
-
-
-        <div class="warning">
-
-            💡 Puede ser un código específico
-            del fabricante o todavía no estar
-            incluido en nuestra base de datos.
-
-            <br><br>
-
-            Marca consultada:
-
-            <strong>
-
-                ${escaparHTML(
-                    marca
-                )}
-
-            </strong>
-
-        </div>
-
-    `;
-
-}
-
-
-
-/*
-=================================================
 ERROR DEL SERVIDOR
 =================================================
 */
@@ -1421,18 +1336,17 @@ function mostrarErrorServidor(
 
 
     const resultado =
-        document.getElementById("resultado");
-
-
-    resultado.style.display =
-        "block";
+        document.getElementById(
+            "resultado"
+        );
 
 
     let mensaje =
         "El servidor encontró un problema.";
 
 
-    let detalles = "";
+    let detalles =
+        "";
 
 
     if (
@@ -1481,4 +1395,183 @@ function mostrarErrorServidor(
                         data.details
                     );
 
-   
+            }
+
+        }
+
+    }
+
+
+    resultado.style.display =
+        "block";
+
+
+    resultado.innerHTML = `
+
+        <div class="error">
+
+            ❌ Error del servidor
+
+        </div>
+
+
+        <br>
+
+
+        <div class="warning">
+
+            <strong>
+                HTTP:
+            </strong>
+
+            ${escaparHTML(
+                status
+            )}
+
+            <br><br>
+
+            <strong>
+                Mensaje:
+            </strong>
+
+            ${escaparHTML(
+                mensaje
+            )}
+
+            ${
+                detalles
+                ?
+                `
+
+                <br><br>
+
+                <strong>
+                    Detalles:
+                </strong>
+
+                <br><br>
+
+                ${escaparHTML(
+                    detalles
+                )}
+
+                `
+                :
+                ""
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+
+/*
+=================================================
+MOSTRAR ERROR
+=================================================
+*/
+
+function mostrarError(
+    mensaje
+) {
+
+
+    const resultado =
+        document.getElementById(
+            "resultado"
+        );
+
+
+    resultado.style.display =
+        "block";
+
+
+    resultado.innerHTML = `
+
+        <div class="error">
+
+            ⚠️
+
+            ${escaparHTML(
+                mensaje
+            )}
+
+        </div>
+
+    `;
+
+}
+
+
+
+/*
+=================================================
+CONVERTIR LISTA
+=================================================
+*/
+
+function convertirLista(
+    valor
+) {
+
+
+    if (
+        !valor
+    ) {
+
+        return [];
+
+    }
+
+
+    if (
+        Array.isArray(
+            valor
+        )
+    ) {
+
+        return valor
+            .map(
+                elemento =>
+                    String(
+                        elemento
+                    ).trim()
+            )
+            .filter(
+                Boolean
+            );
+
+    }
+
+
+    if (
+        typeof valor ===
+        "string"
+    ) {
+
+        return valor
+            .split("\n")
+            .map(
+                elemento =>
+                    elemento.trim()
+            )
+            .filter(
+                Boolean
+            );
+
+    }
+
+
+    return [];
+
+}
+
+
+
+/*
+=================================================
+CREAR LISTA
+===========================
