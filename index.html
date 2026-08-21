@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+
 <meta charset="UTF-8">
 
 <meta
@@ -12,6 +13,10 @@
 <title>Scanner DTC Automotriz</title>
 
 <style>
+
+/* =========================
+   GENERAL
+========================= */
 
 * {
     box-sizing: border-box;
@@ -726,10 +731,17 @@ async function buscarCodigo() {
         =========================================
         URL DE LA API
         =========================================
+
+        IMPORTANTE:
+
+        La API actual recibe el código mediante:
+
+        ?code=P2122
+
         */
 
         const url =
-        `${API_URL}/${encodeURIComponent(codigo)}?make=${encodeURIComponent(marca)}`;
+        `${API_URL}?code=${encodeURIComponent(codigo)}&make=${encodeURIComponent(marca)}`;
 
 
         console.log(
@@ -784,6 +796,23 @@ async function buscarCodigo() {
 
         const data =
             await response.json();
+
+
+        /*
+        =========================================
+        COMPROBAR RESPUESTA
+        =========================================
+        */
+
+        if (!data.success) {
+
+            mostrarError(
+                data.error ||
+                "No se pudo obtener la información."
+            );
+
+            return;
+        }
 
 
 
@@ -1338,4 +1367,4 @@ document
 
 </body>
 
-    </html>
+</html>
