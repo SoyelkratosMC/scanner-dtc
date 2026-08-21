@@ -14,10 +14,6 @@
 
 <style>
 
-/* =================================================
-   GENERAL
-================================================= */
-
 * {
     box-sizing: border-box;
 }
@@ -49,9 +45,9 @@ body {
 }
 
 
-/* =================================================
+/* =========================
    HEADER
-================================================= */
+========================= */
 
 header {
 
@@ -81,9 +77,9 @@ h1 {
 }
 
 
-/* =================================================
+/* =========================
    CARDS
-================================================= */
+========================= */
 
 .card {
 
@@ -102,9 +98,9 @@ h1 {
 }
 
 
-/* =================================================
+/* =========================
    FORMULARIO
-================================================= */
+========================= */
 
 label {
 
@@ -180,23 +176,17 @@ button:hover {
 }
 
 
-button:active {
-
-    transform: scale(.98);
-}
-
-
 button:disabled {
 
-    opacity: .65;
+    opacity: .7;
 
     cursor: wait;
 }
 
 
-/* =================================================
+/* =========================
    RESULTADO
-================================================= */
+========================= */
 
 #resultado {
 
@@ -274,31 +264,9 @@ button:disabled {
 }
 
 
-.fuente {
-
-    display: inline-block;
-
-    margin-top: 10px;
-
-    margin-left: 5px;
-
-    padding: 5px 9px;
-
-    border-radius: 6px;
-
-    background: #1e3a8a;
-
-    color: #bfdbfe;
-
-    font-size: 13px;
-
-    font-weight: bold;
-}
-
-
-/* =================================================
+/* =========================
    SECCIONES
-================================================= */
+========================= */
 
 .seccion {
 
@@ -343,9 +311,9 @@ li {
 }
 
 
-/* =================================================
+/* =========================
    ESTADOS
-================================================= */
+========================= */
 
 .loading {
 
@@ -382,8 +350,6 @@ li {
     color: #fed7aa;
 
     line-height: 1.5;
-
-    word-break: break-word;
 }
 
 
@@ -400,14 +366,12 @@ li {
     color: #bbf7d0;
 
     margin-top: 15px;
-
-    line-height: 1.5;
 }
 
 
-/* =================================================
+/* =========================
    FOOTER
-================================================= */
+========================= */
 
 footer {
 
@@ -421,9 +385,9 @@ footer {
 }
 
 
-/* =================================================
+/* =========================
    CELULAR
-================================================= */
+========================= */
 
 @media(max-width:600px) {
 
@@ -463,10 +427,6 @@ footer {
 <div class="container">
 
 
-<!-- =================================================
-     HEADER
-================================================= -->
-
 <header>
 
 <h1>
@@ -480,9 +440,9 @@ Diagnóstico de códigos de falla automotrices
 </header>
 
 
-<!-- =================================================
+<!-- =========================
      BUSCADOR
-================================================= -->
+========================= -->
 
 <div class="card">
 
@@ -606,7 +566,7 @@ type="text"
 
 placeholder="Ejemplo: P0420"
 
-maxlength="5"
+maxlength="6"
 
 autocomplete="off"
 
@@ -618,6 +578,7 @@ spellcheck="false"
 <button
 id="buscarBtn"
 type="button"
+onclick="buscarCodigo()"
 >
 
 🔎 BUSCAR CÓDIGO
@@ -628,9 +589,9 @@ type="button"
 </div>
 
 
-<!-- =================================================
+<!-- =========================
      RESULTADO
-================================================= -->
+========================= -->
 
 <div
 id="resultado"
@@ -651,76 +612,98 @@ Scanner DTC Automotriz © 2026
 
 <script>
 
-/* =================================================
-   API
-================================================= */
+/*
+=================================================
+CONFIGURACIÓN DE LA API
+=================================================
+*/
 
-const API =
+const API_URL =
 "https://scanner-dtc.vercel.app/api/dtc";
 
 
-/* =================================================
-   ELEMENTOS
-================================================= */
-
-const boton =
-document.getElementById("buscarBtn");
-
-const codigoInput =
-document.getElementById("codigo");
-
-const marcaSelect =
-document.getElementById("marca");
-
-const resultado =
-document.getElementById("resultado");
-
-
-/* =================================================
-   BUSCAR CÓDIGO
-================================================= */
-
-boton.addEventListener(
-    "click",
-    buscarCodigo
-);
-
+/*
+=================================================
+BUSCAR CÓDIGO
+=================================================
+*/
 
 async function buscarCodigo() {
 
+    const codigoInput =
+        document.getElementById("codigo");
 
-    console.log(
-        "🔎 BOTÓN PRESIONADO"
-    );
+    const marcaSelect =
+        document.getElementById("marca");
+
+    const resultado =
+        document.getElementById("resultado");
+
+    const boton =
+        document.getElementById("buscarBtn");
 
 
-    const code =
+    const codigo =
         codigoInput.value
         .trim()
         .toUpperCase();
 
 
-    const make =
-        marcaSelect.value
-        .trim()
-        .toLowerCase();
+    const marca =
+        marcaSelect.value;
 
 
-    /* =============================================
-       MOSTRAR CONSULTANDO INMEDIATAMENTE
-    ============================================= */
+    /*
+    =============================================
+    VALIDAR
+    =============================================
+    */
 
-    boton.disabled =
-        true;
+    if (!codigo) {
+
+        mostrarError(
+            "Escribe un código DTC, por ejemplo P0420."
+        );
+
+        return;
+
+    }
 
 
-    boton.textContent =
-        "🔄 Consultando...";
+    /*
+    =============================================
+    VALIDAR FORMATO
+    =============================================
+    */
 
+    if (
+        !/^[PBCU][0-9A-F]{4}$/.test(codigo)
+    ) {
+
+        mostrarError(
+            "Código inválido. Ejemplos: P0420, P0300 o C0035."
+        );
+
+        return;
+
+    }
+
+
+    /*
+    =============================================
+    MOSTRAR RESULTADO
+    =============================================
+    */
 
     resultado.style.display =
         "block";
 
+
+    /*
+    =============================================
+    MOSTRAR CONSULTANDO INMEDIATAMENTE
+    =============================================
+    */
 
     resultado.innerHTML = `
 
@@ -733,11 +716,7 @@ async function buscarCodigo() {
             Código:
 
             <strong>
-
-                ${escaparHTML(
-                    code || "..."
-                )}
-
+                ${escaparHTML(codigo)}
             </strong>
 
         </div>
@@ -745,172 +724,147 @@ async function buscarCodigo() {
     `;
 
 
-    /* =============================================
-       VALIDAR
-    ============================================= */
+    /*
+    =============================================
+    CAMBIAR BOTÓN INMEDIATAMENTE
+    =============================================
+    */
 
-    if (!code) {
+    boton.disabled = true;
 
-        mostrarError(
-            "Escribe un código DTC, por ejemplo P0420."
-        );
-
-        terminar();
-
-        codigoInput.focus();
-
-        return;
-
-    }
+    boton.textContent =
+        "🔄 Consultando...";
 
 
-    if (
-        !/^[PBCU][0-9A-F]{4}$/.test(
-            code
-        )
-    ) {
-
-        mostrarError(
-            "Código inválido. Ejemplos: P0420, P0300 o C0035."
-        );
-
-        terminar();
-
-        codigoInput.focus();
-
-        return;
-
-    }
-
-
-    /* =============================================
-       CREAR URL
-    ============================================= */
+    /*
+    =============================================
+    URL
+    =============================================
+    */
 
     const url =
-        API +
-        "/" +
-        encodeURIComponent(code) +
-        "?make=" +
-        encodeURIComponent(make);
-
-
-    console.log(
-        "🌐 URL:",
-        url
-    );
+        `${API_URL}/${encodeURIComponent(codigo)}?make=${encodeURIComponent(marca)}`;
 
 
     try {
 
+        console.log(
+            "Consultando API:",
+            url
+        );
 
-        /* =========================================
-           FETCH
-        ========================================= */
+
+        /*
+        =========================================
+        FETCH
+        =========================================
+        */
 
         const response =
-            await fetch(
-                url,
-                {
-                    method: "GET",
+            await fetch(url, {
 
-                    headers: {
-                        "Accept":
-                            "application/json"
-                    },
+                method: "GET",
 
-                    cache:
-                        "no-store"
-                }
-            );
+                headers: {
 
+                    "Accept":
+                        "application/json"
 
-        console.log(
-            "HTTP:",
-            response.status
-        );
+                },
+
+                cache: "no-store"
+
+            });
 
 
-        /* =========================================
-           LEER RESPUESTA
-        ========================================= */
+        /*
+        =========================================
+        OBTENER JSON
+        =========================================
+        */
 
-        const text =
-            await response.text();
-
-
-        console.log(
-            "RESPUESTA:",
-            text
-        );
-
-
-        let data;
+        let data = null;
 
 
         try {
 
             data =
-                JSON.parse(text);
+                await response.json();
 
         }
 
-        catch(error) {
+        catch (jsonError) {
 
-            mostrarError(
+            throw new Error(
                 "El servidor no devolvió JSON válido."
             );
 
-            return;
+        }
+
+
+        /*
+        =========================================
+        ERROR HTTP
+        =========================================
+        */
+
+        if (!response.ok) {
+
+            if (
+                response.status === 404
+            ) {
+
+                mostrarNoEncontrado(
+                    codigo,
+                    marca
+                );
+
+                return;
+
+            }
+
+
+            throw new Error(
+
+                data?.error ||
+                `HTTP ${response.status}`
+
+            );
 
         }
 
 
-        /* =========================================
-           ERROR HTTP
-        ========================================= */
+        /*
+        =========================================
+        API REPORTÓ ERROR
+        =========================================
+        */
 
         if (
-            !response.ok
+            data &&
+            data.success === false
         ) {
 
-            mostrarError(
+            throw new Error(
+
                 data.error ||
                 "La API devolvió un error."
-            );
 
-            return;
+            );
 
         }
 
 
-        /* =========================================
-           ERROR API
-        ========================================= */
-
-        if (
-            !data ||
-            data.success !== true
-        ) {
-
-            mostrarError(
-                data.error ||
-                "No se pudo obtener información."
-            );
-
-            return;
-
-        }
-
-
-        /* =========================================
-           MOSTRAR RESULTADO
-        ========================================= */
+        /*
+        =========================================
+        MOSTRAR RESULTADO
+        =========================================
+        */
 
         mostrarResultado(
             data,
-            code,
-            make
+            codigo,
+            marca
         );
 
 
@@ -918,153 +872,76 @@ async function buscarCodigo() {
 
     catch(error) {
 
-
         console.error(
-            "FETCH ERROR:",
+            "ERROR DEL SCANNER:",
             error
         );
 
 
-        resultado.style.display =
-            "block";
+        mostrarError(
 
+            "La API no respondió correctamente.",
 
-        resultado.innerHTML = `
+            error.message
 
-            <div class="error">
-
-                ❌ Error al conectar con el servidor.
-
-            </div>
-
-            <br>
-
-            <div class="warning">
-
-                La API no respondió correctamente.
-
-                <br><br>
-
-                <strong>
-                    Error:
-                </strong>
-
-                ${escaparHTML(
-                    error.message
-                )}
-
-            </div>
-
-        `;
+        );
 
     }
 
 
     finally {
 
-        terminar();
+        boton.disabled =
+            false;
+
+
+        boton.textContent =
+            "🔎 BUSCAR CÓDIGO";
 
     }
 
 }
 
 
-/* =================================================
-   TERMINAR BÚSQUEDA
-================================================= */
-
-function terminar() {
-
-    boton.disabled =
-        false;
-
-    boton.textContent =
-        "🔎 BUSCAR CÓDIGO";
-
-}
-
-
-/* =================================================
-   MOSTRAR RESULTADO
-================================================= */
+/*
+=================================================
+MOSTRAR RESULTADO
+=================================================
+*/
 
 function mostrarResultado(
     data,
-    code,
-    make
+    codigo,
+    marca
 ) {
+
+    const resultado =
+        document.getElementById("resultado");
 
 
     const causas =
         convertirLista(
-            data.causes
+            data?.causes
         );
 
 
     const sintomas =
         convertirLista(
-            data.symptoms
+            data?.symptoms
         );
 
 
     const diagnostico =
         convertirLista(
-            data.diagnosis
+            data?.diagnosis
         );
 
 
-    const reparaciones =
+    const arreglos =
         convertirLista(
-            data.repairs
+            data?.repairs
         );
 
-
-    /* =============================================
-       FUENTE
-    ============================================= */
-
-    let fuente = "";
-
-
-    if (
-        data.source ===
-        "supabase"
-    ) {
-
-        fuente = `
-
-            <span class="fuente">
-
-                🗄️ Base de datos
-
-            </span>
-
-        `;
-
-    }
-
-
-    if (
-        data.source ===
-        "openrouter"
-    ) {
-
-        fuente = `
-
-            <span class="fuente">
-
-                🤖 IA
-
-            </span>
-
-        `;
-
-    }
-
-
-    /* =============================================
-       HTML RESULTADO
-    ============================================= */
 
     resultado.style.display =
         "block";
@@ -1075,8 +952,8 @@ function mostrarResultado(
         <span class="codigo">
 
             ${escaparHTML(
-                data.code ||
-                code
+                data?.code ||
+                codigo
             )}
 
         </span>
@@ -1085,7 +962,8 @@ function mostrarResultado(
         <div class="titulo">
 
             ${escaparHTML(
-                data.title ||
+                data?.title ||
+                data?.definition ||
                 "Código DTC"
             )}
 
@@ -1097,17 +975,17 @@ function mostrarResultado(
             🚗
 
             ${escaparHTML(
-                data.make ||
-                make ||
-                "genérica"
+                data?.make ||
+                marca
             )}
 
         </span>
 
 
         ${
-            data.severity
+            data?.severity
             ?
+
             `
 
             <span class="gravedad">
@@ -1121,17 +999,15 @@ function mostrarResultado(
             </span>
 
             `
+
             :
+
             ""
+
         }
 
 
-        ${fuente}
-
-
-        <!-- =====================================
-             PROBLEMA
-        ====================================== -->
+        <!-- PROBLEMA -->
 
         <div class="seccion">
 
@@ -1145,9 +1021,13 @@ function mostrarResultado(
             <p>
 
                 ${escaparHTML(
-                    data.problem ||
-                    data.description ||
+
+                    data?.problem ||
+
+                    data?.description ||
+
                     "No hay descripción disponible."
+
                 )}
 
             </p>
@@ -1155,9 +1035,7 @@ function mostrarResultado(
         </div>
 
 
-        <!-- =====================================
-             CAUSAS
-        ====================================== -->
+        <!-- CAUSAS -->
 
         <div class="seccion">
 
@@ -1175,9 +1053,7 @@ function mostrarResultado(
         </div>
 
 
-        <!-- =====================================
-             SÍNTOMAS
-        ====================================== -->
+        <!-- SÍNTOMAS -->
 
         <div class="seccion">
 
@@ -1195,9 +1071,7 @@ function mostrarResultado(
         </div>
 
 
-        <!-- =====================================
-             DIAGNÓSTICO
-        ====================================== -->
+        <!-- DIAGNÓSTICO -->
 
         <div class="seccion">
 
@@ -1216,9 +1090,7 @@ function mostrarResultado(
         </div>
 
 
-        <!-- =====================================
-             REPARACIONES
-        ====================================== -->
+        <!-- ARREGLO -->
 
         <div class="seccion">
 
@@ -1230,25 +1102,109 @@ function mostrarResultado(
 
 
             ${crearLista(
-                reparaciones
+                arreglos
             )}
 
         </div>
 
 
-        <!-- =====================================
-             ÉXITO
-        ====================================== -->
+        ${
+            data?.source === "supabase"
 
-        <div class="success">
+            ?
 
-            ✅ Información obtenida correctamente.
+            `
 
-            <br>
+            <div class="success">
 
-            La información mostrada debe utilizarse
-            como orientación y confirmarse mediante
-            un diagnóstico adecuado del vehículo.
+                ⚡ Información recuperada
+                desde la base de datos.
+
+            </div>
+
+            `
+
+            :
+
+            `
+
+            <div class="success">
+
+                ✅ Información obtenida
+                desde el servidor DTC.
+
+            </div>
+
+            `
+
+        }
+
+    `;
+
+}
+
+
+/*
+=================================================
+NO ENCONTRADO
+=================================================
+*/
+
+function mostrarNoEncontrado(
+    codigo,
+    marca
+) {
+
+    const resultado =
+        document.getElementById("resultado");
+
+
+    resultado.style.display =
+        "block";
+
+
+    resultado.innerHTML = `
+
+        <span class="codigo">
+
+            ${escaparHTML(codigo)}
+
+        </span>
+
+
+        <div class="titulo">
+
+            Código no encontrado
+
+        </div>
+
+
+        <p>
+
+            No encontramos información para
+
+            <strong>
+
+                ${escaparHTML(codigo)}
+
+            </strong>
+
+            en la consulta para
+
+            <strong>
+
+                ${escaparHTML(marca)}
+
+            </strong>.
+
+        </p>
+
+
+        <div class="warning">
+
+            💡 Puede ser un código específico
+            del fabricante o todavía no estar
+            incluido en nuestra base de datos.
 
         </div>
 
@@ -1257,14 +1213,77 @@ function mostrarResultado(
 }
 
 
-/* =================================================
-   LISTAS
-================================================= */
+/*
+=================================================
+MOSTRAR ERROR
+=================================================
+*/
+
+function mostrarError(
+    mensaje,
+    detalle = ""
+) {
+
+    const resultado =
+        document.getElementById("resultado");
+
+
+    resultado.style.display =
+        "block";
+
+
+    resultado.innerHTML = `
+
+        <div class="error">
+
+            ⚠️
+
+            ${escaparHTML(
+                mensaje
+            )}
+
+        </div>
+
+
+        ${
+            detalle
+
+            ?
+
+            `
+
+            <br>
+
+            <div class="warning">
+
+                ${escaparHTML(
+                    detalle
+                )}
+
+            </div>
+
+            `
+
+            :
+
+            ""
+
+        }
+
+    `;
+
+}
+
+
+/*
+=================================================
+CONVERTIR LISTA
+=================================================
+*/
 
 function convertirLista(
     valor
 ) {
-
 
     if (!valor) {
 
@@ -1279,30 +1298,26 @@ function convertirLista(
 
         return valor
             .map(
-                item =>
-                    String(item).trim()
+                elemento =>
+                    String(elemento)
+                    .trim()
             )
-            .filter(
-                Boolean
-            );
+            .filter(Boolean);
 
     }
 
 
     if (
-        typeof valor ===
-        "string"
+        typeof valor === "string"
     ) {
 
         return valor
             .split("\n")
             .map(
-                item =>
-                    item.trim()
+                x =>
+                    x.trim()
             )
-            .filter(
-                Boolean
-            );
+            .filter(Boolean);
 
     }
 
@@ -1312,19 +1327,20 @@ function convertirLista(
 }
 
 
-/* =================================================
-   CREAR LISTA
-================================================= */
+/*
+=================================================
+CREAR LISTA
+=================================================
+*/
 
 function crearLista(
     elementos,
     numerada = false
 ) {
 
-
     if (
         !elementos ||
-        elementos.length === 0
+        !elementos.length
     ) {
 
         return `
@@ -1342,31 +1358,31 @@ function crearLista(
 
     const etiqueta =
         numerada
-        ?
-        "ol"
-        :
-        "ul";
+        ? "ol"
+        : "ul";
 
 
     return `
 
         <${etiqueta}>
 
-            ${
-                elementos
-                    .map(
-                        item =>
+            ${elementos
+                .map(
+                    elemento =>
 
-                        `<li>
+                    `
 
-                            ${escaparHTML(
-                                item
-                            )}
+                    <li>
 
-                        </li>`
+                        ${escaparHTML(
+                            elemento
+                        )}
 
-                    )
-                    .join("")
+                    </li>
+
+                    `
+                )
+                .join("")
             }
 
         </${etiqueta}>
@@ -1376,14 +1392,15 @@ function crearLista(
 }
 
 
-/* =================================================
-   ESCAPAR HTML
-================================================= */
+/*
+=================================================
+PROTEGER HTML
+=================================================
+*/
 
 function escaparHTML(
     texto
 ) {
-
 
     if (
         texto === null ||
@@ -1425,68 +1442,59 @@ function escaparHTML(
 }
 
 
-/* =================================================
-   ENTER = BUSCAR
-================================================= */
+/*
+=================================================
+ENTER = BUSCAR
+=================================================
+*/
 
-codigoInput.addEventListener(
-    "keydown",
-    function(event) {
+document
+    .getElementById("codigo")
+    .addEventListener(
+        "keydown",
+        function(event) {
 
-        if (
-            event.key ===
-            "Enter"
-        ) {
+            if (
+                event.key === "Enter"
+            ) {
 
-            event.preventDefault();
+                event.preventDefault();
 
-            boton.click();
+                buscarCodigo();
+
+            }
 
         }
-
-    }
-);
+    );
 
 
-/* =================================================
-   CONVERTIR AUTOMÁTICAMENTE A MAYÚSCULAS
-================================================= */
+/*
+=================================================
+LIMPIAR CÓDIGO AUTOMÁTICAMENTE
+=================================================
+*/
 
-codigoInput.addEventListener(
-    "input",
-    function() {
+document
+    .getElementById("codigo")
+    .addEventListener(
+        "input",
+        function() {
 
-        this.value =
-            this.value
-            .toUpperCase()
-            .replace(
-                /[^PBCU0-9A-F]/g,
-                ""
-            )
-            .slice(
-                0,
-                5
-            );
+            this.value =
+                this.value
+                .toUpperCase()
+                .replace(
+                    /[^PBCU0-9A-F]/g,
+                    ""
+                )
+                .slice(0, 5);
 
-    }
-);
-
-
-/* =================================================
-   JAVASCRIPT CARGADO
-================================================= */
-
-console.log(
-    "✅ Scanner DTC cargado correctamente"
-);
-
-console.log(
-    "API:",
-    API
-);
+        }
+    );
 
 </script>
 
+
 </body>
 
-    </html>
+</html>
