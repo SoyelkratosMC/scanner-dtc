@@ -1,1500 +1,805 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
+  <meta charset="UTF-8">
 
-<meta charset="UTF-8">
-
-<meta
+  <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
->
+  >
 
-<title>Scanner DTC Automotriz</title>
+  <title>Scanner DTC Automotriz</title>
 
-<style>
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-
-    margin: 0;
-
-    padding: 20px;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    background: #080d18;
-
-    color: #f8fafc;
-}
-
-
-.container {
-
-    width: 100%;
-
-    max-width: 750px;
-
-    margin: auto;
-}
-
-
-/* =========================
-   HEADER
-========================= */
-
-header {
-
-    text-align: center;
-
-    margin-bottom: 25px;
-}
-
-
-h1 {
-
-    margin: 0 0 6px;
-
-    color: #ef4444;
-
-    font-size: 30px;
-}
-
-
-.subtitle {
-
-    margin: 0;
-
-    color: #94a3b8;
-
-    font-size: 14px;
-}
-
-
-/* =========================
-   CARDS
-========================= */
-
-.card {
-
-    background: #151e2e;
-
-    border: 1px solid #29364d;
-
-    border-radius: 16px;
-
-    padding: 20px;
-
-    margin-bottom: 20px;
-
-    box-shadow:
-        0 8px 30px rgba(0,0,0,.25);
-}
-
-
-/* =========================
-   FORMULARIO
-========================= */
-
-label {
-
-    display: block;
-
-    color: #94a3b8;
-
-    font-size: 13px;
-
-    font-weight: bold;
-
-    margin-bottom: 7px;
-}
-
-
-input,
-select {
-
-    width: 100%;
-
-    padding: 14px;
-
-    margin-bottom: 15px;
-
-    background: #0b1220;
-
-    color: white;
-
-    border: 1px solid #334155;
-
-    border-radius: 9px;
-
-    font-size: 16px;
-
-    outline: none;
-}
-
-
-input:focus,
-select:focus {
-
-    border-color: #ef4444;
-}
-
-
-button {
-
-    width: 100%;
-
-    padding: 15px;
-
-    border: none;
-
-    border-radius: 9px;
-
-    background: #ef4444;
-
-    color: white;
-
-    font-size: 16px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    transition: .2s;
-}
-
-
-button:hover {
-
-    background: #dc2626;
-}
-
-
-button:disabled {
-
-    opacity: .7;
-
-    cursor: wait;
-}
-
-
-/* =========================
-   RESULTADO
-========================= */
-
-#resultado {
-
-    display: none;
-}
-
-
-.codigo {
-
-    display: inline-block;
-
-    background: #ef4444;
-
-    color: white;
-
-    padding: 8px 14px;
-
-    border-radius: 8px;
-
-    font-size: 25px;
-
-    font-weight: bold;
-}
-
-
-.titulo {
-
-    font-size: 21px;
-
-    font-weight: bold;
-
-    margin-top: 14px;
-
-    line-height: 1.3;
-}
-
-
-.marca {
-
-    display: inline-block;
-
-    margin-top: 10px;
-
-    padding: 5px 9px;
-
-    border-radius: 6px;
-
-    background: #334155;
-
-    color: #cbd5e1;
-
-    font-size: 13px;
-}
-
-
-.gravedad {
-
-    display: inline-block;
-
-    margin-top: 10px;
-
-    margin-left: 5px;
-
-    padding: 5px 9px;
-
-    border-radius: 6px;
-
-    background: #f59e0b;
-
-    color: #111827;
-
-    font-size: 13px;
-
-    font-weight: bold;
-}
-
-
-/* =========================
-   SECCIONES
-========================= */
-
-.seccion {
-
-    margin-top: 22px;
-}
-
-
-.seccion h3 {
-
-    color: #38bdf8;
-
-    border-bottom: 1px solid #334155;
-
-    padding-bottom: 7px;
-
-    margin-bottom: 10px;
-}
-
-
-.seccion p {
-
-    color: #cbd5e1;
-
-    line-height: 1.6;
-}
-
-
-ul,
-ol {
-
-    color: #cbd5e1;
-
-    padding-left: 25px;
-}
-
-
-li {
-
-    margin-bottom: 9px;
-
-    line-height: 1.4;
-}
-
-
-/* =========================
-   ESTADOS
-========================= */
-
-.loading {
-
-    text-align: center;
-
-    color: #38bdf8;
-
-    font-weight: bold;
-
-    line-height: 1.6;
-}
-
-
-.error {
-
-    color: #f87171;
-
-    font-weight: bold;
-
-    line-height: 1.6;
-}
-
-
-.warning {
-
-    background: #422006;
-
-    border: 1px solid #92400e;
-
-    padding: 12px;
-
-    border-radius: 8px;
-
-    color: #fed7aa;
-
-    line-height: 1.5;
-}
-
-
-.success {
-
-    background: #052e1b;
-
-    border: 1px solid #166534;
-
-    padding: 12px;
-
-    border-radius: 8px;
-
-    color: #bbf7d0;
-
-    margin-top: 15px;
-}
-
-
-/* =========================
-   FOOTER
-========================= */
-
-footer {
-
-    text-align: center;
-
-    color: #64748b;
-
-    font-size: 12px;
-
-    margin-top: 20px;
-}
-
-
-/* =========================
-   CELULAR
-========================= */
-
-@media(max-width:600px) {
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
     body {
-
-        padding: 12px;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0f14;
+      color: #ffffff;
     }
 
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 25px 10px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    header p {
+      color: #9da7b3;
+      margin-top: 8px;
+    }
+
+    .search-box {
+      background: #151b23;
+      padding: 18px;
+      border-radius: 15px;
+      border: 1px solid #26313d;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid #394654;
+      background: #0d131a;
+      color: white;
+      font-size: 18px;
+      outline: none;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #1677ff;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+      color: #65a9ff;
+      font-weight: bold;
+    }
+
+    .error {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #35191d;
+      border: 1px solid #7b3038;
+      color: #ff9da5;
+    }
+
+    #result {
+      display: none;
+      margin-top: 20px;
+    }
 
     .card {
+      background: #151b23;
+      border: 1px solid #26313d;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
 
+    .title {
+      font-size: 25px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      color: #aeb8c4;
+      margin-bottom: 15px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .problem {
+      line-height: 1.6;
+      color: #e1e7ee;
+    }
+
+    ul {
+      padding-left: 22px;
+      margin-bottom: 0;
+    }
+
+    li {
+      margin-bottom: 9px;
+      line-height: 1.4;
+      color: #d7dee7;
+    }
+
+    .severity {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 20px;
+      background: #332b12;
+      color: #ffd65c;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .diagram {
+      background: #0d131a;
+      border: 1px solid #33404d;
+      border-radius: 14px;
+      padding: 18px;
+      overflow-x: auto;
+    }
+
+    .diagram-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .diagram-note {
+      font-size: 13px;
+      color: #8f9baa;
+      margin-bottom: 18px;
+    }
+
+    .diagram-flow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 10px 0 15px;
+    }
+
+    .component {
+      min-width: 145px;
+      padding: 15px;
+      text-align: center;
+      border: 1px solid #3b4a5a;
+      border-radius: 12px;
+      background: #171f29;
+      font-weight: bold;
+    }
+
+    .arrow {
+      font-size: 25px;
+      color: #4d9cff;
+      flex-shrink: 0;
+    }
+
+    .connection {
+      padding: 10px;
+      margin-top: 8px;
+      background: #151d26;
+      border-radius: 8px;
+      color: #cbd5df;
+    }
+
+    .source {
+      text-align: center;
+      color: #8793a0;
+      font-size: 13px;
+      padding: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 12px;
+      }
+
+      header h1 {
+        font-size: 25px;
+      }
+
+      .title {
+        font-size: 21px;
+      }
+
+      .card {
         padding: 16px;
+      }
+
+      .component {
+        min-width: 125px;
+      }
     }
-
-
-    h1 {
-
-        font-size: 26px;
-    }
-
-
-    .titulo {
-
-        font-size: 19px;
-    }
-
-}
-
-</style>
-
+  </style>
 </head>
-
 
 <body>
 
+  <div class="container">
 
-<div class="container">
+    <header>
+      <h1>🚗 Scanner DTC Automotriz</h1>
+      <p>Consulta códigos de diagnóstico automotriz</p>
+    </header>
 
+    <div class="search-box">
 
-<header>
+      <input
+        id="codeInput"
+        type="text"
+        maxlength="5"
+        placeholder="Ejemplo: P0300"
+        autocomplete="off"
+      >
 
-<h1>
-🚗 Scanner DTC
-</h1>
+      <button
+        id="searchButton"
+        type="button"
+      >
+        🔎 BUSCAR CÓDIGO
+      </button>
 
-<p class="subtitle">
-Diagnóstico de códigos de falla automotrices
-</p>
+    </div>
 
-</header>
+    <div
+      id="loading"
+      class="loading"
+    >
+      ⏳ Consultando...
+    </div>
 
+    <div
+      id="error"
+      class="error"
+    ></div>
 
-<!-- =========================
-     BUSCADOR
-========================= -->
+    <div id="result">
 
-<div class="card">
+      <div class="card">
 
+        <div
+          id="resultTitle"
+          class="title"
+        ></div>
 
-<label for="marca">
-MARCA DEL VEHÍCULO
-</label>
+        <div
+          id="resultMeta"
+          class="meta"
+        ></div>
 
+        <div
+          id="severity"
+          class="severity"
+        ></div>
 
-<select id="marca">
+      </div>
 
-<option value="chevrolet">
-Chevrolet
-</option>
+      <div class="card">
 
-<option value="ford">
-Ford
-</option>
+        <div class="section-title">
+          🔴 Problema
+        </div>
 
-<option value="nissan">
-Nissan
-</option>
+        <div
+          id="problem"
+          class="problem"
+        ></div>
 
-<option value="dodge">
-Dodge
-</option>
+      </div>
 
-<option value="toyota">
-Toyota
-</option>
+      <div class="card">
 
-<option value="honda">
-Honda
-</option>
+        <div class="section-title">
+          🔍 Causas posibles
+        </div>
 
-<option value="kia">
-Kia
-</option>
+        <ul id="causes"></ul>
 
-<option value="hyundai">
-Hyundai
-</option>
+      </div>
 
-<option value="volkswagen">
-Volkswagen
-</option>
+      <div class="card">
 
-<option value="mazda">
-Mazda
-</option>
+        <div class="section-title">
+          🚨 Síntomas
+        </div>
 
-<option value="jeep">
-Jeep
-</option>
+        <ul id="symptoms"></ul>
 
-<option value="chrysler">
-Chrysler
-</option>
+      </div>
 
-<option value="gmc">
-GMC
-</option>
+      <div class="card">
 
-<option value="cadillac">
-Cadillac
-</option>
+        <div class="section-title">
+          🧪 Diagnóstico
+        </div>
 
-<option value="buick">
-Buick
-</option>
+        <ul id="diagnosis"></ul>
 
-<option value="lexus">
-Lexus
-</option>
+      </div>
 
-<option value="infiniti">
-Infiniti
-</option>
+      <div class="card">
 
-<option value="acura">
-Acura
-</option>
+        <div class="section-title">
+          🔧 Posibles arreglos
+        </div>
 
-<option value="subaru">
-Subaru
-</option>
+        <ul id="repairs"></ul>
 
-<option value="mitsubishi">
-Mitsubishi
-</option>
+      </div>
 
-<option value="volvo">
-Volvo
-</option>
+      <!-- ======================================
+           DIAGRAMAS
+           ====================================== -->
 
-<option value="audi">
-Audi
-</option>
+      <div class="card">
 
-<option value="bmw">
-BMW
-</option>
+        <div class="section-title">
+          📐 Diagramas
+        </div>
 
-<option value="mercedes-benz">
-Mercedes-Benz
-</option>
+        <div class="diagram">
 
-</select>
+          <div
+            id="diagramTitle"
+            class="diagram-title"
+          >
+            Diagrama del sistema
+          </div>
 
+          <div class="diagram-note">
+            ⚠️ Diagrama orientativo. No representa
+            un pinout específico del fabricante.
+          </div>
 
-<label for="codigo">
-CÓDIGO DTC
-</label>
+          <div
+            id="diagramFlow"
+            class="diagram-flow"
+          ></div>
 
-
-<input
-
-id="codigo"
-
-type="text"
-
-placeholder="Ejemplo: P0420"
-
-maxlength="6"
-
-autocomplete="off"
-
-spellcheck="false"
-
->
-
-
-<button
-id="buscarBtn"
-type="button"
-onclick="buscarCodigo()"
->
-
-🔎 BUSCAR CÓDIGO
-
-</button>
-
-
-</div>
-
-
-<!-- =========================
-     RESULTADO
-========================= -->
-
-<div
-id="resultado"
-class="card"
-></div>
-
-
-<footer>
-
-Scanner DTC Automotriz © 2026
-
-</footer>
-
-
-</div>
-
-
-
-<script>
-
-/*
-=================================================
-CONFIGURACIÓN DE LA API
-=================================================
-*/
-
-const API_URL =
-"https://scanner-dtc.vercel.app/api/dtc";
-
-
-/*
-=================================================
-BUSCAR CÓDIGO
-=================================================
-*/
-
-async function buscarCodigo() {
-
-    const codigoInput =
-        document.getElementById("codigo");
-
-    const marcaSelect =
-        document.getElementById("marca");
-
-    const resultado =
-        document.getElementById("resultado");
-
-    const boton =
-        document.getElementById("buscarBtn");
-
-
-    const codigo =
-        codigoInput.value
-        .trim()
-        .toUpperCase();
-
-
-    const marca =
-        marcaSelect.value;
-
-
-    /*
-    =============================================
-    VALIDAR
-    =============================================
-    */
-
-    if (!codigo) {
-
-        mostrarError(
-            "Escribe un código DTC, por ejemplo P0420."
-        );
-
-        return;
-
-    }
-
-
-    /*
-    =============================================
-    VALIDAR FORMATO
-    =============================================
-    */
-
-    if (
-        !/^[PBCU][0-9A-F]{4}$/.test(codigo)
-    ) {
-
-        mostrarError(
-            "Código inválido. Ejemplos: P0420, P0300 o C0035."
-        );
-
-        return;
-
-    }
-
-
-    /*
-    =============================================
-    MOSTRAR RESULTADO
-    =============================================
-    */
-
-    resultado.style.display =
-        "block";
-
-
-    /*
-    =============================================
-    MOSTRAR CONSULTANDO INMEDIATAMENTE
-    =============================================
-    */
-
-    resultado.innerHTML = `
-
-        <div class="loading">
-
-            🔄 Consultando servidor...
-
-            <br><br>
-
-            Código:
-
-            <strong>
-                ${escaparHTML(codigo)}
-            </strong>
+          <div
+            id="diagramConnections"
+          ></div>
 
         </div>
 
-    `;
+      </div>
 
+      <div class="source">
+        Información obtenida desde el servidor DTC
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const codeInput =
+      document.getElementById("codeInput");
+
+    const searchButton =
+      document.getElementById("searchButton");
+
+    const loading =
+      document.getElementById("loading");
+
+    const errorBox =
+      document.getElementById("error");
+
+    const result =
+      document.getElementById("result");
 
     /*
-    =============================================
-    CAMBIAR BOTÓN INMEDIATAMENTE
-    =============================================
+    ============================================
+    UTILIDAD PARA ESCAPAR HTML
+    ============================================
     */
 
-    boton.disabled = true;
+    function escapeHTML(value) {
 
-    boton.textContent =
-        "🔄 Consultando...";
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
+    }
 
     /*
-    =============================================
-    URL
-    =============================================
+    ============================================
+    MOSTRAR ERROR
+    ============================================
     */
 
-    const url =
-        `${API_URL}/${encodeURIComponent(codigo)}?make=${encodeURIComponent(marca)}`;
+    function mostrarError(message) {
 
+      errorBox.textContent =
+        "⚠️ " + message;
 
-    try {
+      errorBox.style.display =
+        "block";
 
-        console.log(
-            "Consultando API:",
-            url
+    }
+
+    /*
+    ============================================
+    LIMPIAR LISTA
+    ============================================
+    */
+
+    function renderList(element, items) {
+
+      element.innerHTML = "";
+
+      if (
+        !Array.isArray(items) ||
+        items.length === 0
+      ) {
+
+        const li =
+          document.createElement("li");
+
+        li.textContent =
+          "No hay información disponible.";
+
+        element.appendChild(li);
+
+        return;
+      }
+
+      items.forEach(item => {
+
+        const li =
+          document.createElement("li");
+
+        li.textContent =
+          item;
+
+        element.appendChild(li);
+
+      });
+
+    }
+
+    /*
+    ============================================
+    RENDER DIAGRAMA
+    ============================================
+    */
+
+    function renderDiagram(data) {
+
+      const title =
+        data.diagram_title ||
+        "Diagrama del sistema";
+
+      document.getElementById(
+        "diagramTitle"
+      ).textContent = title;
+
+      const flow =
+        document.getElementById(
+          "diagramFlow"
         );
 
+      const connections =
+        document.getElementById(
+          "diagramConnections"
+        );
 
-        /*
-        =========================================
-        FETCH
-        =========================================
-        */
+      flow.innerHTML = "";
+      connections.innerHTML = "";
+
+      const components =
+        Array.isArray(
+          data.diagram_components
+        )
+          ? data.diagram_components
+          : [];
+
+      const connectionList =
+        Array.isArray(
+          data.diagram_connections
+        )
+          ? data.diagram_connections
+          : [];
+
+      /*
+      COMPONENTES
+      */
+
+      components.forEach(
+        (component, index) => {
+
+          const box =
+            document.createElement("div");
+
+          box.className =
+            "component";
+
+          box.textContent =
+            component;
+
+          flow.appendChild(box);
+
+          if (
+            index <
+            components.length - 1
+          ) {
+
+            const arrow =
+              document.createElement("div");
+
+            arrow.className =
+              "arrow";
+
+            arrow.textContent =
+              "→";
+
+            flow.appendChild(arrow);
+          }
+
+        }
+      );
+
+      /*
+      CONEXIONES
+      */
+
+      connectionList.forEach(
+        connection => {
+
+          const div =
+            document.createElement("div");
+
+          div.className =
+            "connection";
+
+          div.textContent =
+            "🔗 " + connection;
+
+          connections.appendChild(div);
+
+        }
+      );
+
+    }
+
+    /*
+    ============================================
+    BUSCAR
+    ============================================
+    */
+
+    async function buscarCodigo() {
+
+      /*
+      Mostrar inmediatamente
+      */
+
+      loading.style.display =
+        "block";
+
+      errorBox.style.display =
+        "none";
+
+      result.style.display =
+        "none";
+
+      searchButton.disabled =
+        true;
+
+      searchButton.textContent =
+        "⏳ CONSULTANDO...";
+
+      const code =
+        codeInput.value
+          .toUpperCase()
+          .trim();
+
+      if (!/^[PBCU][0-9A-F]{4}$/.test(code)) {
+
+        loading.style.display =
+          "none";
+
+        searchButton.disabled =
+          false;
+
+        searchButton.textContent =
+          "🔎 BUSCAR CÓDIGO";
+
+        mostrarError(
+          "Código DTC inválido. Ejemplo: P0300"
+        );
+
+        return;
+      }
+
+      try {
 
         const response =
-            await fetch(url, {
+          await fetch(
+            `/api/dtc/${encodeURIComponent(code)}`,
+            {
+              method: "GET",
+              headers: {
+                "Accept":
+                  "application/json"
+              }
+            }
+          );
 
-                method: "GET",
+        const text =
+          await response.text();
 
-                headers: {
-
-                    "Accept":
-                        "application/json"
-
-                },
-
-                cache: "no-store"
-
-            });
-
-
-        /*
-        =========================================
-        OBTENER JSON
-        =========================================
-        */
-
-        let data = null;
-
+        let data;
 
         try {
 
-            data =
-                await response.json();
+          data =
+            JSON.parse(text);
+
+        } catch {
+
+          throw new Error(
+            "El servidor no devolvió JSON válido."
+          );
 
         }
-
-        catch (jsonError) {
-
-            throw new Error(
-                "El servidor no devolvió JSON válido."
-            );
-
-        }
-
-
-        /*
-        =========================================
-        ERROR HTTP
-        =========================================
-        */
-
-        if (!response.ok) {
-
-            if (
-                response.status === 404
-            ) {
-
-                mostrarNoEncontrado(
-                    codigo,
-                    marca
-                );
-
-                return;
-
-            }
-
-
-            throw new Error(
-
-                data?.error ||
-                `HTTP ${response.status}`
-
-            );
-
-        }
-
-
-        /*
-        =========================================
-        API REPORTÓ ERROR
-        =========================================
-        */
 
         if (
-            data &&
-            data.success === false
+          !response.ok ||
+          !data.success
         ) {
 
-            throw new Error(
-
-                data.error ||
-                "La API devolvió un error."
-
-            );
+          throw new Error(
+            data.error ||
+            "La API no respondió correctamente."
+          );
 
         }
-
 
         /*
-        =========================================
-        MOSTRAR RESULTADO
-        =========================================
+        ========================================
+        MOSTRAR INFORMACIÓN
+        ========================================
         */
 
-        mostrarResultado(
-            data,
-            codigo,
-            marca
+        document.getElementById(
+          "resultTitle"
+        ).textContent =
+          `${data.code} - ${data.title}`;
+
+        document.getElementById(
+          "resultMeta"
+        ).textContent =
+          `🚗 ${data.make || "Genérica"}`;
+
+        document.getElementById(
+          "severity"
+        ).textContent =
+          `⚠️ ${data.severity || "MEDIA"}`;
+
+        document.getElementById(
+          "problem"
+        ).textContent =
+          data.problem ||
+          "No hay información disponible.";
+
+        renderList(
+          document.getElementById("causes"),
+          data.causes
         );
 
-
-    }
-
-    catch(error) {
-
-        console.error(
-            "ERROR DEL SCANNER:",
-            error
+        renderList(
+          document.getElementById("symptoms"),
+          data.symptoms
         );
 
+        renderList(
+          document.getElementById("diagnosis"),
+          data.diagnosis
+        );
+
+        renderList(
+          document.getElementById("repairs"),
+          data.repairs
+        );
+
+        renderDiagram(data);
+
+        result.style.display =
+          "block";
+
+      } catch (err) {
+
+        console.error(err);
 
         mostrarError(
-
-            "La API no respondió correctamente.",
-
-            error.message
-
+          err.message ||
+          "Error al conectar con el servidor."
         );
 
-    }
+      } finally {
 
+        loading.style.display =
+          "none";
 
-    finally {
+        searchButton.disabled =
+          false;
 
-        boton.disabled =
-            false;
+        searchButton.textContent =
+          "🔎 BUSCAR CÓDIGO";
 
-
-        boton.textContent =
-            "🔎 BUSCAR CÓDIGO";
-
-    }
-
-}
-
-
-/*
-=================================================
-MOSTRAR RESULTADO
-=================================================
-*/
-
-function mostrarResultado(
-    data,
-    codigo,
-    marca
-) {
-
-    const resultado =
-        document.getElementById("resultado");
-
-
-    const causas =
-        convertirLista(
-            data?.causes
-        );
-
-
-    const sintomas =
-        convertirLista(
-            data?.symptoms
-        );
-
-
-    const diagnostico =
-        convertirLista(
-            data?.diagnosis
-        );
-
-
-    const arreglos =
-        convertirLista(
-            data?.repairs
-        );
-
-
-    resultado.style.display =
-        "block";
-
-
-    resultado.innerHTML = `
-
-        <span class="codigo">
-
-            ${escaparHTML(
-                data?.code ||
-                codigo
-            )}
-
-        </span>
-
-
-        <div class="titulo">
-
-            ${escaparHTML(
-                data?.title ||
-                data?.definition ||
-                "Código DTC"
-            )}
-
-        </div>
-
-
-        <span class="marca">
-
-            🚗
-
-            ${escaparHTML(
-                data?.make ||
-                marca
-            )}
-
-        </span>
-
-
-        ${
-            data?.severity
-            ?
-
-            `
-
-            <span class="gravedad">
-
-                ⚠️
-
-                ${escaparHTML(
-                    data.severity
-                )}
-
-            </span>
-
-            `
-
-            :
-
-            ""
-
-        }
-
-
-        <!-- PROBLEMA -->
-
-        <div class="seccion">
-
-            <h3>
-
-                🔴 Problema
-
-            </h3>
-
-
-            <p>
-
-                ${escaparHTML(
-
-                    data?.problem ||
-
-                    data?.description ||
-
-                    "No hay descripción disponible."
-
-                )}
-
-            </p>
-
-        </div>
-
-
-        <!-- CAUSAS -->
-
-        <div class="seccion">
-
-            <h3>
-
-                🔍 Causas posibles
-
-            </h3>
-
-
-            ${crearLista(
-                causas
-            )}
-
-        </div>
-
-
-        <!-- SÍNTOMAS -->
-
-        <div class="seccion">
-
-            <h3>
-
-                🚨 Síntomas
-
-            </h3>
-
-
-            ${crearLista(
-                sintomas
-            )}
-
-        </div>
-
-
-        <!-- DIAGNÓSTICO -->
-
-        <div class="seccion">
-
-            <h3>
-
-                🧪 Diagnóstico
-
-            </h3>
-
-
-            ${crearLista(
-                diagnostico,
-                true
-            )}
-
-        </div>
-
-
-        <!-- ARREGLO -->
-
-        <div class="seccion">
-
-            <h3>
-
-                🔧 Posibles arreglos
-
-            </h3>
-
-
-            ${crearLista(
-                arreglos
-            )}
-
-        </div>
-
-
-        ${
-            data?.source === "supabase"
-
-            ?
-
-            `
-
-            <div class="success">
-
-                ⚡ Información recuperada
-                desde la base de datos.
-
-            </div>
-
-            `
-
-            :
-
-            `
-
-            <div class="success">
-
-                ✅ Información obtenida
-                desde el servidor DTC.
-
-            </div>
-
-            `
-
-        }
-
-    `;
-
-}
-
-
-/*
-=================================================
-NO ENCONTRADO
-=================================================
-*/
-
-function mostrarNoEncontrado(
-    codigo,
-    marca
-) {
-
-    const resultado =
-        document.getElementById("resultado");
-
-
-    resultado.style.display =
-        "block";
-
-
-    resultado.innerHTML = `
-
-        <span class="codigo">
-
-            ${escaparHTML(codigo)}
-
-        </span>
-
-
-        <div class="titulo">
-
-            Código no encontrado
-
-        </div>
-
-
-        <p>
-
-            No encontramos información para
-
-            <strong>
-
-                ${escaparHTML(codigo)}
-
-            </strong>
-
-            en la consulta para
-
-            <strong>
-
-                ${escaparHTML(marca)}
-
-            </strong>.
-
-        </p>
-
-
-        <div class="warning">
-
-            💡 Puede ser un código específico
-            del fabricante o todavía no estar
-            incluido en nuestra base de datos.
-
-        </div>
-
-    `;
-
-}
-
-
-/*
-=================================================
-MOSTRAR ERROR
-=================================================
-*/
-
-function mostrarError(
-    mensaje,
-    detalle = ""
-) {
-
-    const resultado =
-        document.getElementById("resultado");
-
-
-    resultado.style.display =
-        "block";
-
-
-    resultado.innerHTML = `
-
-        <div class="error">
-
-            ⚠️
-
-            ${escaparHTML(
-                mensaje
-            )}
-
-        </div>
-
-
-        ${
-            detalle
-
-            ?
-
-            `
-
-            <br>
-
-            <div class="warning">
-
-                ${escaparHTML(
-                    detalle
-                )}
-
-            </div>
-
-            `
-
-            :
-
-            ""
-
-        }
-
-    `;
-
-}
-
-
-/*
-=================================================
-CONVERTIR LISTA
-=================================================
-*/
-
-function convertirLista(
-    valor
-) {
-
-    if (!valor) {
-
-        return [];
+      }
 
     }
 
+    /*
+    ============================================
+    BOTÓN
+    ============================================
+    */
 
-    if (
-        Array.isArray(valor)
-    ) {
-
-        return valor
-            .map(
-                elemento =>
-                    String(elemento)
-                    .trim()
-            )
-            .filter(Boolean);
-
-    }
-
-
-    if (
-        typeof valor === "string"
-    ) {
-
-        return valor
-            .split("\n")
-            .map(
-                x =>
-                    x.trim()
-            )
-            .filter(Boolean);
-
-    }
-
-
-    return [];
-
-}
-
-
-/*
-=================================================
-CREAR LISTA
-=================================================
-*/
-
-function crearLista(
-    elementos,
-    numerada = false
-) {
-
-    if (
-        !elementos ||
-        !elementos.length
-    ) {
-
-        return `
-
-            <p>
-
-                No hay información disponible.
-
-            </p>
-
-        `;
-
-    }
-
-
-    const etiqueta =
-        numerada
-        ? "ol"
-        : "ul";
-
-
-    return `
-
-        <${etiqueta}>
-
-            ${elementos
-                .map(
-                    elemento =>
-
-                    `
-
-                    <li>
-
-                        ${escaparHTML(
-                            elemento
-                        )}
-
-                    </li>
-
-                    `
-                )
-                .join("")
-            }
-
-        </${etiqueta}>
-
-    `;
-
-}
-
-
-/*
-=================================================
-PROTEGER HTML
-=================================================
-*/
-
-function escaparHTML(
-    texto
-) {
-
-    if (
-        texto === null ||
-        texto === undefined
-    ) {
-
-        return "";
-
-    }
-
-
-    return String(texto)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-/*
-=================================================
-ENTER = BUSCAR
-=================================================
-*/
-
-document
-    .getElementById("codigo")
-    .addEventListener(
-        "keydown",
-        function(event) {
-
-            if (
-                event.key === "Enter"
-            ) {
-
-                event.preventDefault();
-
-                buscarCodigo();
-
-            }
-
-        }
+    searchButton.addEventListener(
+      "click",
+      buscarCodigo
     );
 
+    /*
+    ============================================
+    ENTER
+    ============================================
+    */
 
-/*
-=================================================
-LIMPIAR CÓDIGO AUTOMÁTICAMENTE
-=================================================
-*/
+    codeInput.addEventListener(
+      "keydown",
+      event => {
 
-document
-    .getElementById("codigo")
-    .addEventListener(
-        "input",
-        function() {
+        if (
+          event.key === "Enter"
+        ) {
 
-            this.value =
-                this.value
-                .toUpperCase()
-                .replace(
-                    /[^PBCU0-9A-F]/g,
-                    ""
-                )
-                .slice(0, 5);
+          event.preventDefault();
+
+          buscarCodigo();
 
         }
+
+      }
     );
 
-</script>
-
+  </script>
 
 </body>
-
 </html>
