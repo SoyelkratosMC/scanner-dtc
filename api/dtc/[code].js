@@ -31,11 +31,9 @@ export default async function handler(req, res) {
       });
     }
 
-    /*
-    =================================================
-    BUSCAR EN SUPABASE
-    =================================================
-    */
+    // ============================================
+    // BUSCAR EN SUPABASE
+    // ============================================
 
     const {
       data,
@@ -56,89 +54,86 @@ export default async function handler(req, res) {
       });
     }
 
-    /*
-    =================================================
-    SI EXISTE
-    =================================================
-    */
+    // ============================================
+    // COMPROBAR SI EXISTE Y ESTÁ COMPLETO
+    // ============================================
 
     if (data && data.length > 0) {
-      const dtc = data[0];
+      const existing = data[0];
 
-      /*
-      Detectar si la información guardada está incompleta.
-      */
+      const complete =
+        Array.isArray(existing.causes) &&
+        existing.causes.length > 0 &&
+        Array.isArray(existing.symptoms) &&
+        existing.symptoms.length > 0 &&
+        Array.isArray(existing.diagnosis) &&
+        existing.diagnosis.length > 0 &&
+        Array.isArray(existing.repairs) &&
+        existing.repairs.length > 0;
 
-      const incomplete =
-        !Array.isArray(dtc.causes) ||
-        dtc.causes.length === 0 ||
-        !Array.isArray(dtc.symptoms) ||
-        dtc.symptoms.length === 0 ||
-        !Array.isArray(dtc.diagnosis) ||
-        dtc.diagnosis.length === 0 ||
-        !Array.isArray(dtc.repairs) ||
-        dtc.repairs.length === 0;
+      // ==========================================
+      // SI ESTÁ COMPLETO → RESPUESTA INSTANTÁNEA
+      // ==========================================
 
-      /*
-      =================================================
-      SI ESTÁ COMPLETO → DEVOLVER INSTANTÁNEAMENTE
-      =================================================
-      */
-
-      if (!incomplete) {
+      if (complete) {
         return res.status(200).json({
           success: true,
           source: "supabase",
           saved: true,
 
-          code: dtc.code,
-          make: dtc.make,
-          title: dtc.title,
-          problem: dtc.problem,
+          code: existing.code,
+          make: existing.make,
+          title: existing.title,
+          problem: existing.problem,
 
-          causes: Array.isArray(dtc.causes)
-            ? dtc.causes
+          causes: Array.isArray(existing.causes)
+            ? existing.causes
             : [],
 
-          symptoms: Array.isArray(dtc.symptoms)
-            ? dtc.symptoms
+          symptoms: Array.isArray(existing.symptoms)
+            ? existing.symptoms
             : [],
 
-          diagnosis: Array.isArray(dtc.diagnosis)
-            ? dtc.diagnosis
+          diagnosis: Array.isArray(existing.diagnosis)
+            ? existing.diagnosis
             : [],
 
-          repairs: Array.isArray(dtc.repairs)
-            ? dtc.repairs
+          repairs: Array.isArray(existing.repairs)
+            ? existing.repairs
             : [],
 
-          severity: dtc.severity || "MEDIA",
+          severity:
+            existing.severity || "MEDIA",
 
           vehicle_years:
-            dtc.vehicle_years || "No especificado",
+            existing.vehicle_years || "No especificado",
 
           system:
-            dtc.system || "No especificado"
+            existing.system || "Sistema no especificado",
+
+          diagram_title:
+            existing.diagram_title || "",
+
+          diagram_components:
+            Array.isArray(existing.diagram_components)
+              ? existing.diagram_components
+              : [],
+
+          diagram_connections:
+            Array.isArray(existing.diagram_connections)
+              ? existing.diagram_connections
+              : []
         });
       }
 
-      /*
-      =================================================
-      EXISTE PERO ESTÁ INCOMPLETO
-      → VOLVER A GENERAR
-      =================================================
-      */
-
       console.log(
-        `DTC ${code} encontrado pero incompleto. Regenerando información...`
+        `DTC ${code} incompleto. Regenerando...`
       );
     }
 
-    /*
-    =================================================
-    OPENROUTER
-    =================================================
-    */
+    // ============================================
+    // OPENROUTER
+    // ============================================
 
     const openRouterKey =
       process.env.OPENROUTER_API_KEY;
@@ -150,40 +145,43 @@ export default async function handler(req, res) {
       });
     }
 
-    /*
-    =================================================
-    PROMPT
-    =================================================
-    */
+    // ============================================
+    // PROMPT
+    // ============================================
 
     const prompt = `
 Eres un especialista profesional en diagnóstico automotriz.
 
-Genera información clara y útil sobre este código DTC.
+Genera información para este código DTC:
 
-Código:
-${code}
+Código: ${code}
 
-Marca:
-${make || "genérica"}
+Marca: ${make || "genérica"}
 
-IMPORTANTE:
+La información debe estar en español.
 
-- No inventes una falla confirmada.
-- Las causas deben ser POSIBLES causas.
-- No afirmes que una pieza está dañada sin pruebas.
-- Si el significado cambia según fabricante, indícalo.
-- No inventes años específicos.
-- No inventes números de piezas.
-- No inventes valores eléctricos específicos si no son confiables.
-- La información debe ser útil para un scanner automotriz.
-- Responde en español.
-- Todos los arreglos deben ser acciones razonables de diagnóstico/reparación.
-- NO dejes causes, symptoms, diagnosis ni repairs vacíos.
-- Cada uno debe contener varias opciones útiles.
-- Devuelve solamente JSON válido.
+REGLAS:
 
-La estructura EXACTA debe ser:
+1. No inventes fallas confirmadas.
+2. Las causas son posibles causas.
+3. No afirmes que una pieza está dañada sin diagnóstico.
+4. Si el significado depende del fabricante, indícalo.
+5. No inventes años específicos.
+6. No inventes números de piezas.
+7. No inventes valores eléctricos específicos.
+8. La información debe ser útil para un scanner automotriz.
+9. Todos los arrays deben tener información.
+10. Genera también un diagrama ORIENTATIVO del sistema.
+
+IMPORTANTE SOBRE EL DIAGRAMA:
+
+El diagrama NO debe inventar un pinout específico.
+
+Debe representar solamente la relación general entre componentes.
+
+Devuelve SOLAMENTE JSON válido.
+
+FORMATO:
 
 {
   "code": "${code}",
@@ -212,7 +210,17 @@ La estructura EXACTA debe ser:
   ],
   "severity": "MEDIA",
   "vehicle_years": "No especificado",
-  "system": "string"
+  "system": "string",
+  "diagram_title": "string",
+  "diagram_components": [
+    "string",
+    "string",
+    "string"
+  ],
+  "diagram_connections": [
+    "Componente A → Componente B",
+    "Componente B → Componente C"
+  ]
 }
 
 severity solamente puede ser:
@@ -222,19 +230,19 @@ MEDIA
 ALTA
 CRÍTICA
 
-Si no conoces los años/modelos exactos:
+No dejes vacíos:
 
-"No especificado"
-
-IMPORTANTE:
-causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
+causes
+symptoms
+diagnosis
+repairs
+diagram_components
+diagram_connections
 `;
 
-    /*
-    =================================================
-    LLAMAR A OPENROUTER
-    =================================================
-    */
+    // ============================================
+    // LLAMAR A OPENROUTER
+    // ============================================
 
     const openRouterResponse = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -262,7 +270,7 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
             {
               role: "system",
               content:
-                "Eres especialista en diagnóstico automotriz. Devuelve solamente JSON válido y nunca dejes vacíos causes, symptoms, diagnosis o repairs."
+                "Eres especialista en diagnóstico automotriz. Devuelve solamente JSON válido."
             },
 
             {
@@ -277,16 +285,10 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
 
           temperature: 0.2,
 
-          max_tokens: 1800
+          max_tokens: 2200
         })
       }
     );
-
-    /*
-    =================================================
-    ERROR OPENROUTER
-    =================================================
-    */
 
     if (!openRouterResponse.ok) {
       const errorText =
@@ -309,18 +311,13 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
     const openRouterData =
       await openRouterResponse.json();
 
-    const generatedText =
+    let generatedText =
       openRouterData
         ?.choices?.[0]
         ?.message
         ?.content;
 
     if (!generatedText) {
-      console.error(
-        "OPENROUTER RESPONSE:",
-        JSON.stringify(openRouterData)
-      );
-
       return res.status(502).json({
         success: false,
         error:
@@ -328,11 +325,21 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
       });
     }
 
-    /*
-    =================================================
-    CONVERTIR JSON
-    =================================================
-    */
+    // ============================================
+    // LIMPIAR POSIBLES BLOQUES MARKDOWN
+    // ============================================
+
+    if (typeof generatedText === "string") {
+      generatedText = generatedText
+        .replace(/^```json\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/\s*```$/i, "")
+        .trim();
+    }
+
+    // ============================================
+    // CONVERTIR JSON
+    // ============================================
 
     let dtc;
 
@@ -342,10 +349,10 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
           ? JSON.parse(generatedText)
           : generatedText;
 
-    } catch (jsonError) {
+    } catch (error) {
       console.error(
         "JSON PARSE ERROR:",
-        jsonError
+        error
       );
 
       console.error(
@@ -362,11 +369,9 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
       });
     }
 
-    /*
-    =================================================
-    NORMALIZAR
-    =================================================
-    */
+    // ============================================
+    // NORMALIZAR
+    // ============================================
 
     dtc.code =
       String(dtc.code || code)
@@ -445,23 +450,34 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
         "Sistema no especificado"
       );
 
-    /*
-    =================================================
-    COMPROBAR QUE LA IA REALMENTE GENERÓ TODO
-    =================================================
-    */
+    dtc.diagram_title =
+      String(
+        dtc.diagram_title ||
+        `Diagrama orientativo - ${dtc.system}`
+      );
+
+    dtc.diagram_components =
+      Array.isArray(dtc.diagram_components)
+        ? dtc.diagram_components.filter(Boolean)
+        : [];
+
+    dtc.diagram_connections =
+      Array.isArray(dtc.diagram_connections)
+        ? dtc.diagram_connections.filter(Boolean)
+        : [];
+
+    // ============================================
+    // VALIDAR INFORMACIÓN
+    // ============================================
 
     if (
       dtc.causes.length === 0 ||
       dtc.symptoms.length === 0 ||
       dtc.diagnosis.length === 0 ||
-      dtc.repairs.length === 0
+      dtc.repairs.length === 0 ||
+      dtc.diagram_components.length === 0 ||
+      dtc.diagram_connections.length === 0
     ) {
-      console.error(
-        "OPENROUTER INCOMPLETE:",
-        JSON.stringify(dtc)
-      );
-
       return res.status(502).json({
         success: false,
         error:
@@ -470,26 +486,17 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
       });
     }
 
-    /*
-    =================================================
-    GUARDAR / ACTUALIZAR SUPABASE
-    =================================================
-    */
-
-    let savedData;
-    let saveError;
-
-    /*
-    Si el código ya existía pero estaba incompleto,
-    hacemos UPDATE.
-
-    Si no existía, hacemos INSERT.
-    */
+    // ============================================
+    // SI EXISTÍA → UPDATE
+    // ============================================
 
     if (data && data.length > 0) {
       const existingId = data[0].id;
 
-      const result = await supabase
+      const {
+        data: updatedData,
+        error: updateError
+      } = await supabase
         .from("dtc_codes")
         .update({
           code: dtc.code,
@@ -503,210 +510,200 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
           severity: dtc.severity,
           vehicle_years: dtc.vehicle_years,
           system: dtc.system,
+
+          diagram_title:
+            dtc.diagram_title,
+
+          diagram_components:
+            dtc.diagram_components,
+
+          diagram_connections:
+            dtc.diagram_connections,
+
           source: "openrouter"
         })
         .eq("id", existingId)
         .select();
 
-      savedData = result.data;
-      saveError = result.error;
-
-    } else {
-
-      /*
-      =================================================
-      CONTAR NUEVOS DEL DÍA
-      =================================================
-      */
-
-      const now = new Date();
-
-      const startOfDay = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        0,
-        0,
-        0,
-        0
-      );
-
-      const {
-        count: todayCount,
-        error: countError
-      } = await supabase
-        .from("dtc_codes")
-        .select(
-          "id",
-          {
-            count: "exact",
-            head: true
-          }
-        )
-        .gte(
-          "created_at",
-          startOfDay.toISOString()
-        );
-
-      if (countError) {
+      if (updateError) {
         console.error(
-          "COUNT ERROR:",
-          countError
+          "SUPABASE UPDATE ERROR:",
+          updateError
         );
 
         return res.status(500).json({
           success: false,
           error:
-            "No se pudo comprobar el límite diario.",
+            "OpenRouter generó la información, pero Supabase no pudo actualizarla.",
           details:
-            countError.message
+            updateError.message,
+          supabase_code:
+            updateError.code
         });
       }
 
-      if (
-        todayCount !== null &&
-        todayCount >= MAX_NEW_CODES_PER_DAY
-      ) {
-        return res.status(429).json({
-          success: false,
-          error:
-            "Se alcanzó el límite de 50 códigos nuevos por día.",
-          limit:
-            MAX_NEW_CODES_PER_DAY,
-          used:
-            todayCount
-        });
-      }
+      return res.status(200).json({
+        success: true,
+        source: "openrouter",
+        saved: true,
+        updated: true,
 
-      const result = await supabase
-        .from("dtc_codes")
-        .insert({
-          code: dtc.code,
-          make: dtc.make,
-          title: dtc.title,
-          problem: dtc.problem,
-          causes: dtc.causes,
-          symptoms: dtc.symptoms,
-          diagnosis: dtc.diagnosis,
-          repairs: dtc.repairs,
-          severity: dtc.severity,
-          vehicle_years: dtc.vehicle_years,
-          system: dtc.system,
-          source: "openrouter"
-        })
-        .select();
+        code: dtc.code,
+        make: dtc.make,
+        title: dtc.title,
+        problem: dtc.problem,
 
-      savedData = result.data;
-      saveError = result.error;
-    }
+        causes: dtc.causes,
+        symptoms: dtc.symptoms,
+        diagnosis: dtc.diagnosis,
+        repairs: dtc.repairs,
 
-    /*
-    =================================================
-    ERROR SUPABASE
-    =================================================
-    */
+        severity: dtc.severity,
+        vehicle_years: dtc.vehicle_years,
+        system: dtc.system,
 
-    if (saveError) {
-      console.error(
-        "SUPABASE SAVE ERROR:",
-        saveError
-      );
+        diagram_title:
+          dtc.diagram_title,
 
-      return res.status(500).json({
-        success: false,
+        diagram_components:
+          dtc.diagram_components,
 
-        error:
-          "OpenRouter generó la información, pero Supabase no pudo guardarla.",
-
-        details:
-          saveError.message,
-
-        supabase_code:
-          saveError.code,
-
-        code:
-          dtc.code
+        diagram_connections:
+          dtc.diagram_connections
       });
     }
 
-    /*
-    =================================================
-    VERIFICAR GUARDADO
-    =================================================
-    */
+    // ============================================
+    // CONTAR NUEVOS DEL DÍA
+    // ============================================
+
+    const now = new Date();
+
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
 
     const {
-      data: verifyData,
-      error: verifyError
+      count: todayCount,
+      error: countError
     } = await supabase
       .from("dtc_codes")
-      .select(
-        "id, code, source, created_at"
-      )
-      .eq("code", dtc.code)
-      .limit(1);
-
-    if (verifyError) {
-      console.error(
-        "VERIFY ERROR:",
-        verifyError
+      .select("id", {
+        count: "exact",
+        head: true
+      })
+      .gte(
+        "created_at",
+        startOfDay.toISOString()
       );
+
+    if (countError) {
+      return res.status(500).json({
+        success: false,
+        error:
+          "No se pudo comprobar el límite diario.",
+        details:
+          countError.message
+      });
     }
 
     if (
-      !verifyData ||
-      verifyData.length === 0
+      todayCount !== null &&
+      todayCount >= MAX_NEW_CODES_PER_DAY
     ) {
-      return res.status(500).json({
+      return res.status(429).json({
         success: false,
-
         error:
-          "La información fue generada pero no se encontró después de guardarla.",
-
-        code:
-          dtc.code
+          "Se alcanzó el límite de 50 códigos nuevos por día.",
+        limit:
+          MAX_NEW_CODES_PER_DAY,
+        used:
+          todayCount
       });
     }
 
-    /*
-    =================================================
-    RESPUESTA FINAL
-    =================================================
-    */
+    // ============================================
+    // INSERTAR NUEVO DTC
+    // ============================================
+
+    const {
+      error: insertError
+    } = await supabase
+      .from("dtc_codes")
+      .insert({
+        code: dtc.code,
+        make: dtc.make,
+        title: dtc.title,
+        problem: dtc.problem,
+
+        causes: dtc.causes,
+        symptoms: dtc.symptoms,
+        diagnosis: dtc.diagnosis,
+        repairs: dtc.repairs,
+
+        severity:
+          dtc.severity,
+
+        vehicle_years:
+          dtc.vehicle_years,
+
+        system:
+          dtc.system,
+
+        diagram_title:
+          dtc.diagram_title,
+
+        diagram_components:
+          dtc.diagram_components,
+
+        diagram_connections:
+          dtc.diagram_connections,
+
+        source:
+          "openrouter"
+      });
+
+    if (insertError) {
+      console.error(
+        "SUPABASE INSERT ERROR:",
+        insertError
+      );
+
+      return res.status(500).json({
+        success: false,
+        error:
+          "OpenRouter generó la información, pero Supabase no pudo guardarla.",
+        details:
+          insertError.message,
+        supabase_code:
+          insertError.code
+      });
+    }
+
+    // ============================================
+    // RESPUESTA FINAL
+    // ============================================
 
     return res.status(200).json({
       success: true,
-
       source: "openrouter",
-
       saved: true,
 
-      updated:
-        data && data.length > 0,
+      code: dtc.code,
+      make: dtc.make,
+      title: dtc.title,
+      problem: dtc.problem,
 
-      code:
-        dtc.code,
-
-      make:
-        dtc.make,
-
-      title:
-        dtc.title,
-
-      problem:
-        dtc.problem,
-
-      causes:
-        dtc.causes,
-
-      symptoms:
-        dtc.symptoms,
-
-      diagnosis:
-        dtc.diagnosis,
-
-      repairs:
-        dtc.repairs,
+      causes: dtc.causes,
+      symptoms: dtc.symptoms,
+      diagnosis: dtc.diagnosis,
+      repairs: dtc.repairs,
 
       severity:
         dtc.severity,
@@ -715,11 +712,19 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
         dtc.vehicle_years,
 
       system:
-        dtc.system
+        dtc.system,
+
+      diagram_title:
+        dtc.diagram_title,
+
+      diagram_components:
+        dtc.diagram_components,
+
+      diagram_connections:
+        dtc.diagram_connections
     });
 
   } catch (error) {
-
     console.error(
       "SERVER ERROR:",
       error
@@ -731,4 +736,4 @@ causes, symptoms, diagnosis y repairs NO pueden ser arrays vacíos.
         error.message
     });
   }
-        }
+      }
