@@ -42,12 +42,8 @@ export default async function handler(req, res) {
     if (!code) {
 
       return res.status(400).json({
-
         success: false,
-
-        error:
-          "Falta el código DTC"
-
+        error: "Falta el código DTC"
       });
 
     }
@@ -55,19 +51,15 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    VALIDAR FORMATO DTC
+    VALIDAR FORMATO
     =================================================
     */
 
     if (!/^[PBCU][0-9A-F]{4}$/.test(code)) {
 
       return res.status(400).json({
-
         success: false,
-
-        error:
-          "Código DTC inválido"
-
+        error: "Código DTC inválido"
       });
 
     }
@@ -75,24 +67,23 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    BUSCAR EN SUPABASE
+    BUSCAR PRIMERO EN SUPABASE
     =================================================
     */
 
-    const { data, error } = await supabase
-
+    const {
+      data,
+      error
+    } = await supabase
       .from("dtc_codes")
-
       .select("*")
-
       .eq("code", code)
-
       .limit(1);
 
 
     /*
     =================================================
-    ERROR SUPABASE
+    ERROR AL BUSCAR
     =================================================
     */
 
@@ -104,15 +95,9 @@ export default async function handler(req, res) {
       );
 
       return res.status(500).json({
-
         success: false,
-
-        error:
-          "Error consultando Supabase",
-
-        details:
-          error.message
-
+        error: "Error consultando Supabase",
+        details: error.message
       });
 
     }
@@ -124,35 +109,25 @@ export default async function handler(req, res) {
     =================================================
     */
 
-    if (
-      data &&
-      data.length > 0
-    ) {
+    if (data && data.length > 0) {
 
       const dtc = data[0];
-
 
       return res.status(200).json({
 
         success: true,
 
-        source:
-          "supabase",
+        source: "supabase",
 
-        saved:
-          true,
+        saved: true,
 
-        code:
-          dtc.code,
+        code: dtc.code,
 
-        make:
-          dtc.make,
+        make: dtc.make,
 
-        title:
-          dtc.title,
+        title: dtc.title,
 
-        problem:
-          dtc.problem,
+        problem: dtc.problem,
 
         causes:
           Array.isArray(dtc.causes)
@@ -175,13 +150,13 @@ export default async function handler(req, res) {
             : [],
 
         severity:
-          dtc.severity,
+          dtc.severity || "MEDIA",
 
         vehicle_years:
-          dtc.vehicle_years,
+          dtc.vehicle_years || "No especificado",
 
         system:
-          dtc.system || null
+          dtc.system || "No especificado"
 
       });
 
@@ -194,63 +169,38 @@ export default async function handler(req, res) {
     =================================================
     */
 
-    /*
-    Aquí empieza el límite diario.
-    */
-
-
-    const now =
-      new Date();
-
-
-    const startOfDay =
-      new Date(
-
-        now.getFullYear(),
-
-        now.getMonth(),
-
-        now.getDate(),
-
-        0,
-
-        0,
-
-        0,
-
-        0
-
-      );
-
 
     /*
     =================================================
-    CONTAR CÓDIGOS NUEVOS DE HOY
+    CONTAR CÓDIGOS CREADOS HOY
     =================================================
     */
+
+    const now = new Date();
+
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0,
+      0,
+      0,
+      0
+    );
+
 
     const {
-
-      count:
-        todayCount,
-
-      error:
-        countError
-
+      count: todayCount,
+      error: countError
     } = await supabase
-
       .from("dtc_codes")
-
       .select(
         "id",
         {
-          count:
-            "exact",
-          head:
-            true
+          count: "exact",
+          head: true
         }
       )
-
       .gte(
         "created_at",
         startOfDay.toISOString()
@@ -259,7 +209,7 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    SI created_at NO EXISTE
+    ERROR AL CONTAR
     =================================================
     */
 
@@ -270,17 +220,24 @@ export default async function handler(req, res) {
         countError
       );
 
-      /*
-      No detenemos el scanner.
-      Continuamos con OpenRouter.
-      */
+      return res.status(500).json({
+
+        success: false,
+
+        error:
+          "No se pudo comprobar el límite diario.",
+
+        details:
+          countError.message
+
+      });
 
     }
 
 
     /*
     =================================================
-    LÍMITE DE 50
+    LÍMITE DIARIO
     =================================================
     */
 
@@ -294,7 +251,7 @@ export default async function handler(req, res) {
         success: false,
 
         error:
-          "Se alcanzó el límite diario de 50 códigos nuevos.",
+          "Se alcanzó el límite de 50 códigos nuevos por día.",
 
         limit:
           MAX_NEW_CODES_PER_DAY,
@@ -309,7 +266,7 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    OPENROUTER API KEY
+    OPENROUTER
     =================================================
     */
 
@@ -341,7 +298,7 @@ export default async function handler(req, res) {
 
 Eres un especialista en diagnóstico automotriz.
 
-Genera información para el siguiente código DTC:
+Genera información para este código DTC:
 
 Código:
 ${code}
@@ -351,19 +308,31 @@ ${make || "genérica"}
 
 IMPORTANTE:
 
-- No inventes una falla confirmada.
-- Las causas deben ser posibles causas.
-- No afirmes que una pieza está dañada sin pruebas.
-- Si el significado cambia según fabricante,
-  indícalo.
-- No inventes años específicos.
-- No inventes números de piezas.
-- No inventes valores eléctricos específicos.
-- La información debe ser útil para un scanner automotriz.
-- Responde en español.
-- Devuelve solamente JSON válido.
+1. No inventes una falla confirmada.
 
-Utiliza EXACTAMENTE esta estructura:
+2. Las causas son POSIBLES causas.
+
+3. No afirmes que una pieza está dañada
+   sin pruebas de diagnóstico.
+
+4. Si el significado cambia según fabricante,
+   indícalo.
+
+5. No inventes años específicos.
+
+6. No inventes números de piezas.
+
+7. No inventes valores eléctricos específicos
+   si no son confiables.
+
+8. La información debe ser útil para
+   un scanner automotriz.
+
+9. Responde en español.
+
+10. Devuelve solamente JSON válido.
+
+La estructura EXACTA debe ser:
 
 {
   "code": "string",
@@ -407,13 +376,10 @@ ${make || "genérica"}
 
     const openRouterResponse =
       await fetch(
-
         "https://openrouter.ai/api/v1/chat/completions",
-
         {
 
-          method:
-            "POST",
+          method: "POST",
 
           headers: {
 
@@ -431,53 +397,40 @@ ${make || "genérica"}
 
           },
 
-          body:
-            JSON.stringify({
+          body: JSON.stringify({
 
-              model:
-                "openrouter/free",
+            model:
+              "openrouter/free",
 
-              messages: [
+            messages: [
 
-                {
+              {
+                role: "system",
 
-                  role:
-                    "system",
-
-                  content:
-                    "Eres especialista en diagnóstico automotriz. Devuelve solamente JSON válido."
-
-                },
-
-                {
-
-                  role:
-                    "user",
-
-                  content:
-                    prompt
-
-                }
-
-              ],
-
-              response_format: {
-
-                type:
-                  "json_object"
-
+                content:
+                  "Eres especialista en diagnóstico automotriz. Devuelve solamente JSON válido."
               },
 
-              temperature:
-                0.2,
+              {
+                role: "user",
 
-              max_tokens:
-                1800
+                content:
+                  prompt
+              }
 
-            })
+            ],
+
+            response_format: {
+              type: "json_object"
+            },
+
+            temperature: 0.2,
+
+            max_tokens: 1800
+
+          })
 
         }
-
       );
 
 
@@ -487,24 +440,19 @@ ${make || "genérica"}
     =================================================
     */
 
-    if (
-      !openRouterResponse.ok
-    ) {
+    if (!openRouterResponse.ok) {
 
       const errorText =
         await openRouterResponse.text();
-
 
       console.error(
         "OPENROUTER ERROR:",
         errorText
       );
 
-
       return res.status(502).json({
 
-        success:
-          false,
+        success: false,
 
         error:
           "OpenRouter no pudo generar la información.",
@@ -536,13 +484,17 @@ ${make || "genérica"}
 
     if (!generatedText) {
 
+      console.error(
+        "OPENROUTER RESPONSE:",
+        JSON.stringify(openRouterData)
+      );
+
       return res.status(502).json({
 
-        success:
-          false,
+        success: false,
 
         error:
-          "OpenRouter no devolvió información."
+          "OpenRouter no devolvió información válida."
 
       });
 
@@ -551,41 +503,37 @@ ${make || "genérica"}
 
     /*
     =================================================
-    PARSEAR JSON
+    CONVERTIR JSON
     =================================================
     */
 
     let dtc;
 
-
     try {
 
       dtc =
         typeof generatedText === "string"
-
-          ? JSON.parse(
-              generatedText
-            )
-
+          ? JSON.parse(generatedText)
           : generatedText;
 
-    }
-
-    catch (error) {
+    } catch (jsonError) {
 
       console.error(
-        "JSON ERROR:",
+        "JSON PARSE ERROR:",
+        jsonError
+      );
+
+      console.error(
+        "RESPUESTA IA:",
         generatedText
       );
 
-
       return res.status(502).json({
 
-        success:
-          false,
+        success: false,
 
         error:
-          "OpenRouter devolvió información inválida.",
+          "OpenRouter devolvió información que no pudo convertirse a JSON.",
 
         details:
           String(generatedText)
@@ -597,14 +545,13 @@ ${make || "genérica"}
 
     /*
     =================================================
-    NORMALIZAR
+    NORMALIZAR DATOS
     =================================================
     */
 
     dtc.code =
       String(
-        dtc.code ||
-        code
+        dtc.code || code
       )
       .toUpperCase()
       .trim();
@@ -633,33 +580,25 @@ ${make || "genérica"}
 
 
     dtc.causes =
-      Array.isArray(
-        dtc.causes
-      )
+      Array.isArray(dtc.causes)
         ? dtc.causes
         : [];
 
 
     dtc.symptoms =
-      Array.isArray(
-        dtc.symptoms
-      )
+      Array.isArray(dtc.symptoms)
         ? dtc.symptoms
         : [];
 
 
     dtc.diagnosis =
-      Array.isArray(
-        dtc.diagnosis
-      )
+      Array.isArray(dtc.diagnosis)
         ? dtc.diagnosis
         : [];
 
 
     dtc.repairs =
-      Array.isArray(
-        dtc.repairs
-      )
+      Array.isArray(dtc.repairs)
         ? dtc.repairs
         : [];
 
@@ -669,6 +608,25 @@ ${make || "genérica"}
         dtc.severity ||
         "MEDIA"
       );
+
+
+    const validSeverities = [
+      "BAJA",
+      "MEDIA",
+      "ALTA",
+      "CRÍTICA"
+    ];
+
+
+    if (
+      !validSeverities.includes(
+        dtc.severity
+      )
+    ) {
+
+      dtc.severity = "MEDIA";
+
+    }
 
 
     dtc.vehicle_years =
@@ -692,106 +650,13 @@ ${make || "genérica"}
     */
 
     const {
-
-      data:
-        savedData,
-
-      error:
-        saveError
-
+      data: savedData,
+      error: saveError
     } = await supabase
 
       .from("dtc_codes")
 
-      .upsert(
-
-        {
-
-          code:
-            dtc.code,
-
-          make:
-            dtc.make,
-
-          title:
-            dtc.title,
-
-          problem:
-            dtc.problem,
-
-          causes:
-            dtc.causes,
-
-          symptoms:
-            dtc.symptoms,
-
-          diagnosis:
-            dtc.diagnosis,
-
-          repairs:
-            dtc.repairs,
-
-          severity:
-            dtc.severity,
-
-          vehicle_years:
-            dtc.vehicle_years,
-
-          system:
-            dtc.system,
-
-          source:
-            "openrouter"
-
-        },
-
-        {
-
-          onConflict:
-            "code"
-
-        }
-
-      )
-
-      .select();
-
-
-    /*
-    =================================================
-    ERROR AL GUARDAR
-    =================================================
-    */
-
-    if (saveError) {
-
-      console.error(
-        "SUPABASE SAVE ERROR:",
-        saveError
-      );
-
-
-      /*
-      La IA sí generó el resultado,
-      pero no fingimos que se guardó.
-      */
-
-      return res.status(200).json({
-
-        success:
-          true,
-
-        source:
-          "openrouter",
-
-        saved:
-          false,
-
-        warning:
-          "La información fue generada, pero no pudo guardarse en Supabase.",
-
-        save_error:
-          saveError.message,
+      .insert({
 
         code:
           dtc.code,
@@ -824,7 +689,94 @@ ${make || "genérica"}
           dtc.vehicle_years,
 
         system:
-          dtc.system
+          dtc.system,
+
+        source:
+          "openrouter"
+
+      })
+
+      .select();
+
+
+    /*
+    =================================================
+    ERROR AL GUARDAR
+    =================================================
+    */
+
+    if (saveError) {
+
+      console.error(
+        "SUPABASE INSERT ERROR:",
+        saveError
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        error:
+          "OpenRouter generó la información, pero Supabase no pudo guardarla.",
+
+        details:
+          saveError.message,
+
+        code:
+          dtc.code,
+
+        generated:
+          dtc
+
+      });
+
+    }
+
+
+    /*
+    =================================================
+    VERIFICAR QUE REALMENTE SE GUARDÓ
+    =================================================
+    */
+
+    const {
+      data: verifyData,
+      error: verifyError
+    } = await supabase
+
+      .from("dtc_codes")
+
+      .select("id, code, source, created_at")
+
+      .eq("code", dtc.code)
+
+      .limit(1);
+
+
+    if (verifyError) {
+
+      console.error(
+        "SUPABASE VERIFY ERROR:",
+        verifyError
+      );
+
+    }
+
+
+    if (
+      !verifyData ||
+      verifyData.length === 0
+    ) {
+
+      return res.status(500).json({
+
+        success: false,
+
+        error:
+          "El código fue generado pero no se encontró después de guardarlo.",
+
+        code:
+          dtc.code
 
       });
 
@@ -839,14 +791,11 @@ ${make || "genérica"}
 
     return res.status(200).json({
 
-      success:
-        true,
+      success: true,
 
-      source:
-        "openrouter",
+      source: "openrouter",
 
-      saved:
-        true,
+      saved: true,
 
       code:
         dtc.code,
@@ -884,20 +833,16 @@ ${make || "genérica"}
     });
 
 
-  }
-
-  catch (error) {
+  } catch (error) {
 
     console.error(
       "SERVER ERROR:",
       error
     );
 
-
     return res.status(500).json({
 
-      success:
-        false,
+      success: false,
 
       error:
         error.message
