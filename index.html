@@ -1,1852 +1,628 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Scanner DTC Automotriz</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #080b12;
-      color: #fff;
-      min-height: 100vh;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 900px;
-      margin: auto;
-      padding: 18px;
-    }
-
-    /* HEADER */
-
-    .header {
-      text-align: center;
-      padding: 25px 10px 20px;
-    }
-
-    .logo {
-      font-size: 34px;
-      font-weight: 900;
-      color: #00e5ff;
-      text-shadow: 0 0 18px rgba(0, 229, 255, .35);
-    }
-
-    .subtitle {
-      color: #9ba4b5;
-      margin-top: 7px;
-      font-size: 14px;
-    }
-
-    /* TABS */
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .tab {
-      flex: 1;
-      border: 1px solid #202938;
-      background: #101621;
-      color: #aeb7c8;
-      padding: 14px 10px;
-      border-radius: 13px;
-      cursor: pointer;
-      font-weight: 800;
-      transition: .2s;
-    }
-
-    .tab.active {
-      background: #00d9ff;
-      color: #001018;
-      border-color: #00d9ff;
-    }
-
-    /* CARDS */
-
-    .card {
-      background: #10151f;
-      border: 1px solid #202938;
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 10px 35px rgba(0,0,0,.18);
-    }
-
-    .card h2 {
-      font-size: 21px;
-      margin-bottom: 7px;
-    }
-
-    .card-description {
-      color: #8e99aa;
-      font-size: 14px;
-      margin-bottom: 18px;
-    }
-
-    /* INPUTS */
-
-    label {
-      display: block;
-      color: #b8c1d1;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 7px;
-    }
-
-    input,
-    select {
-      width: 100%;
-      padding: 14px;
-      border-radius: 11px;
-      border: 1px solid #2b3546;
-      background: #080c13;
-      color: white;
-      outline: none;
-      font-size: 15px;
-      margin-bottom: 14px;
-    }
-
-    input:focus,
-    select:focus {
-      border-color: #00d9ff;
-      box-shadow: 0 0 0 2px rgba(0,217,255,.08);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    /* BUTTON */
-
-    .btn {
-      width: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 15px;
-      background: #00d9ff;
-      color: #001018;
-      font-size: 15px;
-      font-weight: 900;
-      cursor: pointer;
-      transition: .2s;
-    }
-
-    .btn:hover {
-      filter: brightness(1.08);
-    }
-
-    .btn:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    .btn-secondary {
-      background: #18212f;
-      color: white;
-      border: 1px solid #2b3546;
-    }
-
-    /* STATUS */
-
-    .status {
-      display: none;
-      padding: 14px;
-      border-radius: 12px;
-      margin-top: 15px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .status.loading {
-      display: block;
-      background: #101d29;
-      border: 1px solid #17465a;
-      color: #7eeaff;
-    }
-
-    .status.error {
-      display: block;
-      background: #291116;
-      border: 1px solid #68222d;
-      color: #ff8794;
-    }
-
-    /* RESULT */
-
-    #result {
-      display: none;
-    }
-
-    .result-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    .dtc-code {
-      font-size: 32px;
-      font-weight: 900;
-      color: #00e5ff;
-    }
-
-    .badge {
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: #263142;
-      color: #d9e1ed;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .section {
-      margin-top: 18px;
-    }
-
-    .section-title {
-      font-size: 15px;
-      font-weight: 900;
-      margin-bottom: 9px;
-    }
-
-    .section-content {
-      color: #c2cad6;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    li {
-      margin-bottom: 7px;
-    }
-
-    /* DIAGRAM */
-
-    #diagramResult {
-      display: none;
-    }
-
-    .diagram-meta {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-
-    .meta {
-      background: #080d15;
-      border: 1px solid #202938;
-      padding: 11px;
-      border-radius: 10px;
-    }
-
-    .meta small {
-      display: block;
-      color: #7f8999;
-      font-size: 11px;
-      margin-bottom: 4px;
-    }
-
-    .meta strong {
-      font-size: 13px;
-      word-break: break-word;
-    }
-
-    .diagram-box {
-      background: #080c12;
-      border: 1px solid #202938;
-      border-radius: 14px;
-      padding: 18px;
-      overflow-x: auto;
-    }
-
-    .diagram-canvas {
-      min-width: 600px;
-      min-height: 260px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 25px;
-      flex-wrap: wrap;
-    }
-
-    .component {
-      background: #111b28;
-      border: 1px solid #00bcd4;
-      border-radius: 12px;
-      padding: 13px;
-      min-width: 120px;
-      text-align: center;
-      position: relative;
-    }
-
-    .component-name {
-      font-weight: 900;
-      font-size: 13px;
-    }
-
-    .component-type {
-      color: #7fdded;
-      font-size: 10px;
-      margin-top: 5px;
-    }
-
-    .connection-list {
-      margin-top: 18px;
-    }
-
-    .connection {
-      padding: 10px;
-      border-left: 3px solid #00d9ff;
-      background: #0c121b;
-      margin-bottom: 8px;
-      color: #b9c4d2;
-      font-size: 13px;
-    }
-
-    .warning {
-      margin-top: 15px;
-      padding: 12px;
-      background: #211c0e;
-      border: 1px solid #594b1c;
-      color: #e6d27a;
-      border-radius: 10px;
-      font-size: 13px;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .empty {
-      color: #7f8999;
-      text-align: center;
-      padding: 25px 10px;
-    }
-
-    /* MOBILE */
-
-    @media (max-width: 650px) {
-
-      .app {
-        padding: 12px;
-      }
-
-      .logo {
-        font-size: 27px;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
-
-      .diagram-meta {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .dtc-code {
-        font-size: 27px;
-      }
-
-      .card {
-        padding: 16px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scanner DTC</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ background:#070b12;
+ color:#fff;
+ font-family:Arial,sans-serif;
+}
+
+.app{
+ max-width:850px;
+ margin:auto;
+ padding:18px;
+}
+
+header{
+ text-align:center;
+ padding:25px 0;
+}
+
+.logo{
+ font-size:32px;
+ font-weight:900;
+ color:#00e5ff;
+}
+
+.sub{
+ color:#8c98aa;
+ margin-top:6px;
+}
+
+.tabs{
+ display:flex;
+ gap:10px;
+ margin-bottom:18px;
+}
+
+.tab{
+ flex:1;
+ padding:14px;
+ border:1px solid #263142;
+ border-radius:12px;
+ background:#111824;
+ color:#aeb8c8;
+ font-weight:bold;
+ cursor:pointer;
+}
+
+.tab.active{
+ background:#00d9ff;
+ color:#001018;
+}
+
+.card{
+ background:#101722;
+ border:1px solid #222d3d;
+ border-radius:18px;
+ padding:20px;
+ margin-bottom:18px;
+}
+
+h2{
+ margin-top:0;
+}
+
+p{
+ color:#8f9bad;
+}
+
+label{
+ display:block;
+ margin:14px 0 7px;
+ color:#b8c2d1;
+ font-size:13px;
+ font-weight:bold;
+}
+
+input{
+ width:100%;
+ padding:14px;
+ border-radius:11px;
+ border:1px solid #2a3749;
+ background:#080d14;
+ color:#fff;
+ font-size:15px;
+ outline:none;
+}
+
+input:focus{
+ border-color:#00d9ff;
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+}
+
+button.main{
+ width:100%;
+ margin-top:16px;
+ padding:15px;
+ border:0;
+ border-radius:12px;
+ background:#00d9ff;
+ color:#001018;
+ font-weight:900;
+ font-size:15px;
+ cursor:pointer;
+}
+
+button:disabled{
+ opacity:.5;
+}
+
+.status{
+ margin-top:14px;
+ padding:12px;
+ border-radius:10px;
+ display:none;
+}
+
+.loading{
+ display:block;
+ background:#10202b;
+ color:#7deaff;
+}
+
+.error{
+ display:block;
+ background:#291217;
+ color:#ff8b98;
+}
+
+.hidden{
+ display:none!important;
+}
+
+.result{
+ display:none;
+}
+
+.code{
+ color:#00e5ff;
+ font-size:30px;
+ font-weight:900;
+}
+
+.head{
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ align-items:center;
+}
+
+.badge{
+ background:#263142;
+ padding:7px 12px;
+ border-radius:20px;
+ font-size:12px;
+ font-weight:bold;
+}
+
+.section{
+ margin-top:20px;
+}
+
+.title{
+ font-weight:900;
+ margin-bottom:8px;
+}
+
+.content{
+ color:#c4ccd8;
+ line-height:1.6;
+}
+
+ul{
+ padding-left:20px;
+}
+
+li{
+ margin-bottom:6px;
+}
+
+.meta{
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:8px;
+ margin:18px 0;
+}
+
+.meta div{
+ background:#080d14;
+ border:1px solid #222d3d;
+ padding:12px;
+ border-radius:10px;
+}
+
+.meta small{
+ display:block;
+ color:#778396;
+ font-size:10px;
+ margin-bottom:5px;
+}
+
+.meta strong{
+ font-size:13px;
+ word-break:break-word;
+}
+
+.diagram{
+ display:flex;
+ flex-wrap:wrap;
+ justify-content:center;
+ gap:12px;
+ padding:20px;
+ background:#080d14;
+ border:1px solid #222d3d;
+ border-radius:14px;
+}
+
+.component{
+ width:130px;
+ padding:14px 8px;
+ text-align:center;
+ border:1px solid #00bcd4;
+ border-radius:12px;
+ background:#111d2b;
+}
+
+.component b{
+ display:block;
+ font-size:13px;
+}
+
+.component small{
+ color:#79dbea;
+}
+
+.connection{
+ padding:10px;
+ margin-top:8px;
+ border-left:3px solid #00d9ff;
+ background:#0b121b;
+ color:#bfc8d5;
+ font-size:13px;
+}
+
+.warning{
+ margin-top:10px;
+ padding:12px;
+ background:#211d0d;
+ color:#e4d17c;
+ border-radius:10px;
+}
+
+@media(max-width:600px){
+ .app{padding:12px}
+ .logo{font-size:27px}
+ .grid{grid-template-columns:1fr}
+ .meta{grid-template-columns:1fr 1fr}
+}
+</style>
 </head>
 
 <body>
 
 <div class="app">
 
-  <!-- HEADER -->
+<header>
+ <div class="logo">🔧 SCANNER DTC</div>
+ <div class="sub">Diagnóstico automotriz inteligente</div>
+</header>
 
-  <header class="header">
+<div class="tabs">
+ <button class="tab active" id="dtcTab"
+ onclick="section('dtc')">
+ 🔎 Códigos DTC
+ </button>
 
-    <div class="logo">
-      🔧 SCANNER DTC
-    </div>
+ <button class="tab" id="diagramTab"
+ onclick="section('diagram')">
+ 📊 Diagramas
+ </button>
+</div>
 
-    <div class="subtitle">
-      Diagnóstico automotriz inteligente
-    </div>
 
-  </header>
+<!-- DTC -->
 
+<section id="dtc">
 
-  <!-- TABS -->
+<div class="card">
+<h2>🔎 Buscar código DTC</h2>
+<p>Consulta códigos guardados o genera información nueva.</p>
 
-  <div class="tabs">
+<label>Código</label>
+<input id="code" maxlength="5" placeholder="P2122">
 
-    <button
-      class="tab active"
-      id="tabDtc"
-      onclick="showSection('dtc')"
-    >
-      🔎 Códigos DTC
-    </button>
-
-    <button
-      class="tab"
-      id="tabDiagram"
-      onclick="showSection('diagram')"
-    >
-      📊 Diagramas
-    </button>
+<label>Marca opcional</label>
+<input id="make" placeholder="Chevrolet">
 
-  </div>
+<button class="main" id="dtcBtn" onclick="searchDTC()">
+🔎 BUSCAR CÓDIGO
+</button>
 
+<div id="dtcStatus" class="status"></div>
+</div>
 
-  <!-- ================================
-       DTC
-       ================================= -->
+<div id="dtcResult" class="card result">
 
-  <section id="dtcSection">
+<div class="head">
+<div>
+<div id="rCode" class="code"></div>
+<div id="rTitle"></div>
+</div>
+<div id="rSeverity" class="badge"></div>
+</div>
 
-    <div class="card">
+<div class="section">
+<div class="title">🚗 Marca</div>
+<div id="rMake" class="content"></div>
+</div>
 
-      <h2>
-        🔎 Buscar código DTC
-      </h2>
+<div class="section">
+<div class="title">🔴 Problema</div>
+<div id="rProblem" class="content"></div>
+</div>
 
-      <p class="card-description">
-        Consulta códigos almacenados o genera información
-        de diagnóstico para códigos nuevos.
-      </p>
+<div class="section">
+<div class="title">🔍 Causas posibles</div>
+<div id="rCauses" class="content"></div>
+</div>
 
-      <label for="dtcCode">
-        Código de error
-      </label>
+<div class="section">
+<div class="title">🚨 Síntomas</div>
+<div id="rSymptoms" class="content"></div>
+</div>
 
-      <input
-        id="dtcCode"
-        type="text"
-        maxlength="5"
-        placeholder="Ejemplo: P0300"
-        autocomplete="off"
-        autocapitalize="characters"
-      >
+<div class="section">
+<div class="title">🧪 Diagnóstico</div>
+<div id="rDiagnosis" class="content"></div>
+</div>
 
-      <label for="dtcMake">
-        Marca (opcional)
-      </label>
+<div class="section">
+<div class="title">🔧 Posibles arreglos</div>
+<div id="rRepairs" class="content"></div>
+</div>
 
-      <input
-        id="dtcMake"
-        type="text"
-        placeholder="Ejemplo: Chevrolet"
-      >
+<div class="section">
+<div class="title">🚘 Años</div>
+<div id="rYears" class="content"></div>
+</div>
 
-      <button
-        class="btn"
-        id="searchDtcBtn"
-        onclick="searchDTC()"
-      >
-        🔎 BUSCAR CÓDIGO
-      </button>
+<div class="section">
+<div class="title">⚙️ Sistema</div>
+<div id="rSystem" class="content"></div>
+</div>
 
-      <div
-        id="dtcStatus"
-        class="status"
-      ></div>
+</div>
+</section>
 
-    </div>
 
+<!-- DIAGRAMAS -->
 
-    <!-- RESULTADO DTC -->
+<section id="diagram" class="hidden">
 
-    <div
-      class="card"
-      id="result"
-    >
+<div class="card">
+<h2>📊 Diagramas automotrices</h2>
+<p>Busca diagramas independientemente de los códigos DTC.</p>
 
-      <div class="result-header">
+<div class="grid">
 
-        <div>
-          <div
-            class="dtc-code"
-            id="resultCode"
-          >
-            P0000
-          </div>
+<div>
+<label>Marca</label>
+<input id="dMake" placeholder="Chevrolet">
+</div>
 
-          <div
-            id="resultTitle"
-            style="margin-top:5px;color:#aeb7c8;"
-          >
-          </div>
-        </div>
+<div>
+<label>Modelo</label>
+<input id="dModel" placeholder="Silverado">
+</div>
 
-        <div
-          class="badge"
-          id="resultSeverity"
-        >
-          MEDIA
-        </div>
+</div>
 
-      </div>
+<div class="grid">
 
+<div>
+<label>Año</label>
+<input id="dYear" type="number" placeholder="2020">
+</div>
 
-      <div class="section">
+<div>
+<label>Sistema</label>
+<input id="dSystem" placeholder="EVAP">
+</div>
 
-        <div class="section-title">
-          🚗 Marca
-        </div>
+</div>
 
-        <div
-          class="section-content"
-          id="resultMake"
-        ></div>
+<button class="main" id="diagramBtn" onclick="searchDiagram()">
+📊 BUSCAR DIAGRAMA
+</button>
 
-      </div>
+<div id="diagramStatus" class="status"></div>
+</div>
 
 
-      <div class="section">
+<div id="diagramResult" class="card result">
 
-        <div class="section-title">
-          🔴 Problema
-        </div>
+<h2 id="diagramTitle"></h2>
+<p id="diagramDescription"></p>
 
-        <div
-          class="section-content"
-          id="resultProblem"
-        ></div>
+<div class="meta">
+<div><small>MARCA</small><strong id="xMake"></strong></div>
+<div><small>MODELO</small><strong id="xModel"></strong></div>
+<div><small>AÑO</small><strong id="xYear"></strong></div>
+<div><small>SISTEMA</small><strong id="xSystem"></strong></div>
+</div>
 
-      </div>
+<div class="section">
+<div class="title">🔌 Componentes</div>
+<div id="components" class="diagram"></div>
+</div>
 
+<div class="section">
+<div class="title">🔗 Conexiones</div>
+<div id="connections"></div>
+</div>
 
-      <div class="section">
+<div id="warnings"></div>
 
-        <div class="section-title">
-          🔍 Causas posibles
-        </div>
-
-        <div
-          class="section-content"
-          id="resultCauses"
-        ></div>
-
-      </div>
-
-
-      <div class="section">
-
-        <div class="section-title">
-          🚨 Síntomas
-        </div>
-
-        <div
-          class="section-content"
-          id="resultSymptoms"
-        ></div>
-
-      </div>
-
-
-      <div class="section">
-
-        <div class="section-title">
-          🧪 Diagnóstico
-        </div>
-
-        <div
-          class="section-content"
-          id="resultDiagnosis"
-        ></div>
-
-      </div>
-
-
-      <div class="section">
-
-        <div class="section-title">
-          🔧 Posibles arreglos
-        </div>
-
-        <div
-          class="section-content"
-          id="resultRepairs"
-        ></div>
-
-      </div>
-
-
-      <div class="section">
-
-        <div class="section-title">
-          🚘 Años
-        </div>
-
-        <div
-          class="section-content"
-          id="resultYears"
-        ></div>
-
-      </div>
-
-
-      <div class="section">
-
-        <div class="section-title">
-          ⚙️ Sistema
-        </div>
-
-        <div
-          class="section-content"
-          id="resultSystem"
-        ></div>
-
-      </div>
-
-
-      <div
-        class="section-content"
-        id="resultSource"
-        style="
-          margin-top:20px;
-          color:#6f7b8d;
-          font-size:12px;
-        "
-      ></div>
-
-    </div>
-
-  </section>
-
-
-  <!-- ================================
-       DIAGRAMAS
-       ================================= -->
-
-  <section
-    id="diagramSection"
-    class="hidden"
-  >
-
-    <div class="card">
-
-      <h2>
-        📊 Diagramas automotrices
-      </h2>
-
-      <p class="card-description">
-        Busca un diagrama por separado usando
-        marca, modelo, año y sistema.
-      </p>
-
-
-      <div class="grid">
-
-        <div>
-
-          <label for="diagramMake">
-            Marca
-          </label>
-
-          <input
-            id="diagramMake"
-            type="text"
-            placeholder="Ej. Chevrolet"
-          >
-
-        </div>
-
-
-        <div>
-
-          <label for="diagramModel">
-            Modelo
-          </label>
-
-          <input
-            id="diagramModel"
-            type="text"
-            placeholder="Ej. Silverado"
-          >
-
-        </div>
-
-      </div>
-
-
-      <div class="grid">
-
-        <div>
-
-          <label for="diagramYear">
-            Año
-          </label>
-
-          <input
-            id="diagramYear"
-            type="number"
-            placeholder="Ej. 2020"
-            min="1900"
-            max="2100"
-          >
-
-        </div>
-
-
-        <div>
-
-          <label for="diagramSystem">
-            Sistema
-          </label>
-
-          <input
-            id="diagramSystem"
-            type="text"
-            placeholder="Ej. EVAP"
-          >
-
-        </div>
-
-      </div>
-
-
-      <button
-        class="btn"
-        id="searchDiagramBtn"
-        onclick="searchDiagram()"
-      >
-        📊 BUSCAR DIAGRAMA
-      </button>
-
-
-      <div
-        id="diagramStatus"
-        class="status"
-      ></div>
-
-    </div>
-
-
-    <!-- RESULTADO DIAGRAMA -->
-
-    <div
-      class="card"
-      id="diagramResult"
-    >
-
-      <h2 id="diagramTitle">
-        Diagrama
-      </h2>
-
-      <p
-        id="diagramDescription"
-        class="card-description"
-      ></p>
-
-
-      <div class="diagram-meta">
-
-        <div class="meta">
-
-          <small>
-            MARCA
-          </small>
-
-          <strong id="diagramMakeResult">
-          </strong>
-
-        </div>
-
-
-        <div class="meta">
-
-          <small>
-            MODELO
-          </small>
-
-          <strong id="diagramModelResult">
-          </strong>
-
-        </div>
-
-
-        <div class="meta">
-
-          <small>
-            AÑO
-          </small>
-
-          <strong id="diagramYearResult">
-          </strong>
-
-        </div>
-
-
-        <div class="meta">
-
-          <small>
-            SISTEMA
-          </small>
-
-          <strong id="diagramSystemResult">
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      <div class="section">
-
-        <div class="section-title">
-          🔌 Componentes
-        </div>
-
-        <div class="diagram-box">
-
-          <div
-            class="diagram-canvas"
-            id="diagramCanvas"
-          ></div>
-
-        </div>
-
-      </div>
-
-
-      <div class="section">
-
-        <div class="section-title">
-          🔗 Conexiones
-        </div>
-
-        <div
-          class="connection-list"
-          id="connectionList"
-        ></div>
-
-      </div>
-
-
-      <div
-        id="diagramWarnings"
-      ></div>
-
-
-      <div
-        id="diagramSource"
-        style="
-          margin-top:20px;
-          color:#6f7b8d;
-          font-size:12px;
-        "
-      ></div>
-
-    </div>
-
-  </section>
+</div>
+</section>
 
 </div>
 
 
 <script>
 
-/*
-=========================================================
-CAMBIO DE SECCIÓN
-=========================================================
-*/
+function $(id){
+ return document.getElementById(id);
+}
 
-function showSection(section) {
+function section(name){
 
-  const dtcSection =
-    document.getElementById(
-      "dtcSection"
-    );
+ $("dtc").classList.toggle("hidden",name!=="dtc");
+ $("diagram").classList.toggle("hidden",name!=="diagram");
 
-  const diagramSection =
-    document.getElementById(
-      "diagramSection"
-    );
+ $("dtcTab").classList.toggle("active",name==="dtc");
+ $("diagramTab").classList.toggle("active",name==="diagram");
+}
 
-  const tabDtc =
-    document.getElementById(
-      "tabDtc"
-    );
+function safe(v){
+ return String(v ?? "")
+ .replaceAll("&","&amp;")
+ .replaceAll("<","&lt;")
+ .replaceAll(">","&gt;")
+ .replaceAll('"',"&quot;")
+ .replaceAll("'","&#039;");
+}
 
-  const tabDiagram =
-    document.getElementById(
-      "tabDiagram"
-    );
+function list(id,data){
 
-
-  if (section === "dtc") {
-
-    dtcSection.classList.remove(
-      "hidden"
-    );
-
-    diagramSection.classList.add(
-      "hidden"
-    );
-
-    tabDtc.classList.add(
-      "active"
-    );
-
-    tabDiagram.classList.remove(
-      "active"
-    );
-
-  } else {
-
-    dtcSection.classList.add(
-      "hidden"
-    );
-
-    diagramSection.classList.remove(
-      "hidden"
-    );
-
-    tabDtc.classList.remove(
-      "active"
-    );
-
-    tabDiagram.classList.add(
-      "active"
-    );
-
-  }
-
+ $(id).innerHTML =
+ Array.isArray(data) && data.length
+ ? "<ul>"+data.map(x=>"<li>"+safe(x)+"</li>").join("")+"</ul>"
+ : "No hay información disponible.";
 }
 
 
-/*
-=========================================================
-ESCAPAR HTML
-=========================================================
-*/
+async function searchDTC(){
 
-function escapeHTML(value) {
+ const code=$("code").value.trim().toUpperCase();
+ const make=$("make").value.trim();
 
-  return String(
-    value ?? ""
-  )
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+ if(!/^[PBCU][0-9A-F]{4}$/.test(code)){
+  $("dtcStatus").className="status error";
+  $("dtcStatus").textContent="⚠️ Código inválido. Ejemplo: P2122";
+  return;
+ }
+
+ $("dtcBtn").disabled=true;
+ $("dtcStatus").className="status loading";
+ $("dtcStatus").textContent="🔎 Consultando...";
+ $("dtcResult").style.display="none";
+
+ try{
+
+  let url="/api/dtc?code="+encodeURIComponent(code);
+
+  if(make){
+   url+="&make="+encodeURIComponent(make);
+  }
+
+  const r=await fetch(url);
+  const data=await r.json();
+
+  if(!r.ok || !data.success){
+   throw new Error(data.error||"Error en la API");
+  }
+
+  $("rCode").textContent=data.code;
+  $("rTitle").textContent=data.title||"Código DTC";
+  $("rSeverity").textContent=data.severity||"MEDIA";
+  $("rMake").textContent=data.make||"Genérica";
+  $("rProblem").textContent=data.problem||"No disponible";
+  $("rYears").textContent=data.vehicle_years||"No especificado";
+  $("rSystem").textContent=data.system||"No especificado";
+
+  list("rCauses",data.causes);
+  list("rSymptoms",data.symptoms);
+  list("rDiagnosis",data.diagnosis);
+  list("rRepairs",data.repairs);
+
+  $("dtcResult").style.display="block";
+  $("dtcStatus").style.display="none";
+
+ }catch(e){
+
+  $("dtcStatus").className="status error";
+  $("dtcStatus").textContent="⚠️ "+e.message;
+
+ }finally{
+
+  $("dtcBtn").disabled=false;
+ }
 }
 
 
-/*
-=========================================================
-MOSTRAR LISTA
-=========================================================
-*/
+async function searchDiagram(){
 
-function renderList(elementId, items) {
+ const make=$("dMake").value.trim();
+ const model=$("dModel").value.trim();
+ const year=$("dYear").value.trim();
+ const system=$("dSystem").value.trim();
 
-  const element =
-    document.getElementById(
-      elementId
-    );
+ if(!make||!model||!year||!system){
+  $("diagramStatus").className="status error";
+  $("diagramStatus").textContent="⚠️ Completa todos los campos.";
+  return;
+ }
 
-  if (
-    !Array.isArray(items) ||
-    items.length === 0
-  ) {
+ $("diagramBtn").disabled=true;
+ $("diagramStatus").className="status loading";
+ $("diagramStatus").textContent="📊 Consultando diagrama...";
+ $("diagramResult").style.display="none";
 
-    element.innerHTML =
-      "No hay información disponible.";
+ try{
 
-    return;
+  const url=
+   "/api/diagram?make="+encodeURIComponent(make)+
+   "&model="+encodeURIComponent(model)+
+   "&year="+encodeURIComponent(year)+
+   "&system="+encodeURIComponent(system);
 
+  const r=await fetch(url);
+  const data=await r.json();
+
+  if(!r.ok||!data.success){
+   throw new Error(data.error||"Error en la API");
   }
 
-  element.innerHTML =
-    `
-      <ul>
-        ${
-          items
-            .map(
-              item =>
-                `<li>${escapeHTML(item)}</li>`
-            )
-            .join("")
-        }
-      </ul>
-    `;
-
-}
-
-
-/*
-=========================================================
-BUSCAR DTC
-=========================================================
-*/
-
-async function searchDTC() {
-
-  const codeInput =
-    document.getElementById(
-      "dtcCode"
-    );
-
-  const makeInput =
-    document.getElementById(
-      "dtcMake"
-    );
-
-  const button =
-    document.getElementById(
-      "searchDtcBtn"
-    );
-
-  const status =
-    document.getElementById(
-      "dtcStatus"
-    );
-
-
-  const code =
-    codeInput.value
-      .trim()
-      .toUpperCase();
-
-
-  const make =
-    makeInput.value
-      .trim()
-      .toLowerCase();
-
-
-  /*
-  VALIDACIÓN
-  */
-
-  if (
-    !/^[PBCU][0-9A-F]{4}$/.test(
-      code
-    )
-  ) {
-
-    status.className =
-      "status error";
-
-    status.textContent =
-      "⚠️ Escribe un código DTC válido, por ejemplo P0300.";
-
-    return;
-
-  }
-
-
-  /*
-  CARGANDO
-  */
-
-  button.disabled = true;
-
-  status.className =
-    "status loading";
-
-  status.textContent =
-    "🔎 Consultando información...";
-
-
-  document.getElementById(
-    "result"
-  ).style.display = "none";
-
-
-  try {
-
-    let url =
-      `/api/dtc/${encodeURIComponent(code)}`;
-
-
-    if (make) {
-
-      url +=
-        `?make=${encodeURIComponent(make)}`;
-
-    }
-
-
-    const response =
-      await fetch(url);
-
-
-    const data =
-      await response.json();
-
-
-    if (
-      !response.ok ||
-      !data.success
-    ) {
-
-      throw new Error(
-        data.error ||
-        "La API no respondió correctamente."
-      );
-
-    }
-
-
-    showDTCResult(data);
-
-
-    status.className =
-      "status";
-
-    status.style.display =
-      "none";
-
-
-  } catch (error) {
-
-    console.error(error);
-
-
-    status.className =
-      "status error";
-
-    status.textContent =
-      "⚠️ " +
-      (
-        error.message ||
-        "La API no respondió correctamente."
-      );
-
-  } finally {
-
-    button.disabled = false;
-
-  }
-
-}
-
-
-/*
-=========================================================
-MOSTRAR DTC
-=========================================================
-*/
-
-function showDTCResult(data) {
-
-  document.getElementById(
-    "result"
-  ).style.display = "block";
-
-
-  document.getElementById(
-    "resultCode"
-  ).textContent =
-    data.code || "----";
-
-
-  document.getElementById(
-    "resultTitle"
-  ).textContent =
-    data.title || "Código DTC";
-
-
-  document.getElementById(
-    "resultSeverity"
-  ).textContent =
-    data.severity || "MEDIA";
-
-
-  document.getElementById(
-    "resultMake"
-  ).textContent =
-    data.make || "Genérica";
-
-
-  document.getElementById(
-    "resultProblem"
-  ).textContent =
-    data.problem ||
-    "No hay información disponible.";
-
-
-  renderList(
-    "resultCauses",
-    data.causes
-  );
-
-
-  renderList(
-    "resultSymptoms",
-    data.symptoms
-  );
-
-
-  renderList(
-    "resultDiagnosis",
-    data.diagnosis
-  );
-
-
-  renderList(
-    "resultRepairs",
-    data.repairs
-  );
-
-
-  document.getElementById(
-    "resultYears"
-  ).textContent =
-    data.vehicle_years ||
-    "No especificado";
-
-
-  document.getElementById(
-    "resultSystem"
-  ).textContent =
-    data.system ||
-    "No especificado";
-
-
-  document.getElementById(
-    "resultSource"
-  ).textContent =
-    data.source === "supabase"
-      ? "⚡ Información recuperada desde la base de datos."
-      : "🤖 Información generada y guardada en la base de datos.";
-
-}
-
-
-/*
-=========================================================
-BUSCAR DIAGRAMA
-=========================================================
-*/
-
-async function searchDiagram() {
-
-  const make =
-    document.getElementById(
-      "diagramMake"
-    ).value.trim();
-
-  const model =
-    document.getElementById(
-      "diagramModel"
-    ).value.trim();
-
-  const year =
-    document.getElementById(
-      "diagramYear"
-    ).value.trim();
-
-  const system =
-    document.getElementById(
-      "diagramSystem"
-    ).value.trim();
-
-
-  const button =
-    document.getElementById(
-      "searchDiagramBtn"
-    );
-
-  const status =
-    document.getElementById(
-      "diagramStatus"
-    );
-
-
-  /*
-  VALIDACIÓN
-  */
-
-  if (
-    !make ||
-    !model ||
-    !year ||
-    !system
-  ) {
-
-    status.className =
-      "status error";
-
-    status.textContent =
-      "⚠️ Completa marca, modelo, año y sistema.";
-
-    return;
-
-  }
-
-
-  /*
-  CARGANDO
-  */
-
-  button.disabled = true;
-
-  status.className =
-    "status loading";
-
-  status.textContent =
-    "📊 Consultando diagrama...";
-
-
-  document.getElementById(
-  "diagramResult"
-).style.display = "none";
-
-
-try {
-
-  let url =
-    `/api/diagram?make=${encodeURIComponent(make)}` +
-    `&model=${encodeURIComponent(model)}` +
-    `&year=${encodeURIComponent(year)}` +
-    `&system=${encodeURIComponent(system)}`;
-
-
-  const response =
-    await fetch(url);
-
-
-  const data =
-    await response.json();
-
-
-  if (
-    !response.ok ||
-    !data.success
-  ) {
-
-    throw new Error(
-      data.error ||
-      "La API no respondió correctamente."
-    );
-
-  }
-
-
-  showDiagramResult(data);
-
-
-  status.className =
-    "status";
-
-  status.style.display =
-    "none";
-
-
-} catch (error) {
-
-  console.error(
-    "DIAGRAM ERROR:",
-    error
-  );
-
-
-  status.className =
-    "status error";
-
-  status.style.display =
-    "block";
-
-  status.textContent =
-    "⚠️ " +
-    (
-      error.message ||
-      "No se pudo obtener el diagrama."
-    );
-
-
-} finally {
-
-  button.disabled = false;
-
-  /*
-  Restaurar botón
-  */
-
-  button.textContent =
-    "📊 BUSCAR DIAGRAMA";
-
-}
-
-}
-
-
-/*
-=========================================================
-MOSTRAR DIAGRAMA
-=========================================================
-*/
-
-function showDiagramResult(data) {
-
-  const result =
-    document.getElementById(
-      "diagramResult"
-    );
-
-
-  result.style.display =
-    "block";
-
-
-  /*
-  DATOS PRINCIPALES
-  */
-
-  document.getElementById(
-    "diagramTitle"
-  ).textContent =
-    data.title ||
-    "Diagrama automotriz";
-
-
-  document.getElementById(
-    "diagramDescription"
-  ).textContent =
-    data.description ||
-    "Sin descripción disponible.";
-
-
-  document.getElementById(
-    "diagramMakeResult"
-  ).textContent =
-    data.make ||
-    "No especificado";
-
-
-  document.getElementById(
-    "diagramModelResult"
-  ).textContent =
-    data.model ||
-    "No especificado";
-
-
-  document.getElementById(
-    "diagramYearResult"
-  ).textContent =
-    data.year ||
-    "No especificado";
-
-
-  document.getElementById(
-    "diagramSystemResult"
-  ).textContent =
-    data.system ||
-    "No especificado";
-
-
-  /*
-  =======================================================
-  COMPONENTES
-  =======================================================
-  */
-
-  const canvas =
-    document.getElementById(
-      "diagramCanvas"
-    );
-
-
-  canvas.innerHTML =
-    "";
-
-
-  const components =
-    Array.isArray(data.components)
-      ? data.components
-      : [];
-
-
-  if (
-    components.length === 0
-  ) {
-
-    canvas.innerHTML =
-      `
-        <div class="empty">
-          No hay componentes disponibles.
-        </div>
-      `;
-
-  } else {
-
-    components.forEach(
-      component => {
-
-        const box =
-          document.createElement(
-            "div"
-          );
-
-
-        box.className =
-          "component";
-
-
-        box.innerHTML =
-          `
-            <div class="component-name">
-              ${escapeHTML(
-                component.name ||
-                "Componente"
-              )}
-            </div>
-
-            <div class="component-type">
-              ${escapeHTML(
-                component.type ||
-                "other"
-              )}
-            </div>
-          `;
-
-
-        canvas.appendChild(
-          box
-        );
-
-      }
-    );
-
-  }
-
-
-  /*
-  =======================================================
-  CONEXIONES
-  =======================================================
-  */
-
-  const connectionList =
-    document.getElementById(
-      "connectionList"
-    );
-
-
-  connectionList.innerHTML =
-    "";
-
-
-  const connections =
-    Array.isArray(data.connections)
-      ? data.connections
-      : [];
-
-
-  if (
-    connections.length === 0
-  ) {
-
-    connectionList.innerHTML =
-      `
-        <div class="empty">
-          No hay conexiones disponibles.
-        </div>
-      `;
-
-  } else {
-
-    /*
-    Crear mapa de componentes
-    */
-
-    const componentMap =
-      new Map();
-
-
-    components.forEach(
-      component => {
-
-        if (
-          component &&
-          component.id
-        ) {
-
-          componentMap.set(
-            component.id,
-            component.name ||
-            component.id
-          );
-
-        }
-
-      }
-    );
-
-
-    connections.forEach(
-      connection => {
-
-        const fromName =
-          componentMap.get(
-            connection.from
-          ) ||
-          connection.from ||
-          "Origen";
-
-
-        const toName =
-          componentMap.get(
-            connection.to
-          ) ||
-          connection.to ||
-          "Destino";
-
-
-        const label =
-          connection.label ||
-          "Conexión";
-
-
-        const item =
-          document.createElement(
-            "div"
-          );
-
-
-        item.className =
-          "connection";
-
-
-        item.innerHTML =
-          `
-            🔌
-            <strong>
-              ${escapeHTML(
-                fromName
-              )}
-            </strong>
-
-            →
-
-            <strong>
-              ${escapeHTML(
-                toName
-              )}
-            </strong>
-
-            <br>
-
-            <span>
-              ${escapeHTML(
-                label
-              )}
-            </span>
-          `;
-
-
-        connectionList.appendChild(
-          item
-        );
-
-      }
-    );
-
-  }
-
-
-  /*
-  =======================================================
-  ADVERTENCIAS
-  =======================================================
-  */
-
-  const warningsContainer =
-    document.getElementById(
-      "diagramWarnings"
-    );
-
-
-  warningsContainer.innerHTML =
-    "";
-
-
-  const warnings =
-    Array.isArray(data.warnings)
-      ? data.warnings
-      : [];
-
-
-  warnings.forEach(
-    warning => {
-
-      const item =
-        document.createElement(
-          "div"
-        );
-
-
-      item.className =
-        "warning";
-
-
-      item.textContent =
-        "⚠️ " +
-        String(
-          warning
-        );
-
-
-      warningsContainer.appendChild(
-        item
-      );
-
-    }
-  );
-
-
-  /*
-  =======================================================
-  FUENTE
-  =======================================================
-  */
-
-  document.getElementById(
-    "diagramSource"
-  ).textContent =
-    data.source === "supabase"
-      ? "⚡ Diagrama recuperado desde la base de datos."
-      : "🤖 Diagrama generado y guardado en la base de datos.";
-
-
-  /*
-  Llevar al resultado
-  */
-
-  result.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
+  $("diagramTitle").textContent=data.title;
+  $("diagramDescription").textContent=data.description;
+
+  $("xMake").textContent=data.make;
+  $("xModel").textContent=data.model;
+  $("xYear").textContent=data.vehicle_year;
+  $("xSystem").textContent=data.system;
+
+  $("components").innerHTML="";
+
+  (data.components||[]).forEach(c=>{
+   $("components").innerHTML+=`
+    <div class="component">
+     <b>${safe(c.name)}</b>
+     <small>${safe(c.type)}</small>
+    </div>`;
   });
 
+  $("connections").innerHTML="";
+
+  (data.connections||[]).forEach(c=>{
+   $("connections").innerHTML+=`
+    <div class="connection">
+     🔗 <b>${safe(c.from)}</b>
+     → <b>${safe(c.to)}</b>
+     — ${safe(c.label)}
+    </div>`;
+  });
+
+  $("warnings").innerHTML="";
+
+  (data.warnings||[]).forEach(w=>{
+   $("warnings").innerHTML+=
+    `<div class="warning">⚠️ ${safe(w)}</div>`;
+  });
+
+  $("diagramResult").style.display="block";
+  $("diagramStatus").style.display="none";
+
+ }catch(e){
+
+  $("diagramStatus").className="status error";
+  $("diagramStatus").textContent="⚠️ "+e.message;
+
+ }finally{
+
+  $("diagramBtn").disabled=false;
+ }
 }
 
+$("code").addEventListener("keydown",e=>{
+ if(e.key==="Enter") searchDTC();
+});
 
-/*
-=========================================================
-ENTER EN CÓDIGO DTC
-=========================================================
-*/
+</script>
 
-document.getElementById(
-  "dtcCode"
-).addEventListener(
-  "keydown",
-  function(event) {
-
-    if (
-      event.key === "Enter"
-    ) {
-
-      searchDTC();
-
-    }
-
-  }
-);
-
-
-/*
-=========================================================
-ENTER EN MARCA DTC
-=========================================================
-*/
-
-document.getElementById(
-  "dtcMake"
-).addEventListener(
-  "keydown",
-  function(event) {
-
-    if (
-      event.key === "Enter"
-    ) {
-
-      searchDTC();
-
-    }
-
-  }
-);
-
-
-/*
-=========================================================
-ENTER EN CAMPOS DEL DIAGRAMA
-=========================================================
-*/
-
-[
-  "diagramMake",
-  "diagramModel",
-  "diagramYear",
-  "diagramSystem"
-].forEach(
-  function(id) {
-
-    const input =
-      document.getElementById(
-        id
-      );
-
-
-    if (!input) {
-      return;
-    }
-
-
-    input.addEventListener(
-      "keydown",
-      function(event) {
-
-        if (
-          event.key === "Enter"
-        ) {
-
-          searchDiagram();
-
-        }
-
-      }
-    );
-
-  }
-);
-
-
-/*
-=========================================================
-INICIO
-=========================================================
-*/
-
-showSection("dtc");
+</body>
+  </html>
