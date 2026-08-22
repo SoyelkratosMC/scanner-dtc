@@ -2,313 +2,177 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Scanner DTC</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Scanner DTC Automotriz</title>
 
 <style>
-*{box-sizing:border-box}
-
+*{box-sizing:border-box;margin:0;padding:0}
 body{
- margin:0;
- background:#070b12;
- color:#fff;
- font-family:Arial,sans-serif;
+  font-family:Arial,sans-serif;
+  background:#080b12;
+  color:#fff;
+  min-height:100vh
 }
-
-.app{
- max-width:850px;
- margin:auto;
- padding:18px;
-}
-
-header{
- text-align:center;
- padding:25px 0;
-}
-
+.app{max-width:900px;margin:auto;padding:15px}
+.header{text-align:center;padding:25px 5px}
 .logo{
- font-size:32px;
- font-weight:900;
- color:#00e5ff;
+  font-size:30px;font-weight:900;color:#00e5ff;
+  text-shadow:0 0 18px #00e5ff55
 }
+.sub{color:#8994a6;margin-top:6px;font-size:14px}
 
-.sub{
- color:#8c98aa;
- margin-top:6px;
-}
-
-.tabs{
- display:flex;
- gap:10px;
- margin-bottom:18px;
-}
-
+.tabs{display:flex;gap:10px;margin-bottom:15px}
 .tab{
- flex:1;
- padding:14px;
- border:1px solid #263142;
- border-radius:12px;
- background:#111824;
- color:#aeb8c8;
- font-weight:bold;
- cursor:pointer;
+  flex:1;padding:14px;border-radius:13px;
+  border:1px solid #263142;background:#101621;
+  color:#aeb7c8;font-weight:900;cursor:pointer
 }
-
-.tab.active{
- background:#00d9ff;
- color:#001018;
-}
+.tab.active{background:#00d9ff;color:#001018}
 
 .card{
- background:#101722;
- border:1px solid #222d3d;
- border-radius:18px;
- padding:20px;
- margin-bottom:18px;
+  background:#10151f;border:1px solid #202938;
+  border-radius:17px;padding:18px;margin-bottom:15px
 }
-
-h2{
- margin-top:0;
-}
-
-p{
- color:#8f9bad;
-}
+h2{margin-bottom:7px}
+.desc{color:#8e99aa;font-size:14px;margin-bottom:17px}
 
 label{
- display:block;
- margin:14px 0 7px;
- color:#b8c2d1;
- font-size:13px;
- font-weight:bold;
+  display:block;color:#b8c1d1;font-size:13px;
+  font-weight:bold;margin-bottom:6px
 }
-
 input{
- width:100%;
- padding:14px;
- border-radius:11px;
- border:1px solid #2a3749;
- background:#080d14;
- color:#fff;
- font-size:15px;
- outline:none;
+  width:100%;padding:14px;margin-bottom:13px;
+  border-radius:11px;border:1px solid #2b3546;
+  background:#080c13;color:#fff;font-size:15px;
+  outline:none
 }
-
-input:focus{
- border-color:#00d9ff;
-}
+input:focus{border-color:#00d9ff}
 
 .grid{
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:12px;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px
 }
-
-button.main{
- width:100%;
- margin-top:16px;
- padding:15px;
- border:0;
- border-radius:12px;
- background:#00d9ff;
- color:#001018;
- font-weight:900;
- font-size:15px;
- cursor:pointer;
+.btn{
+  width:100%;padding:15px;border:0;border-radius:12px;
+  background:#00d9ff;color:#001018;
+  font-weight:900;font-size:15px;cursor:pointer
 }
-
-button:disabled{
- opacity:.5;
-}
+.btn:disabled{opacity:.5}
 
 .status{
- margin-top:14px;
- padding:12px;
- border-radius:10px;
- display:none;
+  display:none;margin-top:13px;padding:13px;
+  border-radius:11px;font-size:14px
 }
-
 .loading{
- display:block;
- background:#10202b;
- color:#7deaff;
+  display:block;background:#101d29;
+  border:1px solid #17465a;color:#7eeaff
 }
-
 .error{
- display:block;
- background:#291217;
- color:#ff8b98;
+  display:block;background:#291116;
+  border:1px solid #68222d;color:#ff8794
 }
 
-.hidden{
- display:none!important;
-}
-
-.result{
- display:none;
-}
-
+.result{display:none}
 .code{
- color:#00e5ff;
- font-size:30px;
- font-weight:900;
+  font-size:31px;font-weight:900;color:#00e5ff
 }
-
 .head{
- display:flex;
- justify-content:space-between;
- gap:10px;
- align-items:center;
+  display:flex;justify-content:space-between;
+  align-items:center;gap:10px;margin-bottom:15px
 }
-
 .badge{
- background:#263142;
- padding:7px 12px;
- border-radius:20px;
- font-size:12px;
- font-weight:bold;
+  background:#263142;padding:7px 12px;
+  border-radius:20px;font-size:12px;font-weight:900
 }
+.section{margin-top:17px}
+.title{font-weight:900;font-size:15px;margin-bottom:7px}
+.content{color:#c2cad6;font-size:14px;line-height:1.6}
+ul{padding-left:20px}
+li{margin-bottom:6px}
 
-.section{
- margin-top:20px;
-}
-
-.title{
- font-weight:900;
- margin-bottom:8px;
-}
-
-.content{
- color:#c4ccd8;
- line-height:1.6;
-}
-
-ul{
- padding-left:20px;
-}
-
-li{
- margin-bottom:6px;
-}
+.hidden{display:none!important}
 
 .meta{
- display:grid;
- grid-template-columns:repeat(4,1fr);
- gap:8px;
- margin:18px 0;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:8px;margin:15px 0
 }
-
 .meta div{
- background:#080d14;
- border:1px solid #222d3d;
- padding:12px;
- border-radius:10px;
+  background:#080d15;border:1px solid #202938;
+  border-radius:10px;padding:10px
 }
+.meta small{display:block;color:#7f8999;font-size:10px}
+.meta strong{font-size:13px}
 
-.meta small{
- display:block;
- color:#778396;
- font-size:10px;
- margin-bottom:5px;
+.diagram-box{
+  background:#080c12;border:1px solid #202938;
+  border-radius:13px;padding:14px
 }
-
-.meta strong{
- font-size:13px;
- word-break:break-word;
+.components{
+  display:flex;flex-wrap:wrap;
+  justify-content:center;gap:10px
 }
-
-.diagram{
- display:flex;
- flex-wrap:wrap;
- justify-content:center;
- gap:12px;
- padding:20px;
- background:#080d14;
- border:1px solid #222d3d;
- border-radius:14px;
-}
-
 .component{
- width:130px;
- padding:14px 8px;
- text-align:center;
- border:1px solid #00bcd4;
- border-radius:12px;
- background:#111d2b;
+  min-width:120px;padding:12px;
+  border:1px solid #00bcd4;
+  background:#111b28;border-radius:11px;text-align:center
 }
-
-.component b{
- display:block;
- font-size:13px;
-}
-
-.component small{
- color:#79dbea;
-}
+.component b{display:block;font-size:13px}
+.component small{color:#7fdded}
 
 .connection{
- padding:10px;
- margin-top:8px;
- border-left:3px solid #00d9ff;
- background:#0b121b;
- color:#bfc8d5;
- font-size:13px;
+  padding:10px;margin-top:8px;
+  background:#0c121b;
+  border-left:3px solid #00d9ff;
+  font-size:13px;color:#b9c4d2
 }
-
 .warning{
- margin-top:10px;
- padding:12px;
- background:#211d0d;
- color:#e4d17c;
- border-radius:10px;
+  margin-top:12px;padding:11px;
+  background:#211c0e;border:1px solid #594b1c;
+  border-radius:10px;color:#e6d27a;font-size:13px
+}
+.source{
+  margin-top:18px;color:#687587;font-size:12px
 }
 
-@media(max-width:600px){
- .app{padding:12px}
- .logo{font-size:27px}
- .grid{grid-template-columns:1fr}
- .meta{grid-template-columns:1fr 1fr}
+@media(max-width:650px){
+  .grid{grid-template-columns:1fr}
+  .meta{grid-template-columns:1fr 1fr}
+  .logo{font-size:27px}
 }
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
-<header>
- <div class="logo">🔧 SCANNER DTC</div>
- <div class="sub">Diagnóstico automotriz inteligente</div>
+<header class="header">
+  <div class="logo">🔧 SCANNER DTC</div>
+  <div class="sub">Diagnóstico automotriz inteligente</div>
 </header>
 
 <div class="tabs">
- <button class="tab active" id="dtcTab"
- onclick="section('dtc')">
- 🔎 Códigos DTC
- </button>
-
- <button class="tab" id="diagramTab"
- onclick="section('diagram')">
- 📊 Diagramas
- </button>
+  <button id="tabDtc" class="tab active" onclick="showTab('dtc')">
+    🔎 Códigos DTC
+  </button>
+  <button id="tabDiagram" class="tab" onclick="showTab('diagram')">
+    📊 Diagramas
+  </button>
 </div>
 
-
 <!-- DTC -->
-
-<section id="dtc">
+<section id="dtcSection">
 
 <div class="card">
 <h2>🔎 Buscar código DTC</h2>
-<p>Consulta códigos guardados o genera información nueva.</p>
+<p class="desc">Consulta códigos guardados o genera información nueva.</p>
 
 <label>Código</label>
-<input id="code" maxlength="5" placeholder="P2122">
+<input id="dtcCode" maxlength="5" placeholder="Ej. P2122">
 
-<label>Marca opcional</label>
-<input id="make" placeholder="Chevrolet">
+<label>Marca (opcional)</label>
+<input id="dtcMake" placeholder="Ej. Chevrolet">
 
-<button class="main" id="dtcBtn" onclick="searchDTC()">
+<button id="dtcBtn" class="btn" onclick="searchDTC()">
 🔎 BUSCAR CÓDIGO
 </button>
 
@@ -320,9 +184,9 @@ li{
 <div class="head">
 <div>
 <div id="rCode" class="code"></div>
-<div id="rTitle"></div>
+<div id="rTitle" style="color:#aeb7c8;margin-top:5px"></div>
 </div>
-<div id="rSeverity" class="badge"></div>
+<div id="rSeverity" class="badge">MEDIA</div>
 </div>
 
 <div class="section">
@@ -365,69 +229,68 @@ li{
 <div id="rSystem" class="content"></div>
 </div>
 
+<div id="rSource" class="source"></div>
 </div>
+
 </section>
 
-
 <!-- DIAGRAMAS -->
-
-<section id="diagram" class="hidden">
+<section id="diagramSection" class="hidden">
 
 <div class="card">
 <h2>📊 Diagramas automotrices</h2>
-<p>Busca diagramas independientemente de los códigos DTC.</p>
+<p class="desc">
+Busca el diagrama independientemente del código DTC.
+</p>
 
 <div class="grid">
-
 <div>
 <label>Marca</label>
-<input id="dMake" placeholder="Chevrolet">
+<input id="dMake" placeholder="Ej. Chevrolet">
 </div>
 
 <div>
 <label>Modelo</label>
-<input id="dModel" placeholder="Silverado">
+<input id="dModel" placeholder="Ej. Silverado">
 </div>
-
 </div>
 
 <div class="grid">
-
 <div>
 <label>Año</label>
-<input id="dYear" type="number" placeholder="2020">
+<input id="dYear" type="number" placeholder="Ej. 2020">
 </div>
 
 <div>
 <label>Sistema</label>
-<input id="dSystem" placeholder="EVAP">
+<input id="dSystem" placeholder="Ej. EVAP">
+</div>
 </div>
 
-</div>
-
-<button class="main" id="diagramBtn" onclick="searchDiagram()">
+<button id="diagramBtn" class="btn" onclick="searchDiagram()">
 📊 BUSCAR DIAGRAMA
 </button>
 
 <div id="diagramStatus" class="status"></div>
 </div>
 
-
 <div id="diagramResult" class="card result">
 
 <h2 id="diagramTitle"></h2>
-<p id="diagramDescription"></p>
+<p id="diagramDescription" class="desc"></p>
 
 <div class="meta">
-<div><small>MARCA</small><strong id="xMake"></strong></div>
-<div><small>MODELO</small><strong id="xModel"></strong></div>
-<div><small>AÑO</small><strong id="xYear"></strong></div>
-<div><small>SISTEMA</small><strong id="xSystem"></strong></div>
+<div><small>MARCA</small><strong id="dmMake"></strong></div>
+<div><small>MODELO</small><strong id="dmModel"></strong></div>
+<div><small>AÑO</small><strong id="dmYear"></strong></div>
+<div><small>SISTEMA</small><strong id="dmSystem"></strong></div>
 </div>
 
 <div class="section">
 <div class="title">🔌 Componentes</div>
-<div id="components" class="diagram"></div>
+<div class="diagram-box">
+<div id="components" class="components"></div>
+</div>
 </div>
 
 <div class="section">
@@ -436,193 +299,241 @@ li{
 </div>
 
 <div id="warnings"></div>
+<div id="diagramSource" class="source"></div>
 
 </div>
 </section>
 
 </div>
 
-
 <script>
-
 function $(id){
- return document.getElementById(id);
+  return document.getElementById(id);
 }
 
-function section(name){
-
- $("dtc").classList.toggle("hidden",name!=="dtc");
- $("diagram").classList.toggle("hidden",name!=="diagram");
-
- $("dtcTab").classList.toggle("active",name==="dtc");
- $("diagramTab").classList.toggle("active",name==="diagram");
+function showTab(tab){
+  if(tab==="dtc"){
+    $("dtcSection").classList.remove("hidden");
+    $("diagramSection").classList.add("hidden");
+    $("tabDtc").classList.add("active");
+    $("tabDiagram").classList.remove("active");
+  }else{
+    $("dtcSection").classList.add("hidden");
+    $("diagramSection").classList.remove("hidden");
+    $("tabDtc").classList.remove("active");
+    $("tabDiagram").classList.add("active");
+  }
 }
 
-function safe(v){
- return String(v ?? "")
- .replaceAll("&","&amp;")
- .replaceAll("<","&lt;")
- .replaceAll(">","&gt;")
- .replaceAll('"',"&quot;")
- .replaceAll("'","&#039;");
+function esc(v){
+  return String(v ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
-function list(id,data){
+function list(id,arr){
+  if(!Array.isArray(arr)||!arr.length){
+    $(id).textContent="No hay información disponible.";
+    return;
+  }
 
- $(id).innerHTML =
- Array.isArray(data) && data.length
- ? "<ul>"+data.map(x=>"<li>"+safe(x)+"</li>").join("")+"</ul>"
- : "No hay información disponible.";
+  $(id).innerHTML="<ul>"+
+    arr.map(x=>"<li>"+esc(x)+"</li>").join("")+
+    "</ul>";
 }
 
+async function getJSON(url){
+  const response=await fetch(url);
+
+  const text=await response.text();
+
+  let data;
+
+  try{
+    data=JSON.parse(text);
+  }catch(e){
+    throw new Error(
+      "La API no devolvió JSON. Revisa que api/code.js exista y que Vercel haya hecho Deploy."
+    );
+  }
+
+  if(!response.ok||!data.success){
+    throw new Error(data.error||"Error de la API.");
+  }
+
+  return data;
+}
 
 async function searchDTC(){
 
- const code=$("code").value.trim().toUpperCase();
- const make=$("make").value.trim();
+  const code=$("dtcCode").value.trim().toUpperCase();
+  const make=$("dtcMake").value.trim();
 
- if(!/^[PBCU][0-9A-F]{4}$/.test(code)){
-  $("dtcStatus").className="status error";
-  $("dtcStatus").textContent="⚠️ Código inválido. Ejemplo: P2122";
-  return;
- }
-
- $("dtcBtn").disabled=true;
- $("dtcStatus").className="status loading";
- $("dtcStatus").textContent="🔎 Consultando...";
- $("dtcResult").style.display="none";
-
- try{
-
-  let url="/api/dtc?code="+encodeURIComponent(code);
-
-  if(make){
-   url+="&make="+encodeURIComponent(make);
+  if(!/^[PBCU][0-9A-F]{4}$/.test(code)){
+    $("dtcStatus").className="status error";
+    $("dtcStatus").textContent="⚠️ Código inválido. Ejemplo: P2122";
+    return;
   }
 
-  const r=await fetch(url);
-  const data=await r.json();
+  $("dtcBtn").disabled=true;
+  $("dtcStatus").className="status loading";
+  $("dtcStatus").textContent="🔎 Consultando...";
+  $("dtcResult").style.display="none";
 
-  if(!r.ok || !data.success){
-   throw new Error(data.error||"Error en la API");
+  try{
+
+    let url="/api/code?code="+encodeURIComponent(code);
+
+    if(make){
+      url+="&make="+encodeURIComponent(make);
+    }
+
+    const data=await getJSON(url);
+
+    $("rCode").textContent=data.code||code;
+    $("rTitle").textContent=data.title||"Código DTC";
+    $("rSeverity").textContent=data.severity||"MEDIA";
+    $("rMake").textContent=data.make||"Genérica";
+    $("rProblem").textContent=data.problem||"No disponible.";
+    $("rYears").textContent=data.vehicle_years||"No especificado";
+    $("rSystem").textContent=data.system||"No especificado";
+
+    list("rCauses",data.causes);
+    list("rSymptoms",data.symptoms);
+    list("rDiagnosis",data.diagnosis);
+    list("rRepairs",data.repairs);
+
+    $("rSource").textContent=
+      data.source==="supabase"
+      ?"⚡ Información recuperada desde Supabase."
+      :"🤖 Información generada y guardada en Supabase.";
+
+    $("dtcResult").style.display="block";
+    $("dtcStatus").style.display="none";
+
+  }catch(e){
+
+    $("dtcStatus").className="status error";
+    $("dtcStatus").textContent="⚠️ "+e.message;
+
+  }finally{
+    $("dtcBtn").disabled=false;
   }
-
-  $("rCode").textContent=data.code;
-  $("rTitle").textContent=data.title||"Código DTC";
-  $("rSeverity").textContent=data.severity||"MEDIA";
-  $("rMake").textContent=data.make||"Genérica";
-  $("rProblem").textContent=data.problem||"No disponible";
-  $("rYears").textContent=data.vehicle_years||"No especificado";
-  $("rSystem").textContent=data.system||"No especificado";
-
-  list("rCauses",data.causes);
-  list("rSymptoms",data.symptoms);
-  list("rDiagnosis",data.diagnosis);
-  list("rRepairs",data.repairs);
-
-  $("dtcResult").style.display="block";
-  $("dtcStatus").style.display="none";
-
- }catch(e){
-
-  $("dtcStatus").className="status error";
-  $("dtcStatus").textContent="⚠️ "+e.message;
-
- }finally{
-
-  $("dtcBtn").disabled=false;
- }
 }
-
 
 async function searchDiagram(){
 
- const make=$("dMake").value.trim();
- const model=$("dModel").value.trim();
- const year=$("dYear").value.trim();
- const system=$("dSystem").value.trim();
+  const make=$("dMake").value.trim();
+  const model=$("dModel").value.trim();
+  const year=$("dYear").value.trim();
+  const system=$("dSystem").value.trim();
 
- if(!make||!model||!year||!system){
-  $("diagramStatus").className="status error";
-  $("diagramStatus").textContent="⚠️ Completa todos los campos.";
-  return;
- }
-
- $("diagramBtn").disabled=true;
- $("diagramStatus").className="status loading";
- $("diagramStatus").textContent="📊 Consultando diagrama...";
- $("diagramResult").style.display="none";
-
- try{
-
-  const url=
-   "/api/diagram?make="+encodeURIComponent(make)+
-   "&model="+encodeURIComponent(model)+
-   "&year="+encodeURIComponent(year)+
-   "&system="+encodeURIComponent(system);
-
-  const r=await fetch(url);
-  const data=await r.json();
-
-  if(!r.ok||!data.success){
-   throw new Error(data.error||"Error en la API");
+  if(!make||!model||!year||!system){
+    $("diagramStatus").className="status error";
+    $("diagramStatus").textContent=
+      "⚠️ Completa marca, modelo, año y sistema.";
+    return;
   }
 
-  $("diagramTitle").textContent=data.title;
-  $("diagramDescription").textContent=data.description;
+  $("diagramBtn").disabled=true;
+  $("diagramStatus").className="status loading";
+  $("diagramStatus").textContent="📊 Consultando diagrama...";
+  $("diagramResult").style.display="none";
 
-  $("xMake").textContent=data.make;
-  $("xModel").textContent=data.model;
-  $("xYear").textContent=data.vehicle_year;
-  $("xSystem").textContent=data.system;
+  try{
 
-  $("components").innerHTML="";
+    const url=
+      "/api/code?diagram=true"+
+      "&make="+encodeURIComponent(make)+
+      "&model="+encodeURIComponent(model)+
+      "&year="+encodeURIComponent(year)+
+      "&system="+encodeURIComponent(system);
 
-  (data.components||[]).forEach(c=>{
-   $("components").innerHTML+=`
-    <div class="component">
-     <b>${safe(c.name)}</b>
-     <small>${safe(c.type)}</small>
-    </div>`;
-  });
+    const data=await getJSON(url);
 
-  $("connections").innerHTML="";
+    $("diagramTitle").textContent=data.title||"Diagrama";
+    $("diagramDescription").textContent=data.description||"";
 
-  (data.connections||[]).forEach(c=>{
-   $("connections").innerHTML+=`
-    <div class="connection">
-     🔗 <b>${safe(c.from)}</b>
-     → <b>${safe(c.to)}</b>
-     — ${safe(c.label)}
-    </div>`;
-  });
+    $("dmMake").textContent=data.make||make;
+    $("dmModel").textContent=data.model||model;
+    $("dmYear").textContent=data.year||year;
+    $("dmSystem").textContent=data.system||system;
 
-  $("warnings").innerHTML="";
+    const components=$("components");
+    components.innerHTML="";
 
-  (data.warnings||[]).forEach(w=>{
-   $("warnings").innerHTML+=
-    `<div class="warning">⚠️ ${safe(w)}</div>`;
-  });
+    if(Array.isArray(data.components)&&data.components.length){
 
-  $("diagramResult").style.display="block";
-  $("diagramStatus").style.display="none";
+      data.components.forEach(c=>{
+        const div=document.createElement("div");
+        div.className="component";
 
- }catch(e){
+        div.innerHTML=
+          "<b>"+esc(c.name||c.id||"Componente")+"</b>"+
+          "<small>"+esc(c.type||"other")+"</small>";
 
-  $("diagramStatus").className="status error";
-  $("diagramStatus").textContent="⚠️ "+e.message;
+        components.appendChild(div);
+      });
 
- }finally{
+    }else{
+      components.innerHTML=
+        "<div class='content'>No hay componentes disponibles.</div>";
+    }
 
-  $("diagramBtn").disabled=false;
- }
+    const connections=$("connections");
+    connections.innerHTML="";
+
+    if(Array.isArray(data.connections)&&data.connections.length){
+
+      data.connections.forEach(c=>{
+        const div=document.createElement("div");
+        div.className="connection";
+
+        div.textContent=
+          (c.from||"?")+" → "+
+          (c.to||"?")+
+          (c.label?" · "+c.label:"");
+
+        connections.appendChild(div);
+      });
+
+    }else{
+      connections.innerHTML=
+        "<div class='content'>No hay conexiones disponibles.</div>";
+    }
+
+    $("warnings").innerHTML="";
+
+    if(Array.isArray(data.warnings)){
+      data.warnings.forEach(w=>{
+        const div=document.createElement("div");
+        div.className="warning";
+        div.textContent="⚠️ "+w;
+        $("warnings").appendChild(div);
+      });
+    }
+
+    $("diagramSource").textContent=
+      data.source==="supabase"
+      ?"⚡ Diagrama recuperado desde Supabase."
+      :"🤖 Diagrama generado y guardado en Supabase.";
+
+    $("diagramResult").style.display="block";
+    $("diagramStatus").style.display="none";
+
+  }catch(e){
+
+    $("diagramStatus").className="status error";
+    $("diagramStatus").textContent="⚠️ "+e.message;
+
+  }finally{
+    $("diagramBtn").disabled=false;
+  }
 }
-
-$("code").addEventListener("keydown",e=>{
- if(e.key==="Enter") searchDTC();
-});
-
 </script>
 
 </body>
-  </html>
+</html>
