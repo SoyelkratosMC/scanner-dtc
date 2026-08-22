@@ -9,14 +9,7 @@ export default async function handler(req, res) {
 
   try {
 
-    /*
-    =================================================
-    CONFIGURACIÓN
-    =================================================
-    */
-
     const MAX_NEW_CODES_PER_DAY = 50;
-
 
     /*
     =================================================
@@ -35,7 +28,7 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    VALIDAR CÓDIGO
+    VALIDAR
     =================================================
     */
 
@@ -47,13 +40,6 @@ export default async function handler(req, res) {
       });
 
     }
-
-
-    /*
-    =================================================
-    VALIDAR FORMATO
-    =================================================
-    */
 
     if (!/^[PBCU][0-9A-F]{4}$/.test(code)) {
 
@@ -67,7 +53,7 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    BUSCAR PRIMERO EN SUPABASE
+    BUSCAR EN SUPABASE
     =================================================
     */
 
@@ -81,12 +67,6 @@ export default async function handler(req, res) {
       .limit(1);
 
 
-    /*
-    =================================================
-    ERROR AL BUSCAR
-    =================================================
-    */
-
     if (error) {
 
       console.error(
@@ -95,9 +75,19 @@ export default async function handler(req, res) {
       );
 
       return res.status(500).json({
+
         success: false,
-        error: "Error consultando Supabase",
-        details: error.message
+
+        error:
+          "Error consultando Supabase.",
+
+        details: {
+          message: error.message,
+          code: error.code,
+          hint: error.hint,
+          details: error.details
+        }
+
       });
 
     }
@@ -105,7 +95,7 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    SI YA EXISTE
+    SI YA EXISTE → RESPUESTA INMEDIATA
     =================================================
     */
 
@@ -153,10 +143,12 @@ export default async function handler(req, res) {
           dtc.severity || "MEDIA",
 
         vehicle_years:
-          dtc.vehicle_years || "No especificado",
+          dtc.vehicle_years ||
+          "No especificado",
 
         system:
-          dtc.system || "No especificado"
+          dtc.system ||
+          "No especificado"
 
       });
 
@@ -165,14 +157,7 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    CÓDIGO NUEVO
-    =================================================
-    */
-
-
-    /*
-    =================================================
-    CONTAR CÓDIGOS CREADOS HOY
+    CONTAR CÓDIGOS NUEVOS DEL DÍA
     =================================================
     */
 
@@ -207,12 +192,6 @@ export default async function handler(req, res) {
       );
 
 
-    /*
-    =================================================
-    ERROR AL CONTAR
-    =================================================
-    */
-
     if (countError) {
 
       console.error(
@@ -227,8 +206,12 @@ export default async function handler(req, res) {
         error:
           "No se pudo comprobar el límite diario.",
 
-        details:
-          countError.message
+        details: {
+          message: countError.message,
+          code: countError.code,
+          hint: countError.hint,
+          details: countError.details
+        }
 
       });
 
@@ -237,7 +220,7 @@ export default async function handler(req, res) {
 
     /*
     =================================================
-    LÍMITE DIARIO
+    LÍMITE DE 50
     =================================================
     */
 
@@ -309,30 +292,19 @@ ${make || "genérica"}
 IMPORTANTE:
 
 1. No inventes una falla confirmada.
-
 2. Las causas son POSIBLES causas.
-
-3. No afirmes que una pieza está dañada
-   sin pruebas de diagnóstico.
-
-4. Si el significado cambia según fabricante,
-   indícalo.
-
+3. No afirmes que una pieza está dañada sin pruebas.
+4. Si el significado cambia según fabricante, indícalo.
 5. No inventes años específicos.
-
 6. No inventes números de piezas.
-
-7. No inventes valores eléctricos específicos
-   si no son confiables.
-
-8. La información debe ser útil para
-   un scanner automotriz.
-
+7. No inventes valores eléctricos específicos si no son confiables.
+8. La información debe ser útil para un scanner automotriz.
 9. Responde en español.
+10. Devuelve ÚNICAMENTE JSON.
+11. No uses Markdown.
+12. No escribas texto antes ni después del JSON.
 
-10. Devuelve solamente JSON válido.
-
-La estructura EXACTA debe ser:
+ESTRUCTURA EXACTA:
 
 {
   "code": "string",
@@ -408,7 +380,7 @@ ${make || "genérica"}
                 role: "system",
 
                 content:
-                  "Eres especialista en diagnóstico automotriz. Devuelve solamente JSON válido."
+                  "Eres especialista en diagnóstico automotriz. Devuelve únicamente JSON válido, sin Markdown."
               },
 
               {
@@ -467,7 +439,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    OBTENER RESPUESTA
+    LEER RESPUESTA
     =================================================
     */
 
@@ -494,7 +466,10 @@ ${make || "genérica"}
         success: false,
 
         error:
-          "OpenRouter no devolvió información válida."
+          "OpenRouter no devolvió información válida.",
+
+        details:
+          openRouterData
 
       });
 
@@ -503,7 +478,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    CONVERTIR JSON
+    CONVERTIR RESPUESTA A JSON
     =================================================
     */
 
@@ -511,10 +486,67 @@ ${make || "genérica"}
 
     try {
 
-      dtc =
-        typeof generatedText === "string"
-          ? JSON.parse(generatedText)
-          : generatedText;
+      if (
+        typeof generatedText === "object" &&
+        generatedText !== null
+      ) {
+
+        dtc = generatedText;
+
+      } else {
+
+        let cleanText =
+          String(generatedText)
+            .trim();
+
+
+        /*
+        QUITAR MARKDOWN
+        */
+
+        cleanText =
+          cleanText
+            .replace(/^```json\s*/i, "")
+            .replace(/^```\s*/i, "")
+            .replace(/\s*```$/i, "")
+            .trim();
+
+
+        /*
+        BUSCAR OBJETO JSON
+        */
+
+        const firstBrace =
+          cleanText.indexOf("{");
+
+        const lastBrace =
+          cleanText.lastIndexOf("}");
+
+
+        if (
+          firstBrace === -1 ||
+          lastBrace === -1 ||
+          lastBrace <= firstBrace
+        ) {
+
+          throw new Error(
+            "No se encontró un objeto JSON en la respuesta."
+          );
+
+        }
+
+
+        cleanText =
+          cleanText.substring(
+            firstBrace,
+            lastBrace + 1
+          );
+
+
+        dtc =
+          JSON.parse(cleanText);
+
+      }
 
     } catch (jsonError) {
 
@@ -545,7 +577,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    NORMALIZAR DATOS
+    NORMALIZAR
     =================================================
     */
 
@@ -624,7 +656,8 @@ ${make || "genérica"}
       )
     ) {
 
-      dtc.severity = "MEDIA";
+      dtc.severity =
+        "MEDIA";
 
     }
 
@@ -640,6 +673,33 @@ ${make || "genérica"}
       String(
         dtc.system ||
         "Sistema no especificado"
+      );
+
+
+    /*
+    =================================================
+    ASEGURAR QUE JSONB SEA VÁLIDO
+    =================================================
+    */
+
+    const causes =
+      JSON.parse(
+        JSON.stringify(dtc.causes)
+      );
+
+    const symptoms =
+      JSON.parse(
+        JSON.stringify(dtc.symptoms)
+      );
+
+    const diagnosis =
+      JSON.parse(
+        JSON.stringify(dtc.diagnosis)
+      );
+
+    const repairs =
+      JSON.parse(
+        JSON.stringify(dtc.repairs)
       );
 
 
@@ -671,16 +731,16 @@ ${make || "genérica"}
           dtc.problem,
 
         causes:
-          dtc.causes,
+          causes,
 
         symptoms:
-          dtc.symptoms,
+          symptoms,
 
         diagnosis:
-          dtc.diagnosis,
+          diagnosis,
 
         repairs:
-          dtc.repairs,
+          repairs,
 
         severity:
           dtc.severity,
@@ -701,7 +761,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    ERROR AL GUARDAR
+    ERROR REAL DE SUPABASE
     =================================================
     */
 
@@ -719,14 +779,23 @@ ${make || "genérica"}
         error:
           "OpenRouter generó la información, pero Supabase no pudo guardarla.",
 
-        details:
-          saveError.message,
+        details: {
 
-        code:
-          dtc.code,
+          message:
+            saveError.message || null,
 
-        generated:
-          dtc
+          code:
+            saveError.code || null,
+
+          hint:
+            saveError.hint || null,
+
+          details:
+            saveError.details || null
+
+        },
+
+        generated: dtc
 
       });
 
@@ -735,7 +804,7 @@ ${make || "genérica"}
 
     /*
     =================================================
-    VERIFICAR QUE REALMENTE SE GUARDÓ
+    VERIFICAR GUARDADO
     =================================================
     */
 
@@ -746,9 +815,14 @@ ${make || "genérica"}
 
       .from("dtc_codes")
 
-      .select("id, code, source, created_at")
+      .select(
+        "id, code, source, created_at"
+      )
 
-      .eq("code", dtc.code)
+      .eq(
+        "code",
+        dtc.code
+      )
 
       .limit(1);
 
@@ -759,6 +833,34 @@ ${make || "genérica"}
         "SUPABASE VERIFY ERROR:",
         verifyError
       );
+
+      return res.status(500).json({
+
+        success: false,
+
+        error:
+          "El código se guardó, pero no se pudo verificar.",
+
+        details: {
+
+          message:
+            verifyError.message,
+
+          code:
+            verifyError.code,
+
+          hint:
+            verifyError.hint,
+
+          details:
+            verifyError.details
+
+        },
+
+        code:
+          dtc.code
+
+      });
 
     }
 
@@ -793,9 +895,11 @@ ${make || "genérica"}
 
       success: true,
 
-      source: "openrouter",
+      source:
+        "openrouter",
 
-      saved: true,
+      saved:
+        true,
 
       code:
         dtc.code,
@@ -845,7 +949,10 @@ ${make || "genérica"}
       success: false,
 
       error:
-        error.message
+        error.message,
+
+      details:
+        error.stack
 
     });
 
