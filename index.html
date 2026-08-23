@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Scanner DTC Automotriz</title>
+<title>Scanner DTC</title>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -18,38 +18,38 @@ body{
 .app{
   max-width:900px;
   margin:auto;
-  padding:15px;
+  padding:16px;
 }
 
 header{
   text-align:center;
-  padding:25px 5px;
+  padding:25px 10px;
 }
 
 .logo{
+  color:#00e5ff;
   font-size:32px;
   font-weight:900;
-  color:#00e5ff;
 }
 
-.subtitle{
-  color:#8994a5;
+.sub{
+  color:#8d98aa;
   margin-top:6px;
 }
 
 .tabs{
   display:flex;
   gap:10px;
-  margin-bottom:15px;
+  margin-bottom:18px;
 }
 
 .tab{
   flex:1;
   padding:14px;
-  border-radius:12px;
-  border:1px solid #263143;
-  background:#101621;
-  color:#aeb7c8;
+  border:1px solid #263142;
+  border-radius:13px;
+  background:#111722;
+  color:#aeb8c8;
   font-weight:900;
   cursor:pointer;
 }
@@ -64,22 +64,22 @@ header{
   border:1px solid #202938;
   border-radius:18px;
   padding:20px;
-  margin-bottom:15px;
+  margin-bottom:18px;
 }
 
 h2{
-  margin-bottom:8px;
+  margin-bottom:7px;
 }
 
 .desc{
-  color:#8e99aa;
+  color:#8d98aa;
   font-size:14px;
   margin-bottom:18px;
 }
 
 label{
   display:block;
-  color:#b8c1d1;
+  color:#b9c3d2;
   font-size:13px;
   font-weight:bold;
   margin-bottom:6px;
@@ -88,16 +88,16 @@ label{
 input{
   width:100%;
   padding:14px;
-  margin-bottom:13px;
+  margin-bottom:14px;
   border-radius:11px;
   border:1px solid #2b3546;
   background:#080c13;
   color:white;
   font-size:15px;
-  outline:none;
 }
 
 input:focus{
+  outline:none;
   border-color:#00d9ff;
 }
 
@@ -107,7 +107,7 @@ input:focus{
   gap:12px;
 }
 
-.btn{
+button.main{
   width:100%;
   padding:15px;
   border:0;
@@ -118,21 +118,20 @@ input:focus{
   cursor:pointer;
 }
 
-.btn:disabled{
+button:disabled{
   opacity:.5;
 }
 
 .status{
-  display:none;
   margin-top:14px;
   padding:13px;
   border-radius:11px;
-  font-size:14px;
+  display:none;
 }
 
 .loading{
   display:block;
-  background:#101d29;
+  background:#10202b;
   color:#7eeaff;
 }
 
@@ -142,43 +141,35 @@ input:focus{
   color:#ff8794;
 }
 
-.hidden{
-  display:none!important;
+.result{
+  display:none;
 }
 
-.resultCode{
-  font-size:31px;
+.code{
   color:#00e5ff;
+  font-size:30px;
   font-weight:900;
 }
 
-.resultHead{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  align-items:center;
-  margin-bottom:18px;
-}
-
 .badge{
-  background:#263142;
+  display:inline-block;
+  margin-top:8px;
   padding:7px 12px;
   border-radius:20px;
-  font-size:12px;
-  font-weight:bold;
+  background:#263142;
 }
 
 .section{
-  margin-top:17px;
+  margin-top:18px;
 }
 
 .title{
   font-weight:900;
-  margin-bottom:7px;
+  margin-bottom:8px;
 }
 
 .content{
-  color:#c2cad6;
+  color:#c4ccd8;
   line-height:1.6;
   font-size:14px;
 }
@@ -191,23 +182,23 @@ li{
   margin-bottom:6px;
 }
 
-.diagram-meta{
+.meta{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:8px;
-  margin:18px 0;
+  margin-top:18px;
 }
 
-.meta{
+.meta div{
   background:#080d15;
   border:1px solid #202938;
-  padding:10px;
   border-radius:10px;
+  padding:10px;
 }
 
 .meta small{
   display:block;
-  color:#778293;
+  color:#7f8999;
   font-size:10px;
   margin-bottom:4px;
 }
@@ -217,55 +208,45 @@ li{
   word-break:break-word;
 }
 
-.diagram-box{
+.diagram{
+  margin-top:18px;
+  padding:15px;
   background:#080c12;
   border:1px solid #202938;
   border-radius:14px;
-  padding:15px;
-  overflow:auto;
-}
-
-.diagram-canvas{
-  min-width:500px;
-  min-height:220px;
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  align-items:center;
-  gap:12px;
 }
 
 .component{
+  display:inline-block;
+  vertical-align:top;
+  margin:5px;
+  padding:12px;
   min-width:120px;
-  padding:13px;
+  text-align:center;
   background:#111b28;
   border:1px solid #00bcd4;
   border-radius:12px;
-  text-align:center;
 }
 
-.component-name{
-  font-weight:bold;
+.component b{
+  display:block;
   font-size:13px;
 }
 
-.component-type{
+.component small{
   color:#7fdded;
-  font-size:10px;
-  margin-top:5px;
 }
 
 .connection{
-  background:#0c121b;
-  border-left:3px solid #00d9ff;
   padding:10px;
   margin-top:8px;
-  color:#b9c4d2;
+  background:#0c121b;
+  border-left:3px solid #00d9ff;
   font-size:13px;
 }
 
 .warning{
-  margin-top:10px;
+  margin-top:12px;
   padding:12px;
   background:#211c0e;
   border:1px solid #594b1c;
@@ -274,10 +255,18 @@ li{
   font-size:13px;
 }
 
+.hidden{
+  display:none!important;
+}
+
 @media(max-width:650px){
-  .grid{grid-template-columns:1fr}
-  .diagram-meta{grid-template-columns:1fr 1fr}
-  .logo{font-size:27px}
+  .grid,.meta{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .logo{
+    font-size:27px;
+  }
 }
 </style>
 </head>
@@ -288,20 +277,18 @@ li{
 
 <header>
   <div class="logo">🔧 SCANNER DTC</div>
-  <div class="subtitle">Diagnóstico automotriz inteligente</div>
+  <div class="sub">Diagnóstico automotriz inteligente</div>
 </header>
 
 <div class="tabs">
-  <button class="tab active" id="tabDtc" onclick="showSection('dtc')">
+  <button id="tabDtc" class="tab active" onclick="section('dtc')">
     🔎 Códigos DTC
   </button>
 
-  <button class="tab" id="tabDiagram" onclick="showSection('diagram')">
+  <button id="tabDiagram" class="tab" onclick="section('diagram')">
     📊 Diagramas
   </button>
 </div>
-
-<!-- DTC -->
 
 <section id="dtcSection">
 
@@ -310,30 +297,26 @@ li{
 <h2>🔎 Buscar código DTC</h2>
 
 <p class="desc">
-Consulta códigos guardados o genera información nueva.
+Busca un código guardado o genera información automáticamente.
 </p>
 
 <label>Código</label>
 
 <input
- id="dtcCode"
- maxlength="5"
- placeholder="Ejemplo: P2122"
- autocomplete="off"
+  id="code"
+  maxlength="5"
+  placeholder="Ej. P2122"
+  autocomplete="off"
 >
 
 <label>Marca opcional</label>
 
 <input
- id="dtcMake"
- placeholder="Ejemplo: Chevrolet"
+  id="make"
+  placeholder="Ej. Chevrolet"
 >
 
-<button
- class="btn"
- id="searchDtcBtn"
- onclick="searchDTC()"
->
+<button class="main" id="dtcBtn" onclick="searchDTC()">
 🔎 BUSCAR CÓDIGO
 </button>
 
@@ -341,70 +324,59 @@ Consulta códigos guardados o genera información nueva.
 
 </div>
 
-<div class="card" id="result" style="display:none">
+<div id="dtcResult" class="card result">
 
-<div class="resultHead">
+<div class="code" id="rCode"></div>
 
-<div>
-<div class="resultCode" id="resultCode"></div>
-<div id="resultTitle"></div>
-</div>
+<div id="rTitle"></div>
 
-<div class="badge" id="resultSeverity">MEDIA</div>
-
-</div>
+<div class="badge" id="rSeverity"></div>
 
 <div class="section">
 <div class="title">🚗 Marca</div>
-<div class="content" id="resultMake"></div>
+<div class="content" id="rMake"></div>
 </div>
 
 <div class="section">
 <div class="title">🔴 Problema</div>
-<div class="content" id="resultProblem"></div>
+<div class="content" id="rProblem"></div>
 </div>
 
 <div class="section">
-<div class="title">🔍 Causas posibles</div>
-<div class="content" id="resultCauses"></div>
+<div class="title">🔍 Causas</div>
+<div class="content" id="rCauses"></div>
 </div>
 
 <div class="section">
 <div class="title">🚨 Síntomas</div>
-<div class="content" id="resultSymptoms"></div>
+<div class="content" id="rSymptoms"></div>
 </div>
 
 <div class="section">
 <div class="title">🧪 Diagnóstico</div>
-<div class="content" id="resultDiagnosis"></div>
+<div class="content" id="rDiagnosis"></div>
 </div>
 
 <div class="section">
-<div class="title">🔧 Posibles arreglos</div>
-<div class="content" id="resultRepairs"></div>
+<div class="title">🔧 Reparaciones</div>
+<div class="content" id="rRepairs"></div>
 </div>
 
 <div class="section">
 <div class="title">🚘 Años</div>
-<div class="content" id="resultYears"></div>
+<div class="content" id="rYears"></div>
 </div>
 
 <div class="section">
 <div class="title">⚙️ Sistema</div>
-<div class="content" id="resultSystem"></div>
+<div class="content" id="rSystem"></div>
 </div>
 
-<div
- id="resultSource"
- class="content"
- style="margin-top:18px;font-size:12px;color:#6f7b8d"
-></div>
+<div class="section content" id="rSource"></div>
 
 </div>
 
 </section>
-
-<!-- DIAGRAMAS -->
 
 <section id="diagramSection" class="hidden">
 
@@ -413,19 +385,19 @@ Consulta códigos guardados o genera información nueva.
 <h2>📊 Diagramas automotrices</h2>
 
 <p class="desc">
-Busca un diagrama independientemente del código DTC.
+Busca el sistema por separado del código DTC.
 </p>
 
 <div class="grid">
 
 <div>
 <label>Marca</label>
-<input id="diagramMake" placeholder="Ej. Chevrolet">
+<input id="dMake" placeholder="Chevrolet">
 </div>
 
 <div>
 <label>Modelo</label>
-<input id="diagramModel" placeholder="Ej. Silverado">
+<input id="dModel" placeholder="Silverado">
 </div>
 
 </div>
@@ -434,21 +406,17 @@ Busca un diagrama independientemente del código DTC.
 
 <div>
 <label>Año</label>
-<input id="diagramYear" type="number" placeholder="Ej. 2020">
+<input id="dYear" type="number" placeholder="2020">
 </div>
 
 <div>
 <label>Sistema</label>
-<input id="diagramSystem" placeholder="Ej. EVAP">
+<input id="dSystem" placeholder="EVAP">
 </div>
 
 </div>
 
-<button
- class="btn"
- id="searchDiagramBtn"
- onclick="searchDiagram()"
->
+<button class="main" id="diagramBtn" onclick="searchDiagram()">
 📊 BUSCAR DIAGRAMA
 </button>
 
@@ -456,66 +424,47 @@ Busca un diagrama independientemente del código DTC.
 
 </div>
 
-<div class="card" id="diagramResult" style="display:none">
+<div id="diagramResult" class="card result">
 
 <h2 id="diagramTitle"></h2>
 
 <p class="desc" id="diagramDescription"></p>
 
-<div class="diagram-meta">
-
 <div class="meta">
+<div>
 <small>MARCA</small>
-<strong id="diagramMakeResult"></strong>
+<strong id="dm"></strong>
 </div>
 
-<div class="meta">
+<div>
 <small>MODELO</small>
-<strong id="diagramModelResult"></strong>
+<strong id="dmo"></strong>
 </div>
 
-<div class="meta">
+<div>
 <small>AÑO</small>
-<strong id="diagramYearResult"></strong>
+<strong id="dy"></strong>
 </div>
 
-<div class="meta">
+<div>
 <small>SISTEMA</small>
-<strong id="diagramSystemResult"></strong>
+<strong id="ds"></strong>
 </div>
-
 </div>
 
 <div class="section">
-
 <div class="title">🔌 Componentes</div>
-
-<div class="diagram-box">
-
-<div
- class="diagram-canvas"
- id="diagramCanvas"
-></div>
-
-</div>
-
+<div class="diagram" id="components"></div>
 </div>
 
 <div class="section">
-
 <div class="title">🔗 Conexiones</div>
-
-<div id="connectionList"></div>
-
+<div id="connections"></div>
 </div>
 
-<div id="diagramWarnings"></div>
+<div id="warnings"></div>
 
-<div
- id="diagramSource"
- class="content"
- style="margin-top:18px;font-size:12px;color:#6f7b8d"
-></div>
+<div class="section content" id="diagramSource"></div>
 
 </div>
 
@@ -525,46 +474,36 @@ Busca un diagrama independientemente del código DTC.
 
 <script>
 
-/* =========================
-   SECCIONES
-========================= */
+function $(id){
+  return document.getElementById(id);
+}
 
-function showSection(section){
+function section(name){
 
-  const dtc =
-    document.getElementById("dtcSection");
+  const dtc = $("dtcSection");
+  const diagram = $("diagramSection");
 
-  const diagram =
-    document.getElementById("diagramSection");
+  const td = $("tabDtc");
+  const tg = $("tabDiagram");
 
-  const tabDtc =
-    document.getElementById("tabDtc");
-
-  const tabDiagram =
-    document.getElementById("tabDiagram");
-
-  if(section === "dtc"){
+  if(name === "dtc"){
 
     dtc.classList.remove("hidden");
     diagram.classList.add("hidden");
 
-    tabDtc.classList.add("active");
-    tabDiagram.classList.remove("active");
+    td.classList.add("active");
+    tg.classList.remove("active");
 
   }else{
 
     dtc.classList.add("hidden");
     diagram.classList.remove("hidden");
 
-    tabDtc.classList.remove("active");
-    tabDiagram.classList.add("active");
+    td.classList.remove("active");
+    tg.classList.add("active");
 
   }
 }
-
-/* =========================
-   SEGURIDAD HTML
-========================= */
 
 function safe(value){
 
@@ -576,68 +515,68 @@ function safe(value){
     .replaceAll("'","&#039;");
 }
 
-/* =========================
-   LISTAS
-========================= */
-
-function list(id,items){
-
-  const el =
-    document.getElementById(id);
+function list(items){
 
   if(!Array.isArray(items) || !items.length){
-
-    el.textContent =
-      "No hay información disponible.";
-
-    return;
+    return "No hay información disponible.";
   }
 
-  el.innerHTML =
-    "<ul>" +
-    items.map(x =>
-      `<li>${safe(x)}</li>`
-    ).join("") +
+  return "<ul>" +
+    items.map(x => `<li>${safe(x)}</li>`).join("") +
     "</ul>";
 }
 
-/* =========================
-   DTC
-========================= */
+async function getJSON(url){
+
+  const response = await fetch(url);
+
+  const raw = await response.text();
+
+  let data;
+
+  try{
+    data = JSON.parse(raw);
+  }catch{
+    console.error("RESPUESTA NO JSON:",raw);
+
+    throw new Error(
+      "La API no devolvió JSON. Revisa api/dtc/code.js y Vercel."
+    );
+  }
+
+  if(!response.ok || !data.success){
+    throw new Error(
+      data.error || "La API devolvió un error."
+    );
+  }
+
+  return data;
+}
 
 async function searchDTC(){
 
-  const code =
-    document.getElementById("dtcCode")
-      .value.trim().toUpperCase();
+  const code = $("code").value
+    .trim()
+    .toUpperCase();
 
-  const make =
-    document.getElementById("dtcMake")
-      .value.trim();
+  const make = $("make").value.trim();
 
-  const button =
-    document.getElementById("searchDtcBtn");
-
-  const status =
-    document.getElementById("dtcStatus");
+  const button = $("dtcBtn");
+  const status = $("dtcStatus");
 
   if(!/^[PBCU][0-9A-F]{4}$/.test(code)){
 
-    status.className = "status error";
-    status.textContent =
-      "⚠️ Código inválido. Ejemplo: P0300.";
-
+    status.className="status error";
+    status.textContent="⚠️ Código DTC inválido. Ejemplo: P0300.";
     return;
   }
 
-  button.disabled = true;
+  button.disabled=true;
 
-  status.className = "status loading";
-  status.textContent =
-    "🔎 Consultando información...";
+  status.className="status loading";
+  status.textContent="🔎 Consultando...";
 
-  document.getElementById("result")
-    .style.display = "none";
+  $("dtcResult").style.display="none";
 
   try{
 
@@ -645,315 +584,185 @@ async function searchDTC(){
       `/api/dtc?code=${encodeURIComponent(code)}`;
 
     if(make){
-
       url +=
         `&make=${encodeURIComponent(make)}`;
     }
 
-    const response =
-      await fetch(url);
+    const data = await getJSON(url);
 
-    const raw =
-      await response.text();
+    $("rCode").textContent=data.code;
+    $("rTitle").textContent=data.title;
+    $("rSeverity").textContent=data.severity;
+    $("rMake").textContent=data.make;
+    $("rProblem").textContent=data.problem;
 
-    let data;
+    $("rCauses").innerHTML=list(data.causes);
+    $("rSymptoms").innerHTML=list(data.symptoms);
+    $("rDiagnosis").innerHTML=list(data.diagnosis);
+    $("rRepairs").innerHTML=list(data.repairs);
 
-    try{
-      data = JSON.parse(raw);
-    }catch{
-      throw new Error(
-        "La API no devolvió JSON. Revisa api/dtc/code.js y Vercel."
-      );
-    }
+    $("rYears").textContent=data.vehicle_years;
+    $("rSystem").textContent=data.system;
 
-    if(!response.ok || !data.success){
+    $("rSource").textContent =
+      data.source === "supabase"
+      ? "⚡ Información recuperada de la base de datos."
+      : "🤖 Generada y guardada automáticamente.";
 
-      throw new Error(
-        data.error ||
-        "No se pudo consultar el código."
-      );
-    }
+    $("dtcResult").style.display="block";
 
-    showDTC(data);
-
-    status.className = "status";
-    status.style.display = "none";
+    status.className="status";
+    status.style.display="none";
 
   }catch(error){
 
-    status.className = "status error";
-    status.textContent =
-      "⚠️ " + error.message;
+    status.className="status error";
+    status.textContent="⚠️ "+error.message;
 
   }finally{
 
-    button.disabled = false;
+    button.disabled=false;
   }
 }
 
-/* =========================
-   MOSTRAR DTC
-========================= */
-
-function showDTC(data){
-
-  document.getElementById("result")
-    .style.display = "block";
-
-  document.getElementById("resultCode")
-    .textContent = data.code || "----";
-
-  document.getElementById("resultTitle")
-    .textContent = data.title || "Código DTC";
-
-  document.getElementById("resultSeverity")
-    .textContent = data.severity || "MEDIA";
-
-  document.getElementById("resultMake")
-    .textContent = data.make || "Genérica";
-
-  document.getElementById("resultProblem")
-    .textContent =
-      data.problem || "No hay información disponible.";
-
-  list("resultCauses",data.causes);
-  list("resultSymptoms",data.symptoms);
-  list("resultDiagnosis",data.diagnosis);
-  list("resultRepairs",data.repairs);
-
-  document.getElementById("resultYears")
-    .textContent =
-      data.vehicle_years || "No especificado";
-
-  document.getElementById("resultSystem")
-    .textContent =
-      data.system || "No especificado";
-
-  document.getElementById("resultSource")
-    .textContent =
-      data.source === "supabase"
-      ? "⚡ Información recuperada desde Supabase."
-      : "🤖 Información generada y guardada en Supabase.";
-}
-
-/* =========================
-   DIAGRAMAS
-========================= */
-
 async function searchDiagram(){
 
-  const make =
-    document.getElementById("diagramMake")
-      .value.trim();
+  const make=$("dMake").value.trim();
+  const model=$("dModel").value.trim();
+  const year=$("dYear").value.trim();
+  const system=$("dSystem").value.trim();
 
-  const model =
-    document.getElementById("diagramModel")
-      .value.trim();
-
-  const year =
-    document.getElementById("diagramYear")
-      .value.trim();
-
-  const system =
-    document.getElementById("diagramSystem")
-      .value.trim();
-
-  const button =
-    document.getElementById("searchDiagramBtn");
-
-  const status =
-    document.getElementById("diagramStatus");
+  const button=$("diagramBtn");
+  const status=$("diagramStatus");
 
   if(!make || !model || !year || !system){
 
-    status.className = "status error";
-    status.textContent =
+    status.className="status error";
+    status.textContent=
       "⚠️ Completa marca, modelo, año y sistema.";
 
     return;
   }
 
-  button.disabled = true;
+  button.disabled=true;
 
-  status.className = "status loading";
-  status.textContent =
-    "📊 Consultando diagrama...";
+  status.className="status loading";
+  status.textContent="📊 Consultando diagrama...";
 
-  document.getElementById("diagramResult")
-    .style.display = "none";
+  $("diagramResult").style.display="none";
 
   try{
 
     const url =
-      `/api/dtc?type=diagram` +
+      `/api/dtc?action=diagram` +
       `&make=${encodeURIComponent(make)}` +
       `&model=${encodeURIComponent(model)}` +
       `&year=${encodeURIComponent(year)}` +
       `&system=${encodeURIComponent(system)}`;
 
-    const response =
-      await fetch(url);
+    const data=await getJSON(url);
 
-    const raw =
-      await response.text();
+    $("diagramTitle").textContent=data.title;
 
-    let data;
+    $("diagramDescription").textContent=data.description;
 
-    try{
-      data = JSON.parse(raw);
-    }catch{
-      throw new Error(
-        "La API no devolvió JSON. Revisa api/dtc/code.js y Vercel."
-      );
+    $("dm").textContent=data.make;
+    $("dmo").textContent=data.model;
+    $("dy").textContent=data.year;
+    $("ds").textContent=data.system;
+
+    const components=$("components");
+
+    components.innerHTML="";
+
+    if(Array.isArray(data.components) && data.components.length){
+
+      data.components.forEach(c=>{
+
+        const div=document.createElement("div");
+
+        div.className="component";
+
+        div.innerHTML=
+          `<b>${safe(c.name)}</b>
+           <small>${safe(c.type)}</small>`;
+
+        components.appendChild(div);
+
+      });
+
+    }else{
+
+      components.textContent=
+        "No hay componentes disponibles.";
+
     }
 
-    if(!response.ok || !data.success){
+    const connections=$("connections");
 
-      throw new Error(
-        data.error ||
-        "No se pudo generar el diagrama."
-      );
+    connections.innerHTML="";
+
+    if(Array.isArray(data.connections) && data.connections.length){
+
+      data.connections.forEach(c=>{
+
+        const div=document.createElement("div");
+
+        div.className="connection";
+
+        div.textContent=
+          `${c.from || "?"} → ${c.to || "?"} : ${c.label || "Conexión"}`;
+
+        connections.appendChild(div);
+
+      });
+
+    }else{
+
+      connections.textContent=
+        "No hay conexiones disponibles.";
+
     }
 
-    showDiagram(data);
+    const warnings=$("warnings");
 
-    status.className = "status";
-    status.style.display = "none";
+    warnings.innerHTML="";
+
+    if(Array.isArray(data.warnings)){
+
+      data.warnings.forEach(w=>{
+
+        const div=document.createElement("div");
+
+        div.className="warning";
+
+        div.textContent="⚠️ "+w;
+
+        warnings.appendChild(div);
+
+      });
+
+    }
+
+    $("diagramSource").textContent =
+      data.source === "supabase"
+      ? "⚡ Diagrama recuperado de la base de datos."
+      : "🤖 Diagrama generado y guardado automáticamente.";
+
+    $("diagramResult").style.display="block";
+
+    status.className="status";
+    status.style.display="none";
 
   }catch(error){
 
-    status.className = "status error";
-    status.textContent =
-      "⚠️ " + error.message;
+    status.className="status error";
+    status.textContent="⚠️ "+error.message;
 
   }finally{
 
-    button.disabled = false;
+    button.disabled=false;
   }
-}
-
-/* =========================
-   MOSTRAR DIAGRAMA
-========================= */
-
-function showDiagram(data){
-
-  document.getElementById("diagramResult")
-    .style.display = "block";
-
-  document.getElementById("diagramTitle")
-    .textContent =
-      data.title || "Diagrama";
-
-  document.getElementById("diagramDescription")
-    .textContent =
-      data.description || "";
-
-  document.getElementById("diagramMakeResult")
-    .textContent = data.make || "";
-
-  document.getElementById("diagramModelResult")
-    .textContent = data.model || "";
-
-  document.getElementById("diagramYearResult")
-    .textContent = data.year || "";
-
-  document.getElementById("diagramSystemResult")
-    .textContent = data.system || "";
-
-  const canvas =
-    document.getElementById("diagramCanvas");
-
-  canvas.innerHTML = "";
-
-  const components =
-    Array.isArray(data.components)
-    ? data.components
-    : [];
-
-  components.forEach(component => {
-
-    const div =
-      document.createElement("div");
-
-    div.className = "component";
-
-    div.innerHTML = `
-      <div class="component-name">
-        ${safe(component.name || component.id)}
-      </div>
-      <div class="component-type">
-        ${safe(component.type || "other")}
-      </div>
-    `;
-
-    canvas.appendChild(div);
-  });
-
-  if(!components.length){
-
-    canvas.innerHTML =
-      '<div style="color:#7f8999">No hay componentes disponibles.</div>';
-  }
-
-  const connections =
-    document.getElementById("connectionList");
-
-  connections.innerHTML = "";
-
-  const connectionArray =
-    Array.isArray(data.connections)
-    ? data.connections
-    : [];
-
-  connectionArray.forEach(c => {
-
-    const div =
-      document.createElement("div");
-
-    div.className = "connection";
-
-    div.textContent =
-      `${c.from || "?"} → ${c.to || "?"}` +
-      (c.label ? ` — ${c.label}` : "");
-
-    connections.appendChild(div);
-  });
-
-  if(!connectionArray.length){
-
-    connections.innerHTML =
-      '<div class="content">No hay conexiones disponibles.</div>';
-  }
-
-  const warnings =
-    document.getElementById("diagramWarnings");
-
-  warnings.innerHTML = "";
-
-  const warningArray =
-    Array.isArray(data.warnings)
-    ? data.warnings
-    : [];
-
-  warningArray.forEach(w => {
-
-    const div =
-      document.createElement("div");
-
-    div.className = "warning";
-
-    div.textContent =
-      "⚠️ " + w;
-
-    warnings.appendChild(div);
-  });
-
-  document.getElementById("diagramSource")
-    .textContent =
-      data.source === "supabase"
-      ? "⚡ Diagrama recuperado desde Supabase."
-      : "🤖 Diagrama generado y guardado en Supabase.";
 }
 
 </script>
