@@ -1,296 +1,393 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Scanner DTC</title>
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
+<title>Scanner DTC Automotriz</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
 body{
-font-family:Arial,sans-serif;
-background:#080b12;
-color:white;
-min-height:100vh
+  font-family:Arial,Helvetica,sans-serif;
+  background:#070b12;
+  color:white;
 }
 
 .app{
-max-width:850px;
-margin:auto;
-padding:16px
+  width:100%;
+  max-width:900px;
+  margin:auto;
+  padding:15px;
 }
 
 header{
-text-align:center;
-padding:25px 10px
+  text-align:center;
+  padding:25px 5px;
 }
 
 .logo{
-font-size:30px;
-font-weight:900;
-color:#00e5ff
+  font-size:30px;
+  font-weight:900;
+  color:#00e5ff;
 }
 
-.sub{
-color:#8994a6;
-margin-top:6px
+.subtitle{
+  color:#8d98aa;
+  margin-top:6px;
 }
 
 .tabs{
-display:flex;
-gap:10px;
-margin-bottom:16px
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
 }
 
 .tab{
-flex:1;
-padding:14px;
-border:1px solid #263143;
-border-radius:12px;
-background:#111722;
-color:#aeb8c8;
-font-weight:bold;
-font-size:15px
+  flex:1;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #253044;
+  background:#111722;
+  color:#b9c2d0;
+  font-weight:900;
+  cursor:pointer;
 }
 
 .tab.active{
-background:#00d9ff;
-color:#001018
+  background:#00d9ff;
+  color:#001017;
 }
 
 .card{
-background:#10151f;
-border:1px solid #222d3d;
-border-radius:17px;
-padding:18px;
-margin-bottom:16px
+  background:#101620;
+  border:1px solid #202b3b;
+  border-radius:17px;
+  padding:18px;
+  margin-bottom:15px;
 }
 
 h2{
-margin-bottom:7px
+  margin-bottom:7px;
 }
 
 .desc{
-color:#8994a6;
-font-size:14px;
-margin-bottom:18px;
-line-height:1.5
+  color:#8d98aa;
+  font-size:14px;
+  margin-bottom:18px;
 }
 
 label{
-display:block;
-font-size:13px;
-font-weight:bold;
-color:#b9c2d0;
-margin-bottom:6px
+  display:block;
+  color:#bbc5d4;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:6px;
 }
 
 input{
-width:100%;
-padding:14px;
-margin-bottom:13px;
-background:#080c13;
-border:1px solid #2a3547;
-border-radius:10px;
-color:white;
-font-size:15px;
-outline:none
+  width:100%;
+  padding:14px;
+  margin-bottom:13px;
+  border-radius:11px;
+  border:1px solid #2b374b;
+  background:#080d14;
+  color:white;
+  font-size:15px;
+  outline:none;
 }
 
 input:focus{
-border-color:#00d9ff
+  border-color:#00d9ff;
 }
 
 .grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
 }
 
-button{
-cursor:pointer
+button.main{
+  width:100%;
+  padding:15px;
+  border:0;
+  border-radius:12px;
+  background:#00d9ff;
+  color:#001017;
+  font-weight:900;
+  cursor:pointer;
 }
 
-.mainbtn{
-width:100%;
-padding:15px;
-border:0;
-border-radius:11px;
-background:#00d9ff;
-color:#001018;
-font-weight:900;
-font-size:15px
-}
-
-.mainbtn:disabled{
-opacity:.5
+button.main:disabled{
+  opacity:.5;
 }
 
 .status{
-display:none;
-margin-top:13px;
-padding:12px;
-border-radius:10px;
-font-size:14px;
-line-height:1.5;
-word-break:break-word
+  margin-top:13px;
+  padding:12px;
+  border-radius:10px;
+  display:none;
+  font-size:14px;
 }
 
-.loading{
-display:block;
-background:#10202b;
-border:1px solid #18506a;
-color:#79e8ff
+.status.loading{
+  display:block;
+  background:#10202b;
+  color:#75eaff;
 }
 
-.error{
-display:block;
-background:#291116;
-border:1px solid #6b2731;
-color:#ff929d
+.status.error{
+  display:block;
+  background:#291217;
+  color:#ff8997;
 }
 
 .result{
-display:none
+  display:none;
 }
 
 .code{
-font-size:30px;
-font-weight:900;
-color:#00e5ff
+  font-size:32px;
+  font-weight:900;
+  color:#00e5ff;
 }
 
 .badge{
-background:#263142;
-padding:7px 12px;
-border-radius:20px;
-font-size:12px;
-font-weight:bold
-}
-
-.resultHead{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px;
-margin-bottom:18px
+  display:inline-block;
+  padding:6px 10px;
+  margin-top:7px;
+  border-radius:20px;
+  background:#273245;
+  font-size:12px;
+  font-weight:bold;
 }
 
 .section{
-margin-top:17px
+  margin-top:18px;
 }
 
 .title{
-font-weight:900;
-margin-bottom:7px
+  font-weight:900;
+  margin-bottom:7px;
 }
 
 .content{
-color:#c2cad6;
-font-size:14px;
-line-height:1.6
+  color:#c3ccd8;
+  line-height:1.6;
+  font-size:14px;
 }
 
 ul{
-padding-left:20px
+  padding-left:20px;
 }
 
 li{
-margin-bottom:6px
+  margin-bottom:6px;
+}
+
+/* DIAGRAMA */
+
+.diagram-result{
+  display:none;
 }
 
 .meta{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:8px;
-margin:15px 0
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin:15px 0;
 }
 
-.meta div{
-background:#080d15;
-border:1px solid #222d3d;
-padding:10px;
-border-radius:9px;
-overflow:hidden
+.meta-box{
+  background:#080d14;
+  border:1px solid #222d3d;
+  border-radius:10px;
+  padding:10px;
 }
 
-.meta small{
-display:block;
-color:#758093;
-font-size:10px;
-margin-bottom:4px
+.meta-box small{
+  display:block;
+  color:#778397;
+  font-size:10px;
+  margin-bottom:5px;
 }
 
-.meta strong{
-font-size:13px;
-word-break:break-word
+.meta-box strong{
+  font-size:13px;
+  word-break:break-word;
 }
 
-.diagramBox{
-background:#080c12;
-border:1px solid #222d3d;
-border-radius:12px;
-padding:15px
+.diagram-area{
+  background:#060a10;
+  border:1px solid #263244;
+  border-radius:15px;
+  padding:15px;
+  overflow:auto;
 }
 
-.components{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:12px
+.diagram{
+  min-width:650px;
+  min-height:360px;
+  position:relative;
 }
 
-.component{
-min-width:120px;
-padding:13px;
-background:#111c29;
-border:1px solid #00bcd4;
-border-radius:10px;
-text-align:center
+.node{
+  position:absolute;
+  width:145px;
+  min-height:65px;
+  padding:10px;
+  background:#111d2b;
+  border:2px solid #00c9e8;
+  border-radius:12px;
+  text-align:center;
+  cursor:pointer;
+  box-shadow:0 0 15px rgba(0,217,255,.12);
 }
 
-.component b{
-font-size:13px
+.node:hover{
+  background:#16283a;
 }
 
-.component small{
-display:block;
-margin-top:5px;
-color:#78dcea;
-font-size:10px
+.node-name{
+  font-size:12px;
+  font-weight:900;
+}
+
+.node-type{
+  margin-top:5px;
+  color:#72dff0;
+  font-size:10px;
+}
+
+.diagram-line{
+  position:absolute;
+  height:2px;
+  background:#00d9ff;
+  transform-origin:left center;
+  pointer-events:none;
+  opacity:.7;
+}
+
+.line-label{
+  position:absolute;
+  color:#9eeefa;
+  background:#080d14;
+  padding:3px 6px;
+  border-radius:5px;
+  font-size:9px;
+  pointer-events:none;
+}
+
+.big-button{
+  margin-top:12px;
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #26354a;
+  background:#151e2b;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
 }
 
 .connection{
-background:#0c121b;
-border-left:3px solid #00d9ff;
-padding:10px;
-margin-top:8px;
-font-size:13px;
-color:#bbc5d3
+  background:#0b111a;
+  border-left:3px solid #00d9ff;
+  padding:10px;
+  margin-top:8px;
+  font-size:13px;
+  color:#b9c4d2;
 }
 
 .warning{
-background:#211c0e;
-border:1px solid #594b1c;
-color:#e7d47d;
-padding:11px;
-border-radius:9px;
-margin-top:8px;
-font-size:13px
+  margin-top:10px;
+  padding:11px;
+  border-radius:10px;
+  background:#241e0c;
+  border:1px solid #5b4a1a;
+  color:#e5d37b;
+  font-size:13px;
 }
 
 .hidden{
-display:none
+  display:none!important;
 }
 
-@media(max-width:600px){
-.grid{grid-template-columns:1fr}
-.meta{grid-template-columns:1fr 1fr}
-.logo{font-size:26px}
-.resultHead{align-items:flex-start}
+/* VISOR */
+
+.viewer{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:999;
+  background:rgba(0,0,0,.94);
+  padding:15px;
+  overflow:auto;
 }
+
+.viewer-close{
+  position:fixed;
+  top:12px;
+  right:12px;
+  z-index:1001;
+  border:0;
+  border-radius:50%;
+  width:42px;
+  height:42px;
+  background:#00d9ff;
+  color:#001017;
+  font-size:20px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.viewer-content{
+  min-width:800px;
+  min-height:550px;
+  margin:55px auto;
+  position:relative;
+  max-width:1100px;
+}
+
+.viewer-title{
+  position:fixed;
+  top:20px;
+  left:20px;
+  color:#00e5ff;
+  font-weight:900;
+  z-index:1000;
+}
+
+@media(max-width:650px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .meta{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .code{
+    font-size:27px;
+  }
+
+}
+
 </style>
+
 </head>
 
 <body>
@@ -298,18 +395,35 @@ display:none
 <div class="app">
 
 <header>
-<div class="logo">🔧 SCANNER DTC</div>
-<div class="sub">Diagnóstico automotriz inteligente</div>
+
+<div class="logo">
+🔧 SCANNER DTC
+</div>
+
+<div class="subtitle">
+Diagnóstico automotriz inteligente
+</div>
+
 </header>
 
 <div class="tabs">
-<button id="dtcTab" class="tab active" onclick="showTab('dtc')">
-🔎 Códigos DTC
+
+<button
+class="tab active"
+id="tabDtc"
+onclick="showSection('dtc')"
+>
+🔎 DTC
 </button>
 
-<button id="diagramTab" class="tab" onclick="showTab('diagram')">
-📊 Diagramas
+<button
+class="tab"
+id="tabDiagram"
+onclick="showSection('diagram')"
+>
+📊 DIAGRAMAS
 </button>
+
 </div>
 
 <!-- DTC -->
@@ -318,94 +432,175 @@ display:none
 
 <div class="card">
 
-<h2>🔎 Buscar código DTC</h2>
+<h2>
+🔎 Buscar código DTC
+</h2>
 
 <p class="desc">
-Busca un código existente o genera información para uno nuevo.
+Busca un código guardado o genera información nueva.
 </p>
 
-<label>Código</label>
+<label>
+Código
+</label>
 
 <input
 id="dtcCode"
 maxlength="5"
 placeholder="P2122"
-autocomplete="off"
 >
 
-<label>Marca opcional</label>
+<label>
+Marca opcional
+</label>
 
 <input
 id="dtcMake"
-placeholder="Chevrolet, Dodge, Ford..."
+placeholder="Chevrolet"
 >
 
 <button
+class="main"
 id="dtcButton"
-class="mainbtn"
 onclick="searchDTC()"
 >
 🔎 BUSCAR CÓDIGO
 </button>
 
-<div id="dtcStatus" class="status"></div>
+<div
+id="dtcStatus"
+class="status"
+></div>
 
 </div>
 
-<div id="dtcResult" class="card result">
+<div
+class="card result"
+id="dtcResult"
+>
 
-<div class="resultHead">
-
-<div>
-<div id="rCode" class="code"></div>
-<div id="rTitle" style="color:#aeb8c8;margin-top:5px"></div>
+<div class="code" id="resultCode">
+P0000
 </div>
 
-<div id="rSeverity" class="badge"></div>
+<div id="resultTitle"></div>
+
+<div
+class="badge"
+id="resultSeverity"
+>
+MEDIA
+</div>
+
+<div class="section">
+
+<div class="title">
+🚗 Marca
+</div>
+
+<div
+class="content"
+id="resultMake"
+></div>
 
 </div>
 
 <div class="section">
-<div class="title">🚗 Marca</div>
-<div id="rMake" class="content"></div>
+
+<div class="title">
+🔴 Problema
+</div>
+
+<div
+class="content"
+id="resultProblem"
+></div>
+
 </div>
 
 <div class="section">
-<div class="title">🔴 Problema</div>
-<div id="rProblem" class="content"></div>
+
+<div class="title">
+🔍 Causas
+</div>
+
+<div
+class="content"
+id="resultCauses"
+></div>
+
 </div>
 
 <div class="section">
-<div class="title">🔍 Causas posibles</div>
-<div id="rCauses" class="content"></div>
+
+<div class="title">
+🚨 Síntomas
+</div>
+
+<div
+class="content"
+id="resultSymptoms"
+></div>
+
 </div>
 
 <div class="section">
-<div class="title">🚨 Síntomas</div>
-<div id="rSymptoms" class="content"></div>
+
+<div class="title">
+🧪 Diagnóstico
+</div>
+
+<div
+class="content"
+id="resultDiagnosis"
+></div>
+
 </div>
 
 <div class="section">
-<div class="title">🧪 Diagnóstico</div>
-<div id="rDiagnosis" class="content"></div>
+
+<div class="title">
+🔧 Reparaciones
+</div>
+
+<div
+class="content"
+id="resultRepairs"
+></div>
+
 </div>
 
 <div class="section">
-<div class="title">🔧 Posibles arreglos</div>
-<div id="rRepairs" class="content"></div>
+
+<div class="title">
+🚘 Años
+</div>
+
+<div
+class="content"
+id="resultYears"
+></div>
+
 </div>
 
 <div class="section">
-<div class="title">🚘 Años</div>
-<div id="rYears" class="content"></div>
+
+<div class="title">
+⚙️ Sistema
 </div>
 
-<div class="section">
-<div class="title">⚙️ Sistema</div>
-<div id="rSystem" class="content"></div>
+<div
+class="content"
+id="resultSystem"
+></div>
+
 </div>
 
-<div id="rSource" style="margin-top:18px;color:#718096;font-size:12px"></div>
+<div
+class="content"
+id="resultSource"
+style="margin-top:18px;color:#748094;font-size:12px"
+></div>
 
 </div>
 
@@ -413,26 +608,43 @@ onclick="searchDTC()"
 
 <!-- DIAGRAMAS -->
 
-<section id="diagramSection" class="hidden">
+<section
+id="diagramSection"
+class="hidden"
+>
 
 <div class="card">
 
-<h2>📊 Diagramas automotrices</h2>
+<h2>
+📊 Diagrama automotriz
+</h2>
 
 <p class="desc">
-Busca por separado marca, modelo, año y sistema.
+Genera un diagrama educativo visual del sistema.
 </p>
 
 <div class="grid">
 
 <div>
+
 <label>Marca</label>
-<input id="dMake" placeholder="Chevrolet">
+
+<input
+id="diagramMake"
+placeholder="Chevrolet"
+>
+
 </div>
 
 <div>
+
 <label>Modelo</label>
-<input id="dModel" placeholder="Silverado">
+
+<input
+id="diagramModel"
+placeholder="Silverado"
+>
+
 </div>
 
 </div>
@@ -440,86 +652,115 @@ Busca por separado marca, modelo, año y sistema.
 <div class="grid">
 
 <div>
+
 <label>Año</label>
-<input id="dYear" type="number" placeholder="2020">
+
+<input
+id="diagramYear"
+type="number"
+placeholder="2020"
+>
+
 </div>
 
 <div>
+
 <label>Sistema</label>
-<input id="dSystem" placeholder="EVAP">
+
+<input
+id="diagramSystem"
+placeholder="EVAP"
+>
+
 </div>
 
 </div>
 
 <button
+class="main"
 id="diagramButton"
-class="mainbtn"
 onclick="searchDiagram()"
 >
-📊 BUSCAR DIAGRAMA
+📊 GENERAR DIAGRAMA
 </button>
 
-<div id="diagramStatus" class="status"></div>
+<div
+id="diagramStatus"
+class="status"
+></div>
 
 </div>
 
-<div id="diagramResult" class="card result">
+<div
+class="card diagram-result"
+id="diagramResult"
+>
 
-<h2 id="diagramTitle"></h2>
+<h2 id="diagramTitle">
+Diagrama
+</h2>
 
-<p id="diagramDescription" class="desc"></p>
+<p
+class="desc"
+id="diagramDescription"
+></p>
 
 <div class="meta">
 
-<div>
+<div class="meta-box">
 <small>MARCA</small>
-<strong id="dmMake"></strong>
+<strong id="diagramMakeResult"></strong>
 </div>
 
-<div>
+<div class="meta-box">
 <small>MODELO</small>
-<strong id="dmModel"></strong>
+<strong id="diagramModelResult"></strong>
 </div>
 
-<div>
+<div class="meta-box">
 <small>AÑO</small>
-<strong id="dmYear"></strong>
+<strong id="diagramYearResult"></strong>
 </div>
 
-<div>
+<div class="meta-box">
 <small>SISTEMA</small>
-<strong id="dmSystem"></strong>
+<strong id="diagramSystemResult"></strong>
 </div>
 
 </div>
+
+<div class="diagram-area">
+
+<div
+class="diagram"
+id="diagramCanvas"
+></div>
+
+</div>
+
+<button
+class="big-button"
+onclick="openDiagramViewer()"
+>
+🔍 VER DIAGRAMA GRANDE
+</button>
 
 <div class="section">
 
-<div class="title">🔌 Componentes</div>
-
-<div class="diagramBox">
-<div id="components" class="components"></div>
+<div class="title">
+🔗 Conexiones
 </div>
 
-</div>
-
-<div class="section">
-
-<div class="title">🔗 Conexiones</div>
-
-<div id="connections"></div>
+<div id="connectionList"></div>
 
 </div>
 
-<div class="section">
+<div id="diagramWarnings"></div>
 
-<div class="title">⚠️ Advertencias</div>
-
-<div id="warnings"></div>
-
-</div>
-
-<div id="diagramSource" style="margin-top:18px;color:#718096;font-size:12px"></div>
+<div
+id="diagramSource"
+style="margin-top:15px;color:#748094;font-size:12px"
+></div>
 
 </div>
 
@@ -527,133 +768,113 @@ onclick="searchDiagram()"
 
 </div>
 
+<!-- VISOR -->
+
+<div
+class="viewer"
+id="diagramViewer"
+>
+
+<div class="viewer-title">
+📊 DIAGRAMA
+</div>
+
+<button
+class="viewer-close"
+onclick="closeDiagramViewer()"
+>
+×
+</button>
+
+<div
+class="viewer-content"
+id="viewerContent"
+></div>
+
+</div>
+
 <script>
 
-const API = "/api/dtc/code";
-
 /* =====================================================
-   UTILIDADES
+   SECCIONES
 ===================================================== */
 
-function $(id){
-return document.getElementById(id);
-}
+function showSection(section){
 
-function safe(value){
-if(value === null || value === undefined) return "";
-if(typeof value === "object"){
-try{
-return JSON.stringify(value);
-}catch{
-return "Error desconocido";
-}
-}
-return String(value);
-}
+  const dtc =
+    document.getElementById(
+      "dtcSection"
+    );
 
-function esc(value){
-return safe(value)
-.replace(/&/g,"&amp;")
-.replace(/</g,"&lt;")
-.replace(/>/g,"&gt;")
-.replace(/"/g,"&quot;")
-.replace(/'/g,"&#039;");
-}
+  const diagram =
+    document.getElementById(
+      "diagramSection"
+    );
 
-function list(id,items){
+  const tabDtc =
+    document.getElementById(
+      "tabDtc"
+    );
 
-if(!Array.isArray(items) || !items.length){
-$(id).textContent="No hay información disponible.";
-return;
-}
+  const tabDiagram =
+    document.getElementById(
+      "tabDiagram"
+    );
 
-$(id).innerHTML="<ul>"+
-items.map(x=>"<li>"+esc(x)+"</li>").join("")+
-"</ul>";
-}
+  if(section==="dtc"){
 
-function status(id,type,message){
+    dtc.classList.remove("hidden");
+    diagram.classList.add("hidden");
 
-const el=$(id);
+    tabDtc.classList.add("active");
+    tabDiagram.classList.remove("active");
 
-if(!message){
-el.style.display="none";
-return;
-}
+  }else{
 
-el.className="status "+type;
-el.textContent=message;
+    dtc.classList.add("hidden");
+    diagram.classList.remove("hidden");
+
+    tabDtc.classList.remove("active");
+    tabDiagram.classList.add("active");
+  }
 }
 
 /* =====================================================
-   TABS
+   ESCAPE
 ===================================================== */
 
-function showTab(tab){
+function escapeHTML(value){
 
-if(tab==="dtc"){
-
-$("dtcSection").classList.remove("hidden");
-$("diagramSection").classList.add("hidden");
-
-$("dtcTab").classList.add("active");
-$("diagramTab").classList.remove("active");
-
-}else{
-
-$("dtcSection").classList.add("hidden");
-$("diagramSection").classList.remove("hidden");
-
-$("dtcTab").classList.remove("active");
-$("diagramTab").classList.add("active");
-
-}
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
 /* =====================================================
-   LEER RESPUESTA DE API
+   LISTA
 ===================================================== */
 
-async function getJSON(url){
+function listHTML(items){
 
-const response=await fetch(url,{
-method:"GET",
-cache:"no-store",
-headers:{
-"Accept":"application/json"
-}
-});
+  if(
+    !Array.isArray(items) ||
+    !items.length
+  ){
 
-const raw=await response.text();
+    return "No hay información disponible.";
+  }
 
-let data;
-
-try{
-data=JSON.parse(raw);
-}catch{
-
-throw new Error(
-"El servidor no devolvió JSON. HTTP "+
-response.status+
-". Respuesta: "+
-raw.slice(0,250)
-);
-}
-
-if(!response.ok || data.success===false){
-
-let msg=data.error;
-
-if(typeof msg==="object"){
-msg=msg.message || JSON.stringify(msg);
-}
-
-throw new Error(
-safe(msg || "La API devolvió un error.")
-);
-}
-
-return data;
+  return `
+    <ul>
+      ${items.map(
+        x =>
+          `<li>${escapeHTML(x)}</li>`
+      ).join("")}
+    </ul>
+  `;
 }
 
 /* =====================================================
@@ -662,253 +883,563 @@ return data;
 
 async function searchDTC(){
 
-const code=$("dtcCode").value.trim().toUpperCase();
-const make=$("dtcMake").value.trim();
+  const code =
+    document
+      .getElementById("dtcCode")
+      .value
+      .trim()
+      .toUpperCase();
 
-if(!/^[PBCU][0-9A-F]{4}$/.test(code)){
+  const make =
+    document
+      .getElementById("dtcMake")
+      .value
+      .trim();
 
-status(
-"dtcStatus",
-"error",
-"⚠️ Código DTC inválido. Ejemplo: P2122"
-);
+  const button =
+    document.getElementById(
+      "dtcButton"
+    );
 
-return;
+  const status =
+    document.getElementById(
+      "dtcStatus"
+    );
+
+  if(
+    !/^[PBCU][0-9A-F]{4}$/.test(code)
+  ){
+
+    status.className =
+      "status error";
+
+    status.textContent =
+      "⚠️ Código DTC inválido. Ejemplo: P2122";
+
+    return;
+  }
+
+  button.disabled=true;
+
+  status.className =
+    "status loading";
+
+  status.textContent =
+    "🔎 Consultando código...";
+
+  document.getElementById(
+    "dtcResult"
+  ).style.display="none";
+
+  try{
+
+    let url =
+      `/api/dtc/code?code=${encodeURIComponent(code)}`;
+
+    if(make){
+
+      url +=
+        `&make=${encodeURIComponent(make)}`;
+    }
+
+    const response =
+      await fetch(url);
+
+    const text =
+      await response.text();
+
+    let data;
+
+    try{
+
+      data =
+        JSON.parse(text);
+
+    }catch{
+
+      console.error(
+        "RESPUESTA DTC:",
+        text
+      );
+
+      throw new Error(
+        "La API DTC no devolvió JSON. Revisa api/dtc/code.js y Vercel."
+      );
+    }
+
+    if(
+      !response.ok ||
+      !data.success
+    ){
+
+      throw new Error(
+        data.error ||
+        "Error consultando DTC."
+      );
+    }
+
+    showDTC(data);
+
+    status.style.display="none";
+
+  }catch(error){
+
+    console.error(error);
+
+    status.className =
+      "status error";
+
+    status.textContent =
+      "⚠️ " +
+      error.message;
+
+  }finally{
+
+    button.disabled=false;
+  }
 }
 
-$("dtcButton").disabled=true;
+/* =====================================================
+   MOSTRAR DTC
+===================================================== */
 
-status(
-"dtcStatus",
-"loading",
-"🔎 Consultando..."
-);
+function showDTC(data){
 
-$("dtcResult").style.display="none";
+  document.getElementById(
+    "dtcResult"
+  ).style.display="block";
 
-try{
+  document.getElementById(
+    "resultCode"
+  ).textContent =
+    data.code || "----";
 
-let url=API+
-"?code="+encodeURIComponent(code);
+  document.getElementById(
+    "resultTitle"
+  ).textContent =
+    data.title || "Código DTC";
 
-if(make){
-url+="&make="+encodeURIComponent(make);
-}
+  document.getElementById(
+    "resultSeverity"
+  ).textContent =
+    data.severity || "MEDIA";
 
-const data=await getJSON(url);
+  document.getElementById(
+    "resultMake"
+  ).textContent =
+    data.make || "Genérica";
 
-$("rCode").textContent=data.code || code;
-$("rTitle").textContent=data.title || "Código DTC";
-$("rSeverity").textContent=data.severity || "MEDIA";
+  document.getElementById(
+    "resultProblem"
+  ).textContent =
+    data.problem || "Sin información.";
 
-$("rMake").textContent=data.make || "Genérica";
+  document.getElementById(
+    "resultCauses"
+  ).innerHTML =
+    listHTML(data.causes);
 
-$("rProblem").textContent=
-data.problem || "Sin información.";
+  document.getElementById(
+    "resultSymptoms"
+  ).innerHTML =
+    listHTML(data.symptoms);
 
-list("rCauses",data.causes);
-list("rSymptoms",data.symptoms);
-list("rDiagnosis",data.diagnosis);
-list("rRepairs",data.repairs);
+  document.getElementById(
+    "resultDiagnosis"
+  ).innerHTML =
+    listHTML(data.diagnosis);
 
-$("rYears").textContent=
-data.vehicle_years || "No especificado";
+  document.getElementById(
+    "resultRepairs"
+  ).innerHTML =
+    listHTML(data.repairs);
 
-$("rSystem").textContent=
-data.system || "No especificado";
+  document.getElementById(
+    "resultYears"
+  ).textContent =
+    data.vehicle_years ||
+    "No especificado";
 
-$("rSource").textContent=
-data.source==="supabase"
-?"⚡ Recuperado de Supabase."
-:"🤖 Generado y guardado automáticamente.";
+  document.getElementById(
+    "resultSystem"
+  ).textContent =
+    data.system ||
+    "No especificado";
 
-$("dtcResult").style.display="block";
-
-status("dtcStatus");
-
-}catch(error){
-
-console.error(error);
-
-status(
-"dtcStatus",
-"error",
-"⚠️ "+safe(error.message || error)
-);
-
-}finally{
-
-$("dtcButton").disabled=false;
-
-}
+  document.getElementById(
+    "resultSource"
+  ).textContent =
+    data.source === "supabase"
+      ? "⚡ Recuperado desde Supabase."
+      : "🤖 Generado por IA y guardado automáticamente.";
 }
 
 /* =====================================================
    DIAGRAMA
 ===================================================== */
 
+let currentDiagram=null;
+
 async function searchDiagram(){
 
-const make=$("dMake").value.trim();
-const model=$("dModel").value.trim();
-const year=$("dYear").value.trim();
-const system=$("dSystem").value.trim();
+  const make =
+    document
+      .getElementById("diagramMake")
+      .value.trim();
 
-if(!make || !model || !year || !system){
+  const model =
+    document
+      .getElementById("diagramModel")
+      .value.trim();
 
-status(
-"diagramStatus",
-"error",
-"⚠️ Completa marca, modelo, año y sistema."
-);
+  const year =
+    document
+      .getElementById("diagramYear")
+      .value.trim();
 
-return;
+  const system =
+    document
+      .getElementById("diagramSystem")
+      .value.trim();
+
+  const button =
+    document.getElementById(
+      "diagramButton"
+    );
+
+  const status =
+    document.getElementById(
+      "diagramStatus"
+    );
+
+  if(
+    !make ||
+    !model ||
+    !year ||
+    !system
+  ){
+
+    status.className =
+      "status error";
+
+    status.textContent =
+      "⚠️ Completa todos los campos.";
+
+    return;
+  }
+
+  button.disabled=true;
+
+  status.className =
+    "status loading";
+
+  status.textContent =
+    "📊 Generando diagrama visual...";
+
+  document.getElementById(
+    "diagramResult"
+  ).style.display="none";
+
+  try{
+
+    const url =
+      `/api/dtc/code?diagram=1` +
+      `&make=${encodeURIComponent(make)}` +
+      `&model=${encodeURIComponent(model)}` +
+      `&year=${encodeURIComponent(year)}` +
+      `&system=${encodeURIComponent(system)}`;
+
+    const response =
+      await fetch(url);
+
+    const text =
+      await response.text();
+
+    let data;
+
+    try{
+
+      data =
+        JSON.parse(text);
+
+    }catch{
+
+      console.error(
+        "RESPUESTA DIAGRAMA:",
+        text
+      );
+
+      throw new Error(
+        "La API de diagramas no devolvió JSON."
+      );
+    }
+
+    if(
+      !response.ok ||
+      !data.success
+    ){
+
+      throw new Error(
+        data.error ||
+        "No se pudo generar el diagrama."
+      );
+    }
+
+    currentDiagram=data;
+
+    showDiagram(data);
+
+    status.style.display="none";
+
+  }catch(error){
+
+    console.error(error);
+
+    status.className =
+      "status error";
+
+    status.textContent =
+      "⚠️ " +
+      error.message;
+
+  }finally{
+
+    button.disabled=false;
+  }
 }
 
-$("diagramButton").disabled=true;
+/* =====================================================
+   DIBUJAR DIAGRAMA
+===================================================== */
 
-status(
-"diagramStatus",
-"loading",
-"📊 Consultando diagrama..."
-);
+function showDiagram(data){
 
-$("diagramResult").style.display="none";
+  document.getElementById(
+    "diagramResult"
+  ).style.display="block";
 
-try{
+  document.getElementById(
+    "diagramTitle"
+  ).textContent =
+    data.title || "Diagrama";
 
-const url=
-API+
-"?diagram=1"+
-"&make="+encodeURIComponent(make)+
-"&model="+encodeURIComponent(model)+
-"&year="+encodeURIComponent(year)+
-"&system="+encodeURIComponent(system);
+  document.getElementById(
+    "diagramDescription"
+  ).textContent =
+    data.description || "";
 
-const data=await getJSON(url);
+  document.getElementById(
+    "diagramMakeResult"
+  ).textContent =
+    data.make || "";
 
-$("diagramTitle").textContent=
-data.title || "Diagrama";
+  document.getElementById(
+    "diagramModelResult"
+  ).textContent =
+    data.model || "";
 
-$("diagramDescription").textContent=
-data.description || "";
+  document.getElementById(
+    "diagramYearResult"
+  ).textContent =
+    data.year || "";
 
-$("dmMake").textContent=data.make || make;
-$("dmModel").textContent=data.model || model;
-$("dmYear").textContent=data.year || year;
-$("dmSystem").textContent=data.system || system;
+  document.getElementById(
+    "diagramSystemResult"
+  ).textContent =
+    data.system || "";
 
-/* COMPONENTES */
+  drawCanvas(
+    document.getElementById(
+      "diagramCanvas"
+    ),
+    data
+  );
 
-const components=$("components");
+  const connections =
+    document.getElementById(
+      "connectionList"
+    );
 
-components.innerHTML="";
+  connections.innerHTML="";
 
-if(Array.isArray(data.components) && data.components.length){
+  const components =
+    Array.isArray(data.components)
+      ? data.components
+      : [];
 
-data.components.forEach(c=>{
+  const names={};
 
-const div=document.createElement("div");
+  components.forEach(
+    c=>{
+      names[c.id]=c.name;
+    }
+  );
 
-div.className="component";
+  (data.connections || [])
+    .forEach(c=>{
 
-div.innerHTML=
-"<b>"+esc(c.name || c.id || "Componente")+"</b>"+
-"<small>"+esc(c.type || "other")+"</small>";
+      const div =
+        document.createElement(
+          "div"
+        );
 
-components.appendChild(div);
+      div.className="connection";
 
-});
+      div.textContent =
+        `${names[c.from] || c.from} → ` +
+        `${names[c.to] || c.to}` +
+        ` | ${c.label || "Conexión"}`;
 
-}else{
+      connections.appendChild(div);
+    });
 
-components.textContent="No hay componentes.";
+  const warnings =
+    document.getElementById(
+      "diagramWarnings"
+    );
 
+  warnings.innerHTML="";
+
+  (data.warnings || [])
+    .forEach(w=>{
+
+      const div =
+        document.createElement(
+          "div"
+        );
+
+      div.className="warning";
+
+      div.textContent =
+        "⚠️ " + w;
+
+      warnings.appendChild(div);
+    });
+
+  document.getElementById(
+    "diagramSource"
+  ).textContent =
+    data.source === "supabase"
+      ? "⚡ Diagrama recuperado desde Supabase."
+      : "🤖 Diagrama generado por IA y guardado automáticamente.";
 }
 
-/* CONEXIONES */
+/* =====================================================
+   DIBUJAR NODOS
+===================================================== */
 
-const connections=$("connections");
+function drawCanvas(container,data){
 
-connections.innerHTML="";
+  container.innerHTML="";
 
-if(Array.isArray(data.connections) && data.connections.length){
+  const components =
+    Array.isArray(data.components)
+      ? data.components
+      : [];
 
-data.connections.forEach(c=>{
+  if(!components.length){
 
-const div=document.createElement("div");
+    container.innerHTML =
+      "<div class='content'>No hay componentes.</div>";
 
-div.className="connection";
+    return;
+  }
 
-div.textContent=
-safe(c.from)+
-" → "+
-safe(c.to)+
-(c.label ? " | "+safe(c.label) : "");
+  const positions=[];
 
-connections.appendChild(div);
+  const width=650;
+  const height=360;
 
-});
+  components.forEach(
+    (component,index)=>{
 
-}else{
+      const node =
+        document.createElement(
+          "div"
+        );
 
-connections.textContent="No hay conexiones.";
+      node.className="node";
 
-}
+      node.dataset.id =
+        component.id;
 
-/* ADVERTENCIAS */
+      node.innerHTML=`
+        <div class="node-name">
+          ${escapeHTML(component.name)}
+        </div>
 
-const warnings=$("warnings");
+        <div class="node-type">
+          ${escapeHTML(component.type || "other")}
+        </div>
+      `;
 
-warnings.innerHTML="";
+      /*
+        Distribución automática
+      */
 
-if(Array.isArray(data.warnings) && data.warnings.length){
+      const columns =
+        Math.min(
+          3,
+          Math.ceil(
+            Math.sqrt(
+              components.length
+            )
+          )
+        );
 
-data.warnings.forEach(w=>{
+      const rows =
+        Math.ceil(
+          components.length /
+          columns
+        );
 
-const div=document.createElement("div");
+      const column =
+        index % columns;
 
-div.className="warning";
+      const row =
+        Math.floor(
+          index / columns
+        );
 
-div.textContent="⚠️ "+safe(w);
+      const x =
+        20 +
+        column *
+        (
+          (width-180) /
+          Math.max(
+            columns-1,
+            1
+          )
+        );
 
-warnings.appendChild(div);
+      const y =
+        25 +
+        row *
+        (
+          250 /
+          Math.max(
+            rows-1,
+            1
+          )
+        );
 
-});
+      node.style.left =
+        Math.round(x)+"px";
 
-}else{
+      node.style.top =
+        Math.round(y)+"px";
 
-warnings.textContent="Sin advertencias.";
+      container.appendChild(node);
 
-}
+      positions.push({
+        id:component.id,
+        element:node
+      });
 
-$("diagramSource").textContent=
-data.source==="supabase"
-?"⚡ Recuperado de Supabase."
-:"🤖 Generado y guardado automáticamente.";
+      /*
+        Al tocar un componente
+      */
 
-$("diagramResult").style.display="block";
+      node.onclick=()=>{
 
-status("diagramStatus");
-
-}catch(error){
-
-console.error(error);
-
-status(
-"diagramStatus",
-"error",
-"⚠️ "+safe(error.message || error)
-);
-
-}finally{
-
-$("diagramButton").disabled=false;
-
-}
-}
-
-</script>
-
-</body>
- </html>
+  
