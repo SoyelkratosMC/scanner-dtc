@@ -5,8 +5,8 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-const MAX_NEW_CODES_PER_DAY = 50;
-const MAX_NEW_DIAGRAMS_PER_DAY = 50;
+const MAX_DTC_PER_DAY = 50;
+const MAX_DIAGRAMS_PER_DAY = 50;
 
 function text(value) {
   return String(value ?? "").trim();
@@ -24,9 +24,33 @@ function array(value) {
   return Array.isArray(value) ? value : [];
 }
 
-/* =========================
-   OPENROUTER
-========================= */
+function jsonFromAI(content) {
+  if (!content) {
+    throw new Error("La IA no devolvió información.");
+  }
+
+  let result = String(content).trim();
+
+  result = result
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+
+  const first = result.indexOf("{");
+  const last = result.lastIndexOf("}");
+
+  if (first !== -1 && last !== -1) {
+    result = result.slice(first, last + 1);
+  }
+
+  try {
+    return JSON.parse(result);
+  } catch {
+    console.error("JSON IA:", result);
+    throw new Error("La IA devolvió JSON inválido.");
+  }
+}
 
 async function askAI(prompt) {
   const key = process.env.OPENROUTER_API_KEY;
@@ -51,7 +75,7 @@ async function askAI(prompt) {
           {
             role: "system",
             content:
-              "Eres especialista en diagnóstico automotriz. Responde siempre en español."
+              "Eres especialista automotriz. Responde siempre en español."
           },
           {
             role: "user",
@@ -59,7 +83,7 @@ async function askAI(prompt) {
           }
         ],
         temperature: 0.2,
-        max_tokens: 2500
+        max_tokens: 2200
       })
     }
   );
@@ -87,34 +111,8 @@ async function askAI(prompt) {
       .join("");
   }
 
-  if (!content) {
-    throw new Error("La IA no devolvió información.");
-  }
-
-  content = String(content)
-    .replace(/^```json/i, "")
-    .replace(/^```/i, "")
-    .replace(/```$/i, "")
-    .trim();
-
-  const first = content.indexOf("{");
-  const last = content.lastIndexOf("}");
-
-  if (first !== -1 && last !== -1) {
-    content = content.substring(first, last + 1);
-  }
-
-  try {
-    return JSON.parse(content);
-  } catch {
-    console.error("JSON IA:", content);
-    throw new Error("La IA devolvió JSON inválido.");
-  }
+  return jsonFromAI(content);
 }
-
-/* =========================
-   CONTAR REGISTROS DE HOY
-========================= */
 
 async function countToday(table) {
   const start = new Date();
@@ -129,16 +127,12 @@ async function countToday(table) {
     .gte("created_at", start.toISOString());
 
   if (error) {
-    console.error(error);
+    console.error("COUNT:", error);
     throw new Error("No se pudo comprobar el límite diario.");
   }
 
   return count || 0;
 }
-
-/* =========================
-   RESPUESTA DTC
-========================= */
 
 function sendDTC(res, item, source) {
   return res.status(200).json({
@@ -159,29 +153,16 @@ function sendDTC(res, item, source) {
   });
 }
 
-/* =========================
-   DTC
-========================= */
-
 async function handleDTC(req, res) {
   const code = upper(req.query.code);
   const make = lower(req.query.make || "genérica");
 
-  if (!code) {
-    return res.status(400).json({
-      success: false,
-      error: "Falta el código DTC."
-    });
-  }
-
   if (!/^[PBCU][0-9A-F]{4}$/.test(code)) {
     return res.status(400).json({
       success: false,
-      error: "Código DTC inválido. Ejemplo: P0300."
+      error: "Código DTC inválido."
     });
   }
-
-  /* Buscar primero */
 
   const { data, error } = await supabase
     .from("dtc_codes")
@@ -190,7 +171,7 @@ async function handleDTC(req, res) {
     .limit(1);
 
   if (error) {
-    console.error(error);
+    console.error("SUPABASE DTC:", error);
 
     return res.status(500).json({
       success: false,
@@ -203,49 +184,42 @@ async function handleDTC(req, res) {
     return sendDTC(res, data[0], "supabase");
   }
 
-  /* Límite */
-
   const used = await countToday("dtc_codes");
 
-  if (used >= MAX_NEW_CODES_PER_DAY) {
+  if (used >= MAX_DTC_PER_DAY) {
     return res.status(429).json({
       success: false,
-      error: "Se alcanzó el límite de 50 códigos nuevos por día."
+      error: "Se alcanzó el límite de 50 códigos nuevos hoy."
     });
   }
 
-  /* Generar */
-
   const prompt = `
-Genera información técnica automotriz para:
+Genera información automotriz para el código DTC ${code}.
 
-Código DTC: ${code}
 Marca: ${make}
 
-Devuelve ÚNICAMENTE JSON válido.
+Devuelve SOLO JSON válido:
 
 {
   "code": "${code}",
   "make": "${make}",
   "title": "nombre del código",
-  "problem": "explicación clara del problema",
+  "problem": "explicación",
   "causes": ["causa 1", "causa 2"],
   "symptoms": ["síntoma 1", "síntoma 2"],
-  "diagnosis": ["paso 1", "paso 2"],
+  "diagnosis": ["prueba 1", "prueba 2"],
   "repairs": ["reparación 1", "reparación 2"],
   "severity": "MEDIA",
   "vehicle_years": "No especificado",
-  "system": "sistema relacionado"
+  "system": "sistema"
 }
 
-Reglas:
-- Responde en español.
-- No inventes números de piezas.
-- No inventes pines.
-- No inventes colores de cables.
-- Las causas son posibles causas.
-- El diagnóstico debe ser razonable.
-- severity solamente puede ser BAJA, MEDIA, ALTA o CRÍTICA.
+severity solamente:
+BAJA, MEDIA, ALTA, CRÍTICA.
+
+No inventes números de piezas, pines, voltajes ni años específicos.
+Si depende del fabricante, indícalo.
+Responde en español.
 `;
 
   let item;
@@ -271,17 +245,15 @@ Reglas:
   item.diagnosis = array(item.diagnosis);
   item.repairs = array(item.repairs);
 
-  const severities = [
+  const severity = upper(item.severity);
+
+  item.severity = [
     "BAJA",
     "MEDIA",
     "ALTA",
     "CRÍTICA"
-  ];
-
-  item.severity = severities.includes(
-    upper(item.severity)
-  )
-    ? upper(item.severity)
+  ].includes(severity)
+    ? severity
     : "MEDIA";
 
   item.vehicle_years = text(
@@ -292,9 +264,7 @@ Reglas:
     item.system || "No especificado"
   );
 
-  /* Guardar */
-
-  const { error: saveError } = await supabase
+  const { error: insertError } = await supabase
     .from("dtc_codes")
     .insert({
       code: item.code,
@@ -311,10 +281,8 @@ Reglas:
       source: "openrouter"
     });
 
-  if (saveError) {
-    console.error("DTC SAVE:", saveError);
-
-    /* Puede haberse guardado mientras se generaba */
+  if (insertError) {
+    console.error("INSERT DTC:", insertError);
 
     const { data: existing } = await supabase
       .from("dtc_codes")
@@ -328,17 +296,30 @@ Reglas:
 
     return res.status(500).json({
       success: false,
-      error: "La información se generó pero no pudo guardarse.",
-      details: saveError.message
+      error: "No se pudo guardar el código.",
+      details: insertError.message
     });
   }
 
   return sendDTC(res, item, "openrouter");
 }
 
-/* =========================
-   DIAGRAMA
-========================= */
+function sendDiagram(res, item, source) {
+  return res.status(200).json({
+    success: true,
+    source,
+    saved: true,
+    make: item.make,
+    model: item.model,
+    year: item.vehicle_year,
+    system: item.system,
+    title: item.title,
+    description: item.description,
+    components: array(item.components),
+    connections: array(item.connections),
+    warnings: array(item.warnings)
+  });
+}
 
 async function handleDiagram(req, res) {
   const make = text(req.query.make);
@@ -353,8 +334,6 @@ async function handleDiagram(req, res) {
     });
   }
 
-  /* Buscar */
-
   const { data, error } = await supabase
     .from("dtc_diagrams")
     .select("*")
@@ -365,7 +344,7 @@ async function handleDiagram(req, res) {
     .limit(1);
 
   if (error) {
-    console.error(error);
+    console.error("SUPABASE DIAGRAM:", error);
 
     return res.status(500).json({
       success: false,
@@ -375,49 +354,31 @@ async function handleDiagram(req, res) {
   }
 
   if (data?.length) {
-    return res.status(200).json({
-      success: true,
-      source: "supabase",
-      saved: true,
-      make: data[0].make,
-      model: data[0].model,
-      year: data[0].vehicle_year,
-      system: data[0].system,
-      title: data[0].title,
-      description: data[0].description,
-      components: array(data[0].components),
-      connections: array(data[0].connections),
-      warnings: array(data[0].warnings)
-    });
+    return sendDiagram(res, data[0], "supabase");
   }
-
-  /* Límite */
 
   const used = await countToday("dtc_diagrams");
 
-  if (used >= MAX_NEW_DIAGRAMS_PER_DAY) {
+  if (used >= MAX_DIAGRAMS_PER_DAY) {
     return res.status(429).json({
       success: false,
-      error: "Se alcanzó el límite de 50 diagramas nuevos por día."
+      error: "Se alcanzó el límite de 50 diagramas nuevos hoy."
     });
   }
 
-  /* IA */
-
   const prompt = `
-Crea un DIAGRAMA AUTOMOTRIZ EDUCATIVO.
+Crea un diagrama automotriz EDUCATIVO.
 
-Vehículo:
 Marca: ${make}
 Modelo: ${model}
 Año: ${year}
 Sistema: ${system}
 
-Devuelve ÚNICAMENTE JSON válido:
+Devuelve SOLO JSON válido:
 
 {
-  "title": "string",
-  "description": "string",
+  "title": "Diagrama del sistema",
+  "description": "Descripción educativa",
   "components": [
     {
       "id": "ecu",
@@ -433,19 +394,11 @@ Devuelve ÚNICAMENTE JSON válido:
     }
   ],
   "warnings": [
-    "Información orientativa."
+    "Verificar el diagrama específico del vehículo."
   ]
 }
 
-Reglas:
-- Español.
-- Entre 3 y 12 componentes.
-- Los IDs de connections deben existir en components.
-- No inventes colores de cables.
-- No inventes números de pines.
-- No inventes voltajes específicos.
-- No presentes información no confirmada como exacta.
-- El diagrama es educativo y orientativo.
+Entre 3 y 12 componentes.
 
 Tipos permitidos:
 control
@@ -456,12 +409,19 @@ ground
 connector
 module
 other
+
+Las conexiones deben utilizar IDs existentes.
+
+NO inventes colores de cables, números de pines,
+voltajes exactos ni números de piezas.
+
+Responde en español.
 `;
 
-  let diagram;
+  let item;
 
   try {
-    diagram = await askAI(prompt);
+    item = await askAI(prompt);
   } catch (error) {
     return res.status(502).json({
       success: false,
@@ -469,82 +429,62 @@ other
     });
   }
 
-  diagram.title = text(
-    diagram.title || `Diagrama ${system}`
+  item.title = text(
+    item.title || `Diagrama ${system}`
   );
 
-  diagram.description = text(
-    diagram.description ||
-    `Diagrama orientativo del sistema ${system}.`
+  item.description = text(
+    item.description ||
+    `Diagrama educativo del sistema ${system}.`
   );
 
-  diagram.components = array(diagram.components);
-  diagram.connections = array(diagram.connections);
-  diagram.warnings = array(diagram.warnings);
+  item.components = array(item.components);
+  item.connections = array(item.connections);
+  item.warnings = array(item.warnings);
 
-  const { error: saveError } = await supabase
+  const { error: insertError } = await supabase
     .from("dtc_diagrams")
     .insert({
       make,
       model,
       vehicle_year: year,
       system,
-      title: diagram.title,
-      description: diagram.description,
-      components: diagram.components,
-      connections: diagram.connections,
-      warnings: diagram.warnings,
+      title: item.title,
+      description: item.description,
+      components: item.components,
+      connections: item.connections,
+      warnings: item.warnings,
       source: "openrouter"
     });
 
-  if (saveError) {
-    console.error("DIAGRAM SAVE:", saveError);
+  if (insertError) {
+    console.error("INSERT DIAGRAM:", insertError);
 
     return res.status(500).json({
       success: false,
-      error: "El diagrama se generó pero no pudo guardarse.",
-      details: saveError.message
+      error: "No se pudo guardar el diagrama.",
+      details: insertError.message
     });
   }
 
-  return res.status(200).json({
-    success: true,
-    source: "openrouter",
-    saved: true,
-    make,
-    model,
-    year,
-    system,
-    title: diagram.title,
-    description: diagram.description,
-    components: diagram.components,
-    connections: diagram.connections,
-    warnings: diagram.warnings
-  });
+  return sendDiagram(
+    res,
+    {
+      ...item,
+      make,
+      model,
+      vehicle_year: year,
+      system
+    },
+    "openrouter"
+  );
 }
-
-/* =========================
-   HANDLER
-========================= */
 
 export default async function handler(req, res) {
   try {
-    if (req.method !== "GET") {
-      return res.status(405).json({
-        success: false,
-        error: "Método no permitido."
-      });
-    }
+    const action = text(req.query.action).toLowerCase();
 
-    /*
-      /api/dtc?type=diagram
-      = DIAGRAMA
-
-      /api/dtc?code=P0300
-      = DTC
-    */
-
-    if (String(req.query.type).toLowerCase() === "diagram") {
+    if (action === "diagram") {
       return await handleDiagram(req, res);
     }
 
@@ -555,8 +495,7 @@ export default async function handler(req, res) {
 
     return res.status(500).json({
       success: false,
-      error: "Error interno del servidor.",
-      details: error.message
+      error: error.message || "Error interno del servidor."
     });
   }
-  }
+}
