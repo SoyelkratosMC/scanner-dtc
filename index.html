@@ -2,39 +2,42 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Scanner DTC</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scanner DTC Automotriz</title>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 
 body{
-  font-family:Arial,sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
   background:#080b12;
-  color:white;
+  color:#fff;
   min-height:100vh;
 }
 
 .app{
+  width:100%;
   max-width:900px;
   margin:auto;
   padding:16px;
 }
 
-header{
+.header{
   text-align:center;
   padding:25px 10px;
 }
 
 .logo{
-  color:#00e5ff;
   font-size:32px;
   font-weight:900;
+  color:#00e5ff;
+  text-shadow:0 0 18px rgba(0,229,255,.35);
 }
 
-.sub{
-  color:#8d98aa;
-  margin-top:6px;
+.subtitle{
+  color:#8e99aa;
+  margin-top:7px;
+  font-size:14px;
 }
 
 .tabs{
@@ -45,18 +48,19 @@ header{
 
 .tab{
   flex:1;
-  padding:14px;
   border:1px solid #263142;
+  background:#101621;
+  color:#aeb7c8;
+  padding:14px 10px;
   border-radius:13px;
-  background:#111722;
-  color:#aeb8c8;
-  font-weight:900;
   cursor:pointer;
+  font-weight:900;
 }
 
 .tab.active{
   background:#00d9ff;
   color:#001018;
+  border-color:#00d9ff;
 }
 
 .card{
@@ -65,40 +69,43 @@ header{
   border-radius:18px;
   padding:20px;
   margin-bottom:18px;
+  box-shadow:0 10px 35px rgba(0,0,0,.2);
 }
 
-h2{
+.card h2{
+  font-size:21px;
   margin-bottom:7px;
 }
 
-.desc{
-  color:#8d98aa;
+.description{
+  color:#8e99aa;
   font-size:14px;
   margin-bottom:18px;
 }
 
 label{
   display:block;
-  color:#b9c3d2;
+  color:#b8c1d1;
   font-size:13px;
-  font-weight:bold;
-  margin-bottom:6px;
+  font-weight:700;
+  margin-bottom:7px;
 }
 
 input{
   width:100%;
   padding:14px;
-  margin-bottom:14px;
   border-radius:11px;
   border:1px solid #2b3546;
   background:#080c13;
-  color:white;
+  color:#fff;
+  outline:none;
   font-size:15px;
+  margin-bottom:14px;
 }
 
 input:focus{
-  outline:none;
   border-color:#00d9ff;
+  box-shadow:0 0 0 2px rgba(0,217,255,.08);
 }
 
 .grid{
@@ -107,71 +114,88 @@ input:focus{
   gap:12px;
 }
 
-button.main{
+.btn{
   width:100%;
-  padding:15px;
   border:0;
   border-radius:12px;
+  padding:15px;
   background:#00d9ff;
   color:#001018;
+  font-size:15px;
   font-weight:900;
   cursor:pointer;
 }
 
-button:disabled{
+.btn:disabled{
   opacity:.5;
+  cursor:not-allowed;
 }
 
 .status{
-  margin-top:14px;
-  padding:13px;
-  border-radius:11px;
   display:none;
+  padding:13px;
+  border-radius:12px;
+  margin-top:15px;
+  font-size:14px;
+  line-height:1.5;
 }
 
 .loading{
   display:block;
-  background:#10202b;
+  background:#101d29;
+  border:1px solid #17465a;
   color:#7eeaff;
 }
 
 .error{
   display:block;
   background:#291116;
+  border:1px solid #68222d;
   color:#ff8794;
 }
 
-.result{
+#result,
+#diagramResult{
   display:none;
 }
 
-.code{
+.resultHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.dtcCode{
   color:#00e5ff;
   font-size:30px;
   font-weight:900;
 }
 
 .badge{
-  display:inline-block;
-  margin-top:8px;
+  background:#263142;
   padding:7px 12px;
   border-radius:20px;
-  background:#263142;
+  font-size:12px;
+  font-weight:900;
 }
 
 .section{
   margin-top:18px;
 }
 
-.title{
+.sectionTitle{
+  font-size:15px;
   font-weight:900;
   margin-bottom:8px;
 }
 
 .content{
-  color:#c4ccd8;
-  line-height:1.6;
+  color:#c2cad6;
   font-size:14px;
+  line-height:1.6;
 }
 
 ul{
@@ -179,79 +203,87 @@ ul{
 }
 
 li{
-  margin-bottom:6px;
+  margin-bottom:7px;
 }
 
 .meta{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:8px;
-  margin-top:18px;
+  margin:18px 0;
 }
 
-.meta div{
+.metaBox{
   background:#080d15;
   border:1px solid #202938;
+  padding:11px;
   border-radius:10px;
-  padding:10px;
 }
 
-.meta small{
+.metaBox small{
   display:block;
   color:#7f8999;
   font-size:10px;
-  margin-bottom:4px;
+  margin-bottom:5px;
 }
 
-.meta strong{
+.metaBox strong{
   font-size:13px;
   word-break:break-word;
 }
 
-.diagram{
-  margin-top:18px;
-  padding:15px;
+.diagramBox{
   background:#080c12;
   border:1px solid #202938;
   border-radius:14px;
+  padding:15px;
+  overflow-x:auto;
+}
+
+.components{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:12px;
+  min-width:550px;
 }
 
 .component{
-  display:inline-block;
-  vertical-align:top;
-  margin:5px;
-  padding:12px;
-  min-width:120px;
-  text-align:center;
   background:#111b28;
   border:1px solid #00bcd4;
   border-radius:12px;
+  padding:13px;
+  min-width:120px;
+  text-align:center;
 }
 
-.component b{
-  display:block;
+.componentName{
+  font-weight:900;
   font-size:13px;
 }
 
-.component small{
+.componentType{
   color:#7fdded;
+  font-size:10px;
+  margin-top:5px;
 }
 
 .connection{
   padding:10px;
-  margin-top:8px;
-  background:#0c121b;
   border-left:3px solid #00d9ff;
+  background:#0c121b;
+  margin-bottom:8px;
+  color:#b9c4d2;
   font-size:13px;
 }
 
 .warning{
-  margin-top:12px;
+  margin-top:10px;
   padding:12px;
   background:#211c0e;
   border:1px solid #594b1c;
-  border-radius:10px;
   color:#e6d27a;
+  border-radius:10px;
   font-size:13px;
 }
 
@@ -259,14 +291,18 @@ li{
   display:none!important;
 }
 
-@media(max-width:650px){
-  .grid,.meta{
-    grid-template-columns:1fr 1fr;
-  }
+.source{
+  margin-top:20px;
+  color:#6f7b8d;
+  font-size:12px;
+}
 
-  .logo{
-    font-size:27px;
-  }
+@media(max-width:650px){
+  .app{padding:12px}
+  .logo{font-size:27px}
+  .grid{grid-template-columns:1fr}
+  .meta{grid-template-columns:1fr 1fr}
+  .card{padding:16px}
 }
 </style>
 </head>
@@ -275,20 +311,31 @@ li{
 
 <div class="app">
 
-<header>
+<header class="header">
   <div class="logo">🔧 SCANNER DTC</div>
-  <div class="sub">Diagnóstico automotriz inteligente</div>
+  <div class="subtitle">Diagnóstico automotriz inteligente</div>
 </header>
 
 <div class="tabs">
-  <button id="tabDtc" class="tab active" onclick="section('dtc')">
+
+  <button
+    class="tab active"
+    id="tabDtc"
+    onclick="showSection('dtc')">
     🔎 Códigos DTC
   </button>
 
-  <button id="tabDiagram" class="tab" onclick="section('diagram')">
+  <button
+    class="tab"
+    id="tabDiagram"
+    onclick="showSection('diagram')">
     📊 Diagramas
   </button>
+
 </div>
+
+
+<!-- ================= DTC ================= -->
 
 <section id="dtcSection">
 
@@ -296,87 +343,104 @@ li{
 
 <h2>🔎 Buscar código DTC</h2>
 
-<p class="desc">
-Busca un código guardado o genera información automáticamente.
+<p class="description">
+Consulta códigos guardados o genera información para códigos nuevos.
 </p>
 
-<label>Código</label>
+<label>Código de error</label>
 
 <input
-  id="code"
+  id="dtcCode"
+  type="text"
   maxlength="5"
-  placeholder="Ej. P2122"
+  placeholder="Ejemplo: P2122"
   autocomplete="off"
->
+  autocapitalize="characters">
 
-<label>Marca opcional</label>
+<label>Marca (opcional)</label>
 
 <input
-  id="make"
-  placeholder="Ej. Chevrolet"
->
+  id="dtcMake"
+  type="text"
+  placeholder="Ejemplo: Dodge">
 
-<button class="main" id="dtcBtn" onclick="searchDTC()">
-🔎 BUSCAR CÓDIGO
+<button
+  class="btn"
+  id="searchDtcBtn"
+  onclick="searchDTC()">
+  🔎 BUSCAR CÓDIGO
 </button>
 
 <div id="dtcStatus" class="status"></div>
 
 </div>
 
-<div id="dtcResult" class="card result">
 
-<div class="code" id="rCode"></div>
+<div class="card" id="result">
 
-<div id="rTitle"></div>
+<div class="resultHeader">
 
-<div class="badge" id="rSeverity"></div>
+<div>
+<div class="dtcCode" id="resultCode"></div>
 
-<div class="section">
-<div class="title">🚗 Marca</div>
-<div class="content" id="rMake"></div>
+<div
+  id="resultTitle"
+  style="margin-top:5px;color:#aeb7c8;">
+</div>
+</div>
+
+<div class="badge" id="resultSeverity">MEDIA</div>
+
 </div>
 
 <div class="section">
-<div class="title">🔴 Problema</div>
-<div class="content" id="rProblem"></div>
+<div class="sectionTitle">🚗 Marca</div>
+<div class="content" id="resultMake"></div>
 </div>
 
 <div class="section">
-<div class="title">🔍 Causas</div>
-<div class="content" id="rCauses"></div>
+<div class="sectionTitle">🔴 Problema</div>
+<div class="content" id="resultProblem"></div>
 </div>
 
 <div class="section">
-<div class="title">🚨 Síntomas</div>
-<div class="content" id="rSymptoms"></div>
+<div class="sectionTitle">🔍 Causas posibles</div>
+<div class="content" id="resultCauses"></div>
 </div>
 
 <div class="section">
-<div class="title">🧪 Diagnóstico</div>
-<div class="content" id="rDiagnosis"></div>
+<div class="sectionTitle">🚨 Síntomas</div>
+<div class="content" id="resultSymptoms"></div>
 </div>
 
 <div class="section">
-<div class="title">🔧 Reparaciones</div>
-<div class="content" id="rRepairs"></div>
+<div class="sectionTitle">🧪 Diagnóstico</div>
+<div class="content" id="resultDiagnosis"></div>
 </div>
 
 <div class="section">
-<div class="title">🚘 Años</div>
-<div class="content" id="rYears"></div>
+<div class="sectionTitle">🔧 Posibles arreglos</div>
+<div class="content" id="resultRepairs"></div>
 </div>
 
 <div class="section">
-<div class="title">⚙️ Sistema</div>
-<div class="content" id="rSystem"></div>
+<div class="sectionTitle">🚘 Años</div>
+<div class="content" id="resultYears"></div>
 </div>
 
-<div class="section content" id="rSource"></div>
+<div class="section">
+<div class="sectionTitle">⚙️ Sistema</div>
+<div class="content" id="resultSystem"></div>
+</div>
+
+<div class="source" id="resultSource"></div>
 
 </div>
 
 </section>
+
+
+<!-- ================= DIAGRAMAS ================= -->
 
 <section id="diagramSection" class="hidden">
 
@@ -384,20 +448,28 @@ Busca un código guardado o genera información automáticamente.
 
 <h2>📊 Diagramas automotrices</h2>
 
-<p class="desc">
-Busca el sistema por separado del código DTC.
+<p class="description">
+Busca un diagrama independientemente del código DTC.
 </p>
 
 <div class="grid">
 
 <div>
 <label>Marca</label>
-<input id="dMake" placeholder="Chevrolet">
+
+<input
+  id="diagramMake"
+  type="text"
+  placeholder="Ej. Chevrolet">
 </div>
 
 <div>
 <label>Modelo</label>
-<input id="dModel" placeholder="Silverado">
+
+<input
+  id="diagramModel"
+  type="text"
+  placeholder="Ej. Silverado">
 </div>
 
 </div>
@@ -406,65 +478,101 @@ Busca el sistema por separado del código DTC.
 
 <div>
 <label>Año</label>
-<input id="dYear" type="number" placeholder="2020">
+
+<input
+  id="diagramYear"
+  type="number"
+  placeholder="Ej. 2020">
 </div>
 
 <div>
 <label>Sistema</label>
-<input id="dSystem" placeholder="EVAP">
+
+<input
+  id="diagramSystem"
+  type="text"
+  placeholder="Ej. EVAP">
 </div>
 
 </div>
 
-<button class="main" id="diagramBtn" onclick="searchDiagram()">
-📊 BUSCAR DIAGRAMA
+<button
+  class="btn"
+  id="searchDiagramBtn"
+  onclick="searchDiagram()">
+  📊 BUSCAR DIAGRAMA
 </button>
 
 <div id="diagramStatus" class="status"></div>
 
 </div>
 
-<div id="diagramResult" class="card result">
 
-<h2 id="diagramTitle"></h2>
+<div class="card" id="diagramResult">
 
-<p class="desc" id="diagramDescription"></p>
+<h2 id="diagramTitle">Diagrama</h2>
+
+<p
+  id="diagramDescription"
+  class="description">
+</p>
 
 <div class="meta">
-<div>
+
+<div class="metaBox">
 <small>MARCA</small>
-<strong id="dm"></strong>
+<strong id="diagramMakeResult"></strong>
 </div>
 
-<div>
+<div class="metaBox">
 <small>MODELO</small>
-<strong id="dmo"></strong>
+<strong id="diagramModelResult"></strong>
 </div>
 
-<div>
+<div class="metaBox">
 <small>AÑO</small>
-<strong id="dy"></strong>
+<strong id="diagramYearResult"></strong>
 </div>
 
-<div>
+<div class="metaBox">
 <small>SISTEMA</small>
-<strong id="ds"></strong>
+<strong id="diagramSystemResult"></strong>
 </div>
+
 </div>
+
 
 <div class="section">
-<div class="title">🔌 Componentes</div>
-<div class="diagram" id="components"></div>
+
+<div class="sectionTitle">
+🔌 Componentes
 </div>
+
+<div class="diagramBox">
+
+<div
+  class="components"
+  id="diagramCanvas">
+</div>
+
+</div>
+
+</div>
+
 
 <div class="section">
-<div class="title">🔗 Conexiones</div>
-<div id="connections"></div>
+
+<div class="sectionTitle">
+🔗 Conexiones
 </div>
 
-<div id="warnings"></div>
+<div id="connectionList"></div>
 
-<div class="section content" id="diagramSource"></div>
+</div>
+
+<div id="diagramWarnings"></div>
+
+<div class="source" id="diagramSource"></div>
 
 </div>
 
@@ -472,40 +580,53 @@ Busca el sistema por separado del código DTC.
 
 </div>
 
+
 <script>
 
-function $(id){
-  return document.getElementById(id);
-}
+/* ===============================
+   CAMBIAR APARTADO
+================================ */
 
-function section(name){
+function showSection(section){
 
-  const dtc = $("dtcSection");
-  const diagram = $("diagramSection");
+  const dtc =
+    document.getElementById("dtcSection");
 
-  const td = $("tabDtc");
-  const tg = $("tabDiagram");
+  const diagram =
+    document.getElementById("diagramSection");
 
-  if(name === "dtc"){
+  const tabDtc =
+    document.getElementById("tabDtc");
+
+  const tabDiagram =
+    document.getElementById("tabDiagram");
+
+  if(section === "dtc"){
 
     dtc.classList.remove("hidden");
     diagram.classList.add("hidden");
 
-    td.classList.add("active");
-    tg.classList.remove("active");
+    tabDtc.classList.add("active");
+    tabDiagram.classList.remove("active");
 
   }else{
 
     dtc.classList.add("hidden");
     diagram.classList.remove("hidden");
 
-    td.classList.remove("active");
-    tg.classList.add("active");
+    tabDtc.classList.remove("active");
+    tabDiagram.classList.add("active");
 
   }
+
 }
 
-function safe(value){
+
+/* ===============================
+   ESCAPAR HTML
+================================ */
+
+function escapeHTML(value){
 
   return String(value ?? "")
     .replaceAll("&","&amp;")
@@ -513,257 +634,602 @@ function safe(value){
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
+
 }
 
-function list(items){
+
+/* ===============================
+   LISTAS
+================================ */
+
+function renderList(id,items){
+
+  const element =
+    document.getElementById(id);
 
   if(!Array.isArray(items) || !items.length){
-    return "No hay información disponible.";
+
+    element.textContent =
+      "No hay información disponible.";
+
+    return;
+
   }
 
-  return "<ul>" +
-    items.map(x => `<li>${safe(x)}</li>`).join("") +
+  element.innerHTML =
+    "<ul>" +
+    items.map(
+      item => `<li>${escapeHTML(item)}</li>`
+    ).join("") +
     "</ul>";
+
 }
 
-async function getJSON(url){
 
-  const response = await fetch(url);
+/* ===============================
+   LEER RESPUESTA JSON
+================================ */
 
-  const raw = await response.text();
+async function readJSON(response){
 
-  let data;
+  const text =
+    await response.text();
 
   try{
-    data = JSON.parse(raw);
-  }catch{
-    console.error("RESPUESTA NO JSON:",raw);
+
+    return JSON.parse(text);
+
+  }catch(error){
+
+    console.error(
+      "RESPUESTA NO JSON:",
+      text
+    );
 
     throw new Error(
-      "La API no devolvió JSON. Revisa api/dtc/code.js y Vercel."
+      "La API devolvió una respuesta que no es JSON. Revisa api/dtc/code.js y Vercel."
     );
+
   }
 
-  if(!response.ok || !data.success){
-    throw new Error(
-      data.error || "La API devolvió un error."
-    );
-  }
-
-  return data;
 }
+
+
+/* ===============================
+   BUSCAR DTC
+================================ */
 
 async function searchDTC(){
 
-  const code = $("code").value
-    .trim()
-    .toUpperCase();
+  const code =
+    document.getElementById("dtcCode")
+      .value
+      .trim()
+      .toUpperCase();
 
-  const make = $("make").value.trim();
+  const make =
+    document.getElementById("dtcMake")
+      .value
+      .trim();
 
-  const button = $("dtcBtn");
-  const status = $("dtcStatus");
+  const button =
+    document.getElementById("searchDtcBtn");
+
+  const status =
+    document.getElementById("dtcStatus");
 
   if(!/^[PBCU][0-9A-F]{4}$/.test(code)){
 
-    status.className="status error";
-    status.textContent="⚠️ Código DTC inválido. Ejemplo: P0300.";
+    status.className =
+      "status error";
+
+    status.textContent =
+      "⚠️ Código inválido. Ejemplo: P2122";
+
     return;
+
   }
 
-  button.disabled=true;
+  button.disabled = true;
 
-  status.className="status loading";
-  status.textContent="🔎 Consultando...";
+  status.className =
+    "status loading";
 
-  $("dtcResult").style.display="none";
+  status.textContent =
+    "🔎 Consultando información...";
+
+  document.getElementById("result")
+    .style.display = "none";
+
 
   try{
 
+    /*
+      IMPORTANTE:
+      Tu archivo es:
+
+      api/dtc/code.js
+
+      Por eso usamos:
+
+      /api/dtc/code
+    */
+
     let url =
-      `/api/dtc?code=${encodeURIComponent(code)}`;
+      `/api/dtc/code?code=${encodeURIComponent(code)}`;
 
     if(make){
+
       url +=
         `&make=${encodeURIComponent(make)}`;
+
     }
 
-    const data = await getJSON(url);
 
-    $("rCode").textContent=data.code;
-    $("rTitle").textContent=data.title;
-    $("rSeverity").textContent=data.severity;
-    $("rMake").textContent=data.make;
-    $("rProblem").textContent=data.problem;
+    const response =
+      await fetch(url,{
+        method:"GET",
+        headers:{
+          "Accept":"application/json"
+        }
+      });
 
-    $("rCauses").innerHTML=list(data.causes);
-    $("rSymptoms").innerHTML=list(data.symptoms);
-    $("rDiagnosis").innerHTML=list(data.diagnosis);
-    $("rRepairs").innerHTML=list(data.repairs);
 
-    $("rYears").textContent=data.vehicle_years;
-    $("rSystem").textContent=data.system;
+    const data =
+      await readJSON(response);
 
-    $("rSource").textContent =
-      data.source === "supabase"
-      ? "⚡ Información recuperada de la base de datos."
-      : "🤖 Generada y guardada automáticamente.";
 
-    $("dtcResult").style.display="block";
+    if(!response.ok || !data.success){
 
-    status.className="status";
-    status.style.display="none";
+      throw new Error(
+        data.error ||
+        "La API no respondió correctamente."
+      );
+
+    }
+
+
+    showDTCResult(data);
+
+    status.className = "status";
+    status.style.display = "none";
+
 
   }catch(error){
 
-    status.className="status error";
-    status.textContent="⚠️ "+error.message;
+    console.error(error);
+
+    status.className =
+      "status error";
+
+    status.textContent =
+      "⚠️ " + error.message;
 
   }finally{
 
-    button.disabled=false;
+    button.disabled = false;
+
   }
+
 }
+
+
+/* ===============================
+   MOSTRAR DTC
+================================ */
+
+function showDTCResult(data){
+
+  document.getElementById("result")
+    .style.display = "block";
+
+  document.getElementById("resultCode")
+    .textContent =
+      data.code || "----";
+
+  document.getElementById("resultTitle")
+    .textContent =
+      data.title || "Código DTC";
+
+  document.getElementById("resultSeverity")
+    .textContent =
+      data.severity || "MEDIA";
+
+  document.getElementById("resultMake")
+    .textContent =
+      data.make || "Genérica";
+
+  document.getElementById("resultProblem")
+    .textContent =
+      data.problem ||
+      "No hay información disponible.";
+
+  renderList(
+    "resultCauses",
+    data.causes
+  );
+
+  renderList(
+    "resultSymptoms",
+    data.symptoms
+  );
+
+  renderList(
+    "resultDiagnosis",
+    data.diagnosis
+  );
+
+  renderList(
+    "resultRepairs",
+    data.repairs
+  );
+
+  document.getElementById("resultYears")
+    .textContent =
+      data.vehicle_years ||
+      "No especificado";
+
+  document.getElementById("resultSystem")
+    .textContent =
+      data.system ||
+      "No especificado";
+
+  document.getElementById("resultSource")
+    .textContent =
+      data.source === "supabase"
+        ? "⚡ Información recuperada desde Supabase."
+        : "🤖 Información generada por IA y guardada en Supabase.";
+
+}
+
+
+/* ===============================
+   BUSCAR DIAGRAMA
+================================ */
 
 async function searchDiagram(){
 
-  const make=$("dMake").value.trim();
-  const model=$("dModel").value.trim();
-  const year=$("dYear").value.trim();
-  const system=$("dSystem").value.trim();
+  const make =
+    document.getElementById("diagramMake")
+      .value.trim();
 
-  const button=$("diagramBtn");
-  const status=$("diagramStatus");
+  const model =
+    document.getElementById("diagramModel")
+      .value.trim();
+
+  const year =
+    document.getElementById("diagramYear")
+      .value.trim();
+
+  const system =
+    document.getElementById("diagramSystem")
+      .value.trim();
+
+  const button =
+    document.getElementById("searchDiagramBtn");
+
+  const status =
+    document.getElementById("diagramStatus");
+
 
   if(!make || !model || !year || !system){
 
-    status.className="status error";
-    status.textContent=
+    status.className =
+      "status error";
+
+    status.textContent =
       "⚠️ Completa marca, modelo, año y sistema.";
 
     return;
+
   }
 
-  button.disabled=true;
 
-  status.className="status loading";
-  status.textContent="📊 Consultando diagrama...";
+  button.disabled = true;
 
-  $("diagramResult").style.display="none";
+  status.className =
+    "status loading";
+
+  status.textContent =
+    "📊 Consultando diagrama...";
+
+  document.getElementById("diagramResult")
+    .style.display = "none";
+
 
   try{
 
+    /*
+      MISMO code.js
+
+      api/dtc/code.js
+
+      Usamos ?diagram=1 para indicarle
+      al backend que queremos un diagrama.
+    */
+
+    const params =
+      new URLSearchParams({
+
+        diagram:"1",
+
+        make:make,
+
+        model:model,
+
+        year:year,
+
+        system:system
+
+      });
+
+
     const url =
-      `/api/dtc?action=diagram` +
-      `&make=${encodeURIComponent(make)}` +
-      `&model=${encodeURIComponent(model)}` +
-      `&year=${encodeURIComponent(year)}` +
-      `&system=${encodeURIComponent(system)}`;
+      `/api/dtc/code?${params.toString()}`;
 
-    const data=await getJSON(url);
 
-    $("diagramTitle").textContent=data.title;
-
-    $("diagramDescription").textContent=data.description;
-
-    $("dm").textContent=data.make;
-    $("dmo").textContent=data.model;
-    $("dy").textContent=data.year;
-    $("ds").textContent=data.system;
-
-    const components=$("components");
-
-    components.innerHTML="";
-
-    if(Array.isArray(data.components) && data.components.length){
-
-      data.components.forEach(c=>{
-
-        const div=document.createElement("div");
-
-        div.className="component";
-
-        div.innerHTML=
-          `<b>${safe(c.name)}</b>
-           <small>${safe(c.type)}</small>`;
-
-        components.appendChild(div);
-
+    const response =
+      await fetch(url,{
+        method:"GET",
+        headers:{
+          "Accept":"application/json"
+        }
       });
 
-    }else{
 
-      components.textContent=
-        "No hay componentes disponibles.";
+    const data =
+      await readJSON(response);
+
+
+    if(!response.ok || !data.success){
+
+      throw new Error(
+        data.error ||
+        "No se pudo obtener el diagrama."
+      );
 
     }
 
-    const connections=$("connections");
 
-    connections.innerHTML="";
+    showDiagramResult(data);
 
-    if(Array.isArray(data.connections) && data.connections.length){
+    status.className = "status";
+    status.style.display = "none";
 
-      data.connections.forEach(c=>{
-
-        const div=document.createElement("div");
-
-        div.className="connection";
-
-        div.textContent=
-          `${c.from || "?"} → ${c.to || "?"} : ${c.label || "Conexión"}`;
-
-        connections.appendChild(div);
-
-      });
-
-    }else{
-
-      connections.textContent=
-        "No hay conexiones disponibles.";
-
-    }
-
-    const warnings=$("warnings");
-
-    warnings.innerHTML="";
-
-    if(Array.isArray(data.warnings)){
-
-      data.warnings.forEach(w=>{
-
-        const div=document.createElement("div");
-
-        div.className="warning";
-
-        div.textContent="⚠️ "+w;
-
-        warnings.appendChild(div);
-
-      });
-
-    }
-
-    $("diagramSource").textContent =
-      data.source === "supabase"
-      ? "⚡ Diagrama recuperado de la base de datos."
-      : "🤖 Diagrama generado y guardado automáticamente.";
-
-    $("diagramResult").style.display="block";
-
-    status.className="status";
-    status.style.display="none";
 
   }catch(error){
 
-    status.className="status error";
-    status.textContent="⚠️ "+error.message;
+    console.error(error);
+
+    status.className =
+      "status error";
+
+    status.textContent =
+      "⚠️ " + error.message;
 
   }finally{
 
-    button.disabled=false;
+    button.disabled = false;
+
   }
+
 }
+
+
+/* ===============================
+   MOSTRAR DIAGRAMA
+================================ */
+
+function showDiagramResult(data){
+
+  document.getElementById("diagramResult")
+    .style.display = "block";
+
+
+  document.getElementById("diagramTitle")
+    .textContent =
+      data.title || "Diagrama automotriz";
+
+
+  document.getElementById("diagramDescription")
+    .textContent =
+      data.description ||
+      "Diagrama orientativo.";
+
+
+  document.getElementById("diagramMakeResult")
+    .textContent =
+      data.make || "—";
+
+
+  document.getElementById("diagramModelResult")
+    .textContent =
+      data.model || "—";
+
+
+  document.getElementById("diagramYearResult")
+    .textContent =
+      data.year || "—";
+
+
+  document.getElementById("diagramSystemResult")
+    .textContent =
+      data.system || "—";
+
+
+  const canvas =
+    document.getElementById("diagramCanvas");
+
+
+  canvas.innerHTML = "";
+
+
+  const components =
+    Array.isArray(data.components)
+      ? data.components
+      : [];
+
+
+  if(!components.length){
+
+    canvas.innerHTML =
+      '<div style="color:#7f8999;padding:20px;">No hay componentes.</div>';
+
+  }else{
+
+    components.forEach(component => {
+
+      const box =
+        document.createElement("div");
+
+      box.className =
+        "component";
+
+
+      const name =
+        document.createElement("div");
+
+      name.className =
+        "componentName";
+
+      name.textContent =
+        component.name ||
+        component.id ||
+        "Componente";
+
+
+      const type =
+        document.createElement("div");
+
+      type.className =
+        "componentType";
+
+      type.textContent =
+        component.type ||
+        "other";
+
+
+      box.appendChild(name);
+      box.appendChild(type);
+
+      canvas.appendChild(box);
+
+    });
+
+  }
+
+
+  const connectionList =
+    document.getElementById("connectionList");
+
+  connectionList.innerHTML = "";
+
+
+  const connections =
+    Array.isArray(data.connections)
+      ? data.connections
+      : [];
+
+
+  if(!connections.length){
+
+    connectionList.innerHTML =
+      '<div class="content">No hay conexiones disponibles.</div>';
+
+  }else{
+
+    connections.forEach(connection => {
+
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "connection";
+
+
+      item.textContent =
+        `${connection.from || "?"} → ${connection.to || "?"}` +
+        (
+          connection.label
+            ? ` — ${connection.label}`
+            : ""
+        );
+
+
+      connectionList.appendChild(item);
+
+    });
+
+  }
+
+
+  const warnings =
+    document.getElementById("diagramWarnings");
+
+  warnings.innerHTML = "";
+
+
+  const warningList =
+    Array.isArray(data.warnings)
+      ? data.warnings
+      : [];
+
+
+  warningList.forEach(text => {
+
+    const item =
+      document.createElement("div");
+
+    item.className =
+      "warning";
+
+    item.textContent =
+      "⚠️ " + text;
+
+    warnings.appendChild(item);
+
+  });
+
+
+  document.getElementById("diagramSource")
+    .textContent =
+      data.source === "supabase"
+        ? "⚡ Diagrama recuperado desde Supabase."
+        : "🤖 Diagrama generado por IA y guardado en Supabase.";
+
+}
+
+
+/* ===============================
+   ENTER PARA BUSCAR DTC
+================================ */
+
+document.getElementById("dtcCode")
+  .addEventListener("keydown",function(event){
+
+    if(event.key === "Enter"){
+
+      searchDTC();
+
+    }
+
+  });
+
+
+/* ===============================
+   ENTER PARA DIAGRAMA
+================================ */
+
+document.getElementById("diagramSystem")
+  .addEventListener("keydown",function(event){
+
+    if(event.key === "Enter"){
+
+      searchDiagram();
+
+    }
+
+  });
 
 </script>
 
