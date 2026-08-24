@@ -1,23 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1.0"
->
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Scanner DTC</title>
 
 <style>
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
+*{box-sizing:border-box;margin:0;padding:0}
 
 body{
   font-family:Arial,sans-serif;
@@ -42,6 +31,7 @@ header{
   font-size:32px;
   font-weight:900;
   color:#00e5ff;
+  text-shadow:0 0 18px rgba(0,229,255,.25);
 }
 
 .subtitle{
@@ -79,9 +69,7 @@ header{
   margin-bottom:15px;
 }
 
-h2{
-  margin-bottom:7px;
-}
+h2{margin-bottom:7px}
 
 .desc{
   color:#8994a6;
@@ -120,9 +108,7 @@ input:focus{
   gap:12px;
 }
 
-button{
-  font-family:inherit;
-}
+button{font-family:inherit}
 
 .main-btn{
   width:100%;
@@ -137,6 +123,7 @@ button{
 
 .main-btn:disabled{
   opacity:.5;
+  cursor:not-allowed;
 }
 
 .status{
@@ -146,11 +133,10 @@ button{
   border-radius:10px;
   font-size:14px;
   line-height:1.5;
+  word-break:break-word;
 }
 
-.status.show{
-  display:block;
-}
+.status.show{display:block}
 
 .status.loading{
   background:#10202a;
@@ -258,7 +244,7 @@ li{
 
 .node{
   min-width:110px;
-  max-width:150px;
+  max-width:170px;
   padding:12px;
   text-align:center;
   background:#111c2a;
@@ -304,9 +290,7 @@ li{
 
 @media(max-width:650px){
 
-  .logo{
-    font-size:27px;
-  }
+  .logo{font-size:27px}
 
   .grid{
     grid-template-columns:1fr;
@@ -316,11 +300,8 @@ li{
   .diagram-meta{
     grid-template-columns:1fr 1fr;
   }
-
 }
-
 </style>
-
 </head>
 
 <body>
@@ -328,15 +309,8 @@ li{
 <div class="app">
 
 <header>
-
-<div class="logo">
-🔧 SCANNER DTC
-</div>
-
-<div class="subtitle">
-Diagnóstico automotriz inteligente
-</div>
-
+  <div class="logo">🔧 SCANNER DTC</div>
+  <div class="subtitle">Diagnóstico automotriz inteligente</div>
 </header>
 
 <div class="tabs">
@@ -344,6 +318,7 @@ Diagnóstico automotriz inteligente
 <button
   id="tabDtc"
   class="tab active"
+  type="button"
   onclick="showTab('dtc')"
 >
 🔎 DTC
@@ -352,12 +327,14 @@ Diagnóstico automotriz inteligente
 <button
   id="tabDiagram"
   class="tab"
+  type="button"
   onclick="showTab('diagram')"
 >
 📊 DIAGRAMAS
 </button>
 
 </div>
+
 
 <!-- ================= DTC ================= -->
 
@@ -368,20 +345,20 @@ Diagnóstico automotriz inteligente
 <h2>🔎 Buscar código DTC</h2>
 
 <p class="desc">
-Busca un código guardado o genera información
-para un código nuevo.
+Busca un código guardado o genera información para un código nuevo.
 </p>
 
-<label>Código DTC</label>
+<label for="dtcCode">Código DTC</label>
 
 <input
   id="dtcCode"
   maxlength="5"
   placeholder="Ej. P2122"
   autocomplete="off"
+  autocapitalize="characters"
 >
 
-<label>Marca opcional</label>
+<label for="dtcMake">Marca opcional</label>
 
 <input
   id="dtcMake"
@@ -391,22 +368,18 @@ para un código nuevo.
 <button
   class="main-btn"
   id="dtcButton"
+  type="button"
   onclick="searchDTC()"
 >
 🔎 BUSCAR CÓDIGO
 </button>
 
-<div
-  id="dtcStatus"
-  class="status"
-></div>
+<div id="dtcStatus" class="status"></div>
 
 </div>
 
-<div
-  id="dtcResult"
-  class="card hidden"
->
+
+<div id="dtcResult" class="card hidden">
 
 <div class="result-code" id="rCode"></div>
 
@@ -454,53 +427,35 @@ para un código nuevo.
 <div class="content" id="rSystem"></div>
 </div>
 
-<div
-  class="source"
-  id="rSource"
-></div>
+<div class="source" id="rSource"></div>
 
 </div>
 
 </section>
 
+
 <!-- ================= DIAGRAMAS ================= -->
 
-<section
-  id="diagramSection"
-  class="hidden"
->
+<section id="diagramSection" class="hidden">
 
 <div class="card">
 
 <h2>📊 Diagramas automotrices</h2>
 
 <p class="desc">
-Genera un diagrama educativo del sistema
-que selecciones.
+Genera un diagrama educativo del sistema que selecciones.
 </p>
 
 <div class="grid">
 
 <div>
-
-<label>Marca</label>
-
-<input
-  id="dMake"
-  placeholder="Chevrolet"
->
-
+<label for="dMake">Marca</label>
+<input id="dMake" placeholder="Chevrolet">
 </div>
 
 <div>
-
-<label>Modelo</label>
-
-<input
-  id="dModel"
-  placeholder="Silverado"
->
-
+<label for="dModel">Modelo</label>
+<input id="dModel" placeholder="Silverado">
 </div>
 
 </div>
@@ -508,26 +463,13 @@ que selecciones.
 <div class="grid">
 
 <div>
-
-<label>Año</label>
-
-<input
-  id="dYear"
-  type="number"
-  placeholder="2020"
->
-
+<label for="dYear">Año</label>
+<input id="dYear" type="number" placeholder="2020">
 </div>
 
 <div>
-
-<label>Sistema</label>
-
-<input
-  id="dSystem"
-  placeholder="EVAP"
->
-
+<label for="dSystem">Sistema</label>
+<input id="dSystem" placeholder="EVAP">
 </div>
 
 </div>
@@ -535,29 +477,22 @@ que selecciones.
 <button
   class="main-btn"
   id="diagramButton"
+  type="button"
   onclick="searchDiagram()"
 >
 📊 BUSCAR DIAGRAMA
 </button>
 
-<div
-  id="diagramStatus"
-  class="status"
-></div>
+<div id="diagramStatus" class="status"></div>
 
 </div>
 
-<div
-  id="diagramResult"
-  class="card hidden"
->
+
+<div id="diagramResult" class="card hidden">
 
 <h2 id="diagramTitle"></h2>
 
-<p
-  class="desc"
-  id="diagramDescription"
-></p>
+<p class="desc" id="diagramDescription"></p>
 
 <div class="diagram-meta">
 
@@ -585,16 +520,11 @@ que selecciones.
 
 <div class="section">
 
-<div class="section-title">
-🔌 Componentes
-</div>
+<div class="section-title">🔌 Componentes</div>
 
 <div class="diagram">
 
-<div
-  id="diagramNodes"
-  class="diagram-inner"
-></div>
+<div id="diagramNodes" class="diagram-inner"></div>
 
 </div>
 
@@ -602,28 +532,22 @@ que selecciones.
 
 <div class="section">
 
-<div class="section-title">
-🔗 Conexiones
-</div>
+<div class="section-title">🔗 Conexiones</div>
 
 <div id="connections"></div>
 
 </div>
 
-<div
-  id="warnings"
-></div>
+<div id="warnings"></div>
 
-<div
-  id="diagramSource"
-  class="source"
-></div>
+<div id="diagramSource" class="source"></div>
 
 </div>
 
 </section>
 
 </div>
+
 
 <script>
 
@@ -635,8 +559,45 @@ function $(id){
   return document.getElementById(id);
 }
 
-function safe(value){
-  return String(value ?? "");
+function errorToText(error){
+
+  if(error === null || error === undefined){
+    return "Error desconocido.";
+  }
+
+  if(typeof error === "string"){
+    return error;
+  }
+
+  if(error instanceof Error){
+    return error.message;
+  }
+
+  if(typeof error === "object"){
+
+    if(error.message){
+      return String(error.message);
+    }
+
+    if(error.error){
+
+      if(typeof error.error === "string"){
+        return error.error;
+      }
+
+      try{
+        return JSON.stringify(error.error);
+      }catch{}
+    }
+
+    try{
+      return JSON.stringify(error);
+    }catch{
+      return "Error desconocido.";
+    }
+  }
+
+  return String(error);
 }
 
 function showStatus(element,message,type){
@@ -650,11 +611,8 @@ function showStatus(element,message,type){
 
 function hideStatus(element){
 
-  element.className =
-    "status";
-
-  element.textContent =
-    "";
+  element.className = "status";
+  element.textContent = "";
 }
 
 function listHTML(items){
@@ -665,12 +623,81 @@ function listHTML(items){
 
   return `
     <ul>
-      ${items.map(
-        x => `<li>${safe(x)}</li>`
+      ${items.map(item =>
+        `<li>${escapeHTML(item)}</li>`
       ).join("")}
     </ul>
   `;
 }
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+
+/* =====================================================
+   LEER RESPUESTA API
+===================================================== */
+
+async function readAPI(response){
+
+  const text = await response.text();
+
+  if(!text){
+
+    throw new Error(
+      "La API no devolvió ninguna respuesta. HTTP " +
+      response.status
+    );
+  }
+
+  let data;
+
+  try{
+
+    data = JSON.parse(text);
+
+  }catch{
+
+    throw new Error(
+      "La API no devolvió JSON. HTTP " +
+      response.status +
+      ". Respuesta: " +
+      text.substring(0,200)
+    );
+  }
+
+  if(!response.ok){
+
+    throw new Error(
+      errorToText(
+        data.error ||
+        data.message ||
+        data
+      )
+    );
+  }
+
+  if(!data.success){
+
+    throw new Error(
+      errorToText(
+        data.error ||
+        data.message ||
+        data
+      )
+    );
+  }
+
+  return data;
+}
+
 
 /* =====================================================
    TABS
@@ -680,42 +707,22 @@ function showTab(tab){
 
   if(tab === "dtc"){
 
-    $("dtcSection")
-      .classList
-      .remove("hidden");
+    $("dtcSection").classList.remove("hidden");
+    $("diagramSection").classList.add("hidden");
 
-    $("diagramSection")
-      .classList
-      .add("hidden");
-
-    $("tabDtc")
-      .classList
-      .add("active");
-
-    $("tabDiagram")
-      .classList
-      .remove("active");
+    $("tabDtc").classList.add("active");
+    $("tabDiagram").classList.remove("active");
 
   }else{
 
-    $("dtcSection")
-      .classList
-      .add("hidden");
+    $("dtcSection").classList.add("hidden");
+    $("diagramSection").classList.remove("hidden");
 
-    $("diagramSection")
-      .classList
-      .remove("hidden");
-
-    $("tabDtc")
-      .classList
-      .remove("active");
-
-    $("tabDiagram")
-      .classList
-      .add("active");
-
+    $("tabDtc").classList.remove("active");
+    $("tabDiagram").classList.add("active");
   }
 }
+
 
 /* =====================================================
    DTC
@@ -734,11 +741,8 @@ async function searchDTC(){
       .value
       .trim();
 
-  const button =
-    $("dtcButton");
-
-  const status =
-    $("dtcStatus");
+  const button = $("dtcButton");
+  const status = $("dtcStatus");
 
   if(!/^[PBCU][0-9A-F]{4}$/.test(code)){
 
@@ -759,14 +763,23 @@ async function searchDTC(){
     "loading"
   );
 
-  $("dtcResult")
-    .classList
-    .add("hidden");
+  $("dtcResult").classList.add("hidden");
 
   try{
 
+    /*
+      IMPORTANTE:
+      code.js está en:
+
+      api/dtc/code.js
+
+      Por eso la ruta correcta es:
+
+      /api/dtc/code
+    */
+
     let url =
-      "/api/dtc?code=" +
+      "/api/dtc/code?code=" +
       encodeURIComponent(code);
 
     if(make){
@@ -777,39 +790,15 @@ async function searchDTC(){
     }
 
     const response =
-      await fetch(url);
+      await fetch(url,{
+        method:"GET",
+        headers:{
+          "Accept":"application/json"
+        }
+      });
 
-    const text =
-      await response.text();
-
-    let data;
-
-    try{
-
-      data =
-        JSON.parse(text);
-
-    }catch{
-
-      throw new Error(
-        "La API respondió algo que no es JSON. Código HTTP: " +
-        response.status +
-        ". Respuesta: " +
-        text.slice(0,150)
-      );
-
-    }
-
-    if(
-      !response.ok ||
-      !data.success
-    ){
-
-      throw new Error(
-        data.error ||
-        "Error de la API."
-      );
-    }
+    const data =
+      await readAPI(response);
 
     showDTC(data);
 
@@ -817,21 +806,20 @@ async function searchDTC(){
 
   }catch(error){
 
-    console.error(error);
+    console.error("DTC:",error);
 
     showStatus(
       status,
-      "⚠️ " +
-      safe(error.message),
+      "⚠️ " + errorToText(error),
       "error"
     );
 
   }finally{
 
     button.disabled = false;
-
   }
 }
+
 
 function showDTC(data){
 
@@ -876,10 +864,9 @@ function showDTC(data){
       ? "⚡ Recuperado de Supabase."
       : "🤖 Generado y guardado automáticamente.";
 
-  $("dtcResult")
-    .classList
-    .remove("hidden");
+  $("dtcResult").classList.remove("hidden");
 }
+
 
 /* =====================================================
    DIAGRAMA
@@ -905,12 +892,7 @@ async function searchDiagram(){
   const status =
     $("diagramStatus");
 
-  if(
-    !make ||
-    !model ||
-    !year ||
-    !system
-  ){
+  if(!make || !model || !year || !system){
 
     showStatus(
       status,
@@ -929,14 +911,20 @@ async function searchDiagram(){
     "loading"
   );
 
-  $("diagramResult")
-    .classList
-    .add("hidden");
+  $("diagramResult").classList.add("hidden");
 
   try{
 
+    /*
+      MISMA RUTA:
+
+      api/dtc/code.js
+
+      => /api/dtc/code
+    */
+
     const url =
-      "/api/dtc?diagram=1" +
+      "/api/dtc/code?diagram=1" +
       "&make=" +
       encodeURIComponent(make) +
       "&model=" +
@@ -947,39 +935,15 @@ async function searchDiagram(){
       encodeURIComponent(system);
 
     const response =
-      await fetch(url);
+      await fetch(url,{
+        method:"GET",
+        headers:{
+          "Accept":"application/json"
+        }
+      });
 
-    const text =
-      await response.text();
-
-    let data;
-
-    try{
-
-      data =
-        JSON.parse(text);
-
-    }catch{
-
-      throw new Error(
-        "La API respondió algo que no es JSON. Código HTTP: " +
-        response.status +
-        ". Respuesta: " +
-        text.slice(0,150)
-      );
-
-    }
-
-    if(
-      !response.ok ||
-      !data.success
-    ){
-
-      throw new Error(
-        data.error ||
-        "Error de la API."
-      );
-    }
+    const data =
+      await readAPI(response);
 
     showDiagram(data);
 
@@ -987,21 +951,20 @@ async function searchDiagram(){
 
   }catch(error){
 
-    console.error(error);
+    console.error("DIAGRAMA:",error);
 
     showStatus(
       status,
-      "⚠️ " +
-      safe(error.message),
+      "⚠️ " + errorToText(error),
       "error"
     );
 
   }finally{
 
     button.disabled = false;
-
   }
 }
+
 
 function showDiagram(data){
 
@@ -1040,14 +1003,12 @@ function showDiagram(data){
     const node =
       document.createElement("div");
 
-    node.className =
-      "node";
+    node.className = "node";
 
     const name =
       document.createElement("div");
 
-    name.className =
-      "node-name";
+    name.className = "node-name";
 
     name.textContent =
       component.name ||
@@ -1057,8 +1018,7 @@ function showDiagram(data){
     const type =
       document.createElement("div");
 
-    type.className =
-      "node-type";
+    type.className = "node-type";
 
     type.textContent =
       component.type ||
@@ -1068,8 +1028,14 @@ function showDiagram(data){
     node.appendChild(type);
 
     nodes.appendChild(node);
-
   });
+
+  if(!components.length){
+
+    nodes.innerHTML =
+      '<div class="content">No hay componentes disponibles.</div>';
+  }
+
 
   const connections =
     $("connections");
@@ -1086,8 +1052,7 @@ function showDiagram(data){
     const div =
       document.createElement("div");
 
-    div.className =
-      "connection";
+    div.className = "connection";
 
     div.textContent =
       `${connection.from || "?"} → ${
@@ -1097,7 +1062,6 @@ function showDiagram(data){
       }`;
 
     connections.appendChild(div);
-
   });
 
   if(!list.length){
@@ -1105,6 +1069,7 @@ function showDiagram(data){
     connections.innerHTML =
       '<div class="content">No hay conexiones disponibles.</div>';
   }
+
 
   const warnings =
     $("warnings");
@@ -1121,45 +1086,90 @@ function showDiagram(data){
       const div =
         document.createElement("div");
 
-      div.className =
-        "warning";
+      div.className = "warning";
 
       div.textContent =
-        "⚠️ " + warning;
+        "⚠️ " + errorToText(warning);
 
       warnings.appendChild(div);
-
     });
-
   }
+
 
   $("diagramSource").textContent =
     data.source === "supabase"
       ? "⚡ Recuperado de Supabase."
       : "🤖 Generado y guardado automáticamente.";
 
-  $("diagramResult")
-    .classList
-    .remove("hidden");
+  $("diagramResult").classList.remove("hidden");
 }
 
+
 /* =====================================================
-   ENTER
+   ENTER PARA DTC
 ===================================================== */
 
-$("dtcCode")
-  .addEventListener(
-    "keydown",
-    event => {
+$("dtcCode").addEventListener(
+  "keydown",
+  event => {
 
-      if(event.key === "Enter"){
-        searchDTC();
-      }
-
+    if(event.key === "Enter"){
+      searchDTC();
     }
-  );
+
+  }
+);
+
+
+/* =====================================================
+   ENTER PARA DIAGRAMA
+===================================================== */
+
+$("dMake").addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+      searchDiagram();
+    }
+
+  }
+);
+
+$("dModel").addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+      searchDiagram();
+    }
+
+  }
+);
+
+$("dYear").addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+      searchDiagram();
+    }
+
+  }
+);
+
+$("dSystem").addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+      searchDiagram();
+    }
+
+  }
+);
 
 </script>
 
 </body>
-  </html>
+</html>
